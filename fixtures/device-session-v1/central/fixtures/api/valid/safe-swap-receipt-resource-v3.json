@@ -1,0 +1,15 @@
+{
+  "schema": "ylx.safe-swap-receipt-resource.v3",
+  "receipt": {
+    "schema": "ylx.safe-swap-receipt.v3",
+    "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "generation_id": "7d516b70-d8ab-47d1-b2dc-5b1250138789",
+    "manifest_id": "01989f6a-2c01-7b2c-9d3e-4f5061728394",
+    "manifest_sha256": "7e53429e512f12d8b6aa2b1794b73c1790792e738df44d20e5487a69d6412815",
+    "sealed_at": "2026-08-08T10:24:33+08:00",
+    "released_at": "2026-08-08T10:25:03+08:00",
+    "release_state": "unmounted",
+    "open_handle_count": 0
+  }
+}

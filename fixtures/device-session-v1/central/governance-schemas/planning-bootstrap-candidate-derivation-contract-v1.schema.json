@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bootstrap-candidate-derivation-contract-v1.schema.json",
+  "title": "YLX planning bootstrap candidate derivation contract v1",
+  "description": "Immutable two-phase deterministic derivation contract pinned by M0-I closure C. Implementation immutability, exact-byte reproducibility, and correspondence between ordered inputs and emitted RFC 8785 bytes are procedural validation rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_id",
+    "contract_revision",
+    "canonical_encoding",
+    "closure_schema",
+    "artifact_schema_by_kind",
+    "artifact_id_by_kind",
+    "phase_a_owner_projection",
+    "phase_b_child_projection_by_kind",
+    "phase_b_bundle_subject_projection",
+    "approval_subject_schema",
+    "approval_subject_field_order",
+    "calculator_contract_ref",
+    "calculator_contract_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bootstrap-candidate-derivation-contract.v1"
+    },
+    "contract_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "contract_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "canonical_encoding": {
+      "const": "RFC8785_JSON_UTF8"
+    },
+    "closure_schema": {
+      "const": "ylx.planning-bootstrap-input-closure.v1"
+    },
+    "artifact_schema_by_kind": {
+      "$ref": "#/$defs/artifactSchemaByKind"
+    },
+    "artifact_id_by_kind": {
+      "$ref": "#/$defs/artifactIdByKind"
+    },
+    "phase_a_owner_projection": {
+      "$ref": "#/$defs/ownerProjectionDescriptor"
+    },
+    "phase_b_child_projection_by_kind": {
+      "$ref": "#/$defs/phaseBChildProjectionByKind"
+    },
+    "phase_b_bundle_subject_projection": {
+      "$ref": "#/$defs/bundleSubjectProjectionDescriptor"
+    },
+    "approval_subject_schema": {
+      "const": "ylx.planning-approval-subject.v1"
+    },
+    "approval_subject_field_order": {
+      "const": [
+        "schema",
+        "artifact_id",
+        "revision",
+        "predecessor_sha256",
+        "source_refs",
+        "artifact_metadata",
+        "planning_gate",
+        "detail_horizon",
+        "registry_binding",
+        "artifacts",
+        "bundle_kind",
+        "final_actual_variance_reconciliation"
+      ]
+    },
+    "calculator_contract_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "calculator_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "projectionDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projection_id",
+        "projection_revision",
+        "implementation_ref",
+        "implementation_sha256",
+        "input_names",
+        "output_schema",
+        "output_field_order"
+      ],
+      "properties": {
+        "projection_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "projection_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "implementation_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "implementation_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "input_names": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        },
+        "output_schema": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/schemaName"
+        },
+        "output_field_order": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "ownerProjectionDescriptor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectionDescriptor"
+        },
+        {
+          "properties": {
+            "output_schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          }
+        }
+      ]
+    },
+    "resourceCalendarProjectionDescriptor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectionDescriptor"
+        },
+        {
+          "properties": {
+            "output_schema": {
+              "const": "ylx.resource-calendar.v1"
+            }
+          }
+        }
+      ]
+    },
+    "deliveryWbsProjectionDescriptor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectionDescriptor"
+        },
+        {
+          "properties": {
+            "output_schema": {
+              "const": "ylx.delivery-wbs.v2"
+            }
+          }
+        }
+      ]
+    },
+    "forecastSnapshotProjectionDescriptor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectionDescriptor"
+        },
+        {
+          "properties": {
+            "output_schema": {
+              "const": "ylx.forecast-snapshot.v1"
+            }
+          }
+        }
+      ]
+    },
+    "bundleSubjectProjectionDescriptor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectionDescriptor"
+        },
+        {
+          "properties": {
+            "output_schema": {
+              "const": "ylx.delivery-planning-bundle.v2"
+            }
+          }
+        }
+      ]
+    },
+    "artifactSchemaByKind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "const": "ylx.owner-assignment.v1"
+        },
+        "resource_calendar": {
+          "const": "ylx.resource-calendar.v1"
+        },
+        "delivery_wbs": {
+          "const": "ylx.delivery-wbs.v2"
+        },
+        "forecast_snapshot": {
+          "const": "ylx.forecast-snapshot.v1"
+        }
+      }
+    },
+    "artifactIdByKind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "const": "M0-GOV-01-governed-owner-assignment"
+        },
+        "resource_calendar": {
+          "const": "M0-GOV-01-governed-resource-calendar"
+        },
+        "delivery_wbs": {
+          "const": "M0-GOV-01-governed-delivery-wbs"
+        },
+        "forecast_snapshot": {
+          "const": "M0-GOV-01-governed-forecast-snapshot"
+        }
+      }
+    },
+    "phaseBChildProjectionByKind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "resource_calendar": {
+          "$ref": "#/$defs/resourceCalendarProjectionDescriptor"
+        },
+        "delivery_wbs": {
+          "$ref": "#/$defs/deliveryWbsProjectionDescriptor"
+        },
+        "forecast_snapshot": {
+          "$ref": "#/$defs/forecastSnapshotProjectionDescriptor"
+        }
+      }
+    }
+  }
+}

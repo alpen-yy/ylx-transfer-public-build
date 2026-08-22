@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/evidence-binding-v1.schema.json",
+  "title": "YLX evidence binding v1",
+  "description": "Closed reverse map from evidence IDs to one immutable stage binding context, the exact execution contexts required by registry coverage, and the immutable execution-authorization evaluation for each evidence-producing action instance. The map carries no verdict, stimulus, observation, result, failure, reviewer, supersession history, or self digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "created_at",
+    "binding_context_ref",
+    "execution_context_refs",
+    "required_execution_context_ids",
+    "evidence_records",
+    "reverse_coverage",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.evidence-binding.v1"
+    },
+    "binding_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "binding_context_ref": {
+      "$ref": "#/$defs/contextRef"
+    },
+    "execution_context_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/contextRef"
+      },
+      "description": "Exact-byte-deduplicated execution context references applicable to the bound evidence records."
+    },
+    "required_execution_context_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+      },
+      "description": "Registry-derived execution contexts that must have evidence coverage. The set must equal the IDs represented by reverse_coverage."
+    },
+    "evidence_records": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceRecordBinding"
+      }
+    },
+    "reverse_coverage": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/reverseCoverage"
+      },
+      "description": "Reverse coverage indexed by requirement and required execution context. Every evidence ID must resolve to evidence_records and bind that same execution context."
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "contextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "evidenceRecordBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "evidence_record_kind",
+        "artifact_path",
+        "artifact_sha256",
+        "execution_context_ids",
+        "actor_deployment_record_sha256",
+        "execution_authorization_evaluation_ref",
+        "action_instance_id",
+        "planned_action_input_sha256"
+      ],
+      "properties": {
+        "evidence_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "evidence_record_kind": {
+          "enum": [
+            "run-evidence",
+            "component-actor-receipt"
+          ]
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "execution_context_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+          }
+        },
+        "actor_deployment_record_sha256": {
+          "oneOf": [
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required exact actual-deployment digest for a component actor receipt; a reusable environment name is never sufficient."
+        },
+        "execution_authorization_evaluation_ref": {
+          "description": "Exact immutable evaluation that authorized this evidence-producing action instance. The procedural validator requires a PASS evaluation, exact tuple equality with the evidence or receipt, and freshness immediately before the action starts.",
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "action_instance_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "planned_action_input_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "evidence_record_kind"
+            ],
+            "properties": {
+              "evidence_record_kind": {
+                "const": "component-actor-receipt"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "actor_deployment_record_sha256": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "actor_deployment_record_sha256": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "reverseCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_id",
+        "execution_context_id",
+        "evidence_ids"
+      ],
+      "properties": {
+        "requirement_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "execution_context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/consumer-boundary-acceptance-set-v1.schema.json",
+  "title": "YLX consumer boundary acceptance set v1",
+  "description": "Closed M5 manifest binding the complete applicable consumer-boundary set to the exact bytes of one valid acceptance record per boundary and one exact M5 binding context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "revision",
+    "consumer_boundary_registry_sha256",
+    "binding_context_ref",
+    "boundary_ids",
+    "component_acceptance_record_sha256_by_boundary",
+    "created_at",
+    "owner_slot",
+    "reviewer_slot",
+    "approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.consumer-boundary-acceptance-set.v1"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "consumer_boundary_registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-acceptance-v1.schema.json#/$defs/bindingContextRef"
+    },
+    "boundary_ids": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+    },
+    "component_acceptance_record_sha256_by_boundary": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryDigestMap"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "owner_slot": {
+      "const": "consumer-owner"
+    },
+    "reviewer_slot": {
+      "const": "contract-owner"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role_id",
+              "principal_id",
+              "decision",
+              "approved_at",
+              "assignment_ref"
+            ],
+            "properties": {
+              "role_id": {
+                "const": "consumer-owner"
+              },
+              "principal_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "decision": {
+                "enum": [
+                  "APPROVED",
+                  "SYNTHETIC_ONLY"
+                ]
+              },
+              "approved_at": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+              },
+              "assignment_ref": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role_id",
+              "principal_id",
+              "decision",
+              "approved_at",
+              "assignment_ref"
+            ],
+            "properties": {
+              "role_id": {
+                "const": "contract-owner"
+              },
+              "principal_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "decision": {
+                "enum": [
+                  "APPROVED",
+                  "SYNTHETIC_ONLY"
+                ]
+              },
+              "approved_at": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+              },
+              "assignment_ref": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    }
+  }
+}

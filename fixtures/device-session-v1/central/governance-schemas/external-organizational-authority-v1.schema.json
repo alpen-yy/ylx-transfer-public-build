@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/external-organizational-authority-v1.schema.json",
+  "title": "YLX external organizational authority for prospective G0 ratification v1",
+  "description": "Normalized, signed external authority input. Live trust is established only when a resolver verifies these exact bytes against an independently configured out-of-repository trust anchor; discovering this record or its key in the candidate repository is never sufficient.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority_id",
+    "revision",
+    "predecessor_authority_sha256",
+    "authority_kind",
+    "authority_origin",
+    "authority_status",
+    "scope",
+    "eligible_approver_by_role_id",
+    "quorum",
+    "grant_issuer",
+    "authority_effect",
+    "effective_semantics",
+    "effective_from",
+    "not_after",
+    "revoked_at",
+    "trust_anchor_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "ylx.external-organizational-authority.v1"},
+    "authority_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"},
+    "revision": {"type": "integer", "minimum": 1},
+    "predecessor_authority_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "authority_kind": {"const": "EXTERNAL_ORGANIZATIONAL_GOVERNANCE_AUTHORITY"},
+    "authority_origin": {"const": "PREEXISTING_OUTSIDE_CANDIDATE_POLICY"},
+    "authority_status": {"enum": ["ACTIVE", "REVOKED", "SUPERSEDED"]},
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "prefixItems": [{"const": "PROSPECTIVE_G0_POLICY_RATIFICATION"}],
+      "items": false
+    },
+    "eligible_approver_by_role_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "propertyNames": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"},
+      "patternProperties": {
+        "^.+$": {"$ref": "#/$defs/eligibleApprover"}
+      }
+    },
+    "quorum": {"$ref": "#/$defs/quorum"},
+    "grant_issuer": {"$ref": "#/$defs/grantIssuer"},
+    "authority_effect": {"const": "PROSPECTIVE_ONLY"},
+    "effective_semantics": {"$ref": "#/$defs/effectiveSemantics"},
+    "effective_from": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "not_after": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "revoked_at": {"$ref": "#/$defs/nullableTimestamp"},
+    "trust_anchor_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signing_key_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signed_payload_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "signature": {"$ref": "#/$defs/ed25519Signature"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"revision": {"const": 1}}, "required": ["revision"]},
+      "then": {"properties": {"predecessor_authority_sha256": {"type": "null"}}},
+      "else": {"properties": {"predecessor_authority_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"}}}
+    },
+    {
+      "if": {"properties": {"authority_status": {"const": "REVOKED"}}, "required": ["authority_status"]},
+      "then": {"properties": {"revoked_at": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"}}},
+      "else": {"properties": {"revoked_at": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"}
+      ]
+    },
+    "nullableTimestamp": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"}
+      ]
+    },
+    "ed25519PublicKey": {"type": "string", "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$"},
+    "ed25519Signature": {"type": "string", "minLength": 88, "maxLength": 88, "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"},
+    "eligibleApprover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person_id",
+        "accountable_natural_person",
+        "approval_signing_key_id",
+        "approval_public_key_base64",
+        "eligible_from",
+        "eligible_until",
+        "conflict_group_id"
+      ],
+      "properties": {
+        "person_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+        "accountable_natural_person": {"const": true},
+        "approval_signing_key_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+        "approval_public_key_base64": {"$ref": "#/$defs/ed25519PublicKey"},
+        "eligible_from": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+        "eligible_until": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+        "conflict_group_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"}
+      }
+    },
+    "quorum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_role_ids",
+        "minimum_approval_count",
+        "require_all_roles",
+        "distinct_natural_persons",
+        "conflict_rule",
+        "approval_order_rule"
+      ],
+      "properties": {
+        "required_role_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"}
+        },
+        "minimum_approval_count": {"type": "integer", "minimum": 1},
+        "require_all_roles": {"const": true},
+        "distinct_natural_persons": {"const": true},
+        "conflict_rule": {"const": "DISTINCT_NATURAL_PERSONS_AND_CONFLICT_GROUPS"},
+        "approval_order_rule": {"const": "NO_REQUIRED_ORDER"}
+      }
+    },
+    "grantIssuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_id", "signing_key_id", "public_key_base64", "allowed_grant_kinds"],
+      "properties": {
+        "issuer_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+        "signing_key_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+        "public_key_base64": {"$ref": "#/$defs/ed25519PublicKey"},
+        "allowed_grant_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["G0_EVENT_PUBLISHER", "REPOSITORY_PERMISSION", "G0_EVENT_READBACK", "EXTERNAL_OUTREACH_SEND", "CANONICAL_LOCATOR_READBACK", "TERMINAL_AUDIT_SINK"]}
+        }
+      }
+    },
+    "effectiveSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application", "retrospective_effect", "source_history_mutation", "environment_scope"],
+      "properties": {
+        "application": {"const": "PROSPECTIVE_FROM_EFFECTIVE_AT"},
+        "retrospective_effect": {"const": "NONE"},
+        "source_history_mutation": {"const": "FORBIDDEN"},
+        "environment_scope": {"const": "REPOSITORY_GOVERNANCE"}
+      }
+    }
+  }
+}

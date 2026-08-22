@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/issue-register-gate-verdict-v1.schema.json",
+  "title": "YLX issue register gate verdict v1",
+  "description": "Immutable revisioned result of running one canonical gate selector against the unique current valid issue-register head. Procedural validation enforces stable verdict identity, an exact adjacent predecessor chain, current-head selection and freshness, exact selected-ID/map-key equality, and exact unchanged issue-slice subset equality.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "verdict_id",
+    "revision",
+    "predecessor_verdict_ref",
+    "requirement_id",
+    "gate",
+    "current_issue_register_head_artifact_path",
+    "current_issue_register_revision",
+    "current_issue_register_head_artifact_sha256",
+    "current_issue_register_sha256",
+    "current_issue_register_selector_version",
+    "current_issue_register_overview_cardinality",
+    "selected_issue_ids",
+    "selected_issue_slices_by_id",
+    "result",
+    "evaluated_at",
+    "evaluator_person_id",
+    "evaluator_assignment_ref",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.issue-register-gate-verdict.v1"
+    },
+    "verdict_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_verdict_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/issueRegisterGateVerdictRef"
+        }
+      ]
+    },
+    "requirement_id": {
+      "enum": [
+        "M0-ISSUES-01",
+        "M1-ISSUES-01",
+        "M2-ISSUES-01",
+        "M3-ISSUES-01",
+        "M4A-ISSUES-01",
+        "M4B-ISSUES-01",
+        "M4C-ISSUES-01",
+        "M4D-ISSUES-01",
+        "M4-ISSUES-01",
+        "M5-ISSUES-01"
+      ]
+    },
+    "gate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4a",
+        "M4b",
+        "M4c",
+        "M4d",
+        "M4",
+        "M5"
+      ]
+    },
+    "current_issue_register_head_artifact_path": {
+      "description": "Exact path of the unique current valid issue-register head selected before source-freshness comparison.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "current_issue_register_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "current_issue_register_head_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "current_issue_register_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "current_issue_register_selector_version": {
+      "enum": [
+        "issue-register-gate-selector.v1",
+        "issue-register-gate-selector.v2"
+      ]
+    },
+    "current_issue_register_overview_cardinality": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "selected_issue_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueId"
+      },
+      "uniqueItems": true
+    },
+    "selected_issue_slices_by_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^O-[1-9][0-9]*$": {
+          "$ref": "https://schemas.ylx.invalid/governance/issue-register-head-v1.schema.json#/$defs/issueSlice"
+        }
+      }
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "BLOCKED"
+      ]
+    },
+    "evaluated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "evaluator_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "evaluator_assignment_ref": {
+      "description": "Exact effective owner assignment for the evaluation. Procedural validation requires evaluator_person_id to resolve as the release-owner responsible for the selected issue requirement at evaluated_at.",
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_verdict_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_verdict_ref": {
+            "$ref": "#/$defs/issueRegisterGateVerdictRef"
+          }
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M0-ISSUES-01"
+            },
+            "gate": {
+              "const": "M0"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M1-ISSUES-01"
+            },
+            "gate": {
+              "const": "M1"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M2-ISSUES-01"
+            },
+            "gate": {
+              "const": "M2"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M3-ISSUES-01"
+            },
+            "gate": {
+              "const": "M3"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M4A-ISSUES-01"
+            },
+            "gate": {
+              "const": "M4a"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M4B-ISSUES-01"
+            },
+            "gate": {
+              "const": "M4b"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M4C-ISSUES-01"
+            },
+            "gate": {
+              "const": "M4c"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M4D-ISSUES-01"
+            },
+            "gate": {
+              "const": "M4d"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M4-ISSUES-01"
+            },
+            "gate": {
+              "const": "M4"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        },
+        {
+          "properties": {
+            "requirement_id": {
+              "const": "M5-ISSUES-01"
+            },
+            "gate": {
+              "const": "M5"
+            }
+          },
+          "required": [
+            "requirement_id",
+            "gate"
+          ]
+        }
+      ]
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "result": {
+              "const": "PASS"
+            },
+            "selected_issue_ids": {
+              "maxItems": 0
+            },
+            "selected_issue_slices_by_id": {
+              "maxProperties": 0
+            }
+          },
+          "required": [
+            "result",
+            "selected_issue_ids",
+            "selected_issue_slices_by_id"
+          ]
+        },
+        {
+          "properties": {
+            "result": {
+              "const": "BLOCKED"
+            },
+            "selected_issue_ids": {
+              "minItems": 1
+            },
+            "selected_issue_slices_by_id": {
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "result",
+            "selected_issue_ids",
+            "selected_issue_slices_by_id"
+          ]
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "issueId": {
+      "type": "string",
+      "pattern": "^O-[1-9][0-9]*$"
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "issueRegisterGateVerdictRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.issue-register-gate-verdict.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,611 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-publication-fence-v2.schema.json",
+  "title": "YLX immutable single-attempt release publication fence v2",
+  "description": "Create-if-absent single-attempt fence over the v2 M5 artifact family. Acquisition is authorized by freshness checkpoint 1 and precedes every external GA mutation. ACTIVE derives only from an absent terminal slot; neither GA promotion nor an orphan final payload completes the release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "fence_id",
+    "revision",
+    "attempt_id",
+    "fence_authority_id",
+    "attempt_input_set_ref",
+    "authorizing_freshness_checkpoint_ref",
+    "authorizing_freshness_checkpoint_sequence",
+    "planned_action_input_sha256",
+    "pre_release_ref",
+    "pre_release_sha256",
+    "domain_attestation_sha256_by_role",
+    "quorum_signature_sha256_by_role",
+    "role_assignment_by_role",
+    "release_operation_assignment_ref",
+    "binding_context_ref",
+    "effective_m4_lineage_ref",
+    "contract_release_sha256",
+    "product_contract_sha256",
+    "qualification_governance_contract_sha256",
+    "fresh_issue_head",
+    "signing_policy_ref",
+    "signing_policy_sha256",
+    "key_head_ref",
+    "key_head_sha256",
+    "quorum_policy_ref",
+    "quorum_policy_sha256",
+    "promotion_plan_ref",
+    "promotion_plan_sha256",
+    "planned_promotion_operator",
+    "release_train",
+    "system_milestone",
+    "rc_version",
+    "rc_commit",
+    "rc_artifact_sha256",
+    "canonical_remote_id",
+    "ga_ref",
+    "ga_channel",
+    "canonical_ga_target",
+    "attempt_terminal_slot",
+    "initial_customer_visibility",
+    "required_key_validity_horizon_seconds",
+    "acquired_at",
+    "fence_semantics",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-publication-fence.v2"
+    },
+    "fence_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "const": 1
+    },
+    "attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "fence_authority_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "attempt_input_set_ref": {
+      "$ref": "#/$defs/attemptInputSetRef"
+    },
+    "authorizing_freshness_checkpoint_ref": {
+      "$ref": "#/$defs/freshnessCheckpointRef"
+    },
+    "authorizing_freshness_checkpoint_sequence": {
+      "const": 1
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "pre_release_ref": {
+      "$ref": "#/$defs/preReleaseRef"
+    },
+    "pre_release_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "domain_attestation_sha256_by_role": {
+      "$ref": "#/$defs/domainAttestationDigestMap"
+    },
+    "quorum_signature_sha256_by_role": {
+      "$ref": "#/$defs/quorumSignatureDigestMap"
+    },
+    "role_assignment_by_role": {
+      "$ref": "#/$defs/roleAssignmentBindingMap"
+    },
+    "release_operation_assignment_ref": {
+      "$ref": "#/$defs/releaseOperationAssignmentRef"
+    },
+    "binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "effective_m4_lineage_ref": {
+      "$ref": "#/$defs/m4ContextLineageRef"
+    },
+    "contract_release_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "product_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "qualification_governance_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "fresh_issue_head": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+    },
+    "signing_policy_ref": {
+      "$ref": "#/$defs/signingPolicyRef"
+    },
+    "signing_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "key_head_ref": {
+      "$ref": "#/$defs/keyHeadRef"
+    },
+    "key_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "quorum_policy_ref": {
+      "$ref": "#/$defs/quorumPolicyRef"
+    },
+    "quorum_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "promotion_plan_ref": {
+      "$ref": "#/$defs/promotionPlanRef"
+    },
+    "promotion_plan_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planned_promotion_operator": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/actorIdentity"
+    },
+    "release_train": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "system_milestone": {
+      "const": "0.5"
+    },
+    "rc_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9A-Za-z.-]+$"
+    },
+    "rc_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+    },
+    "rc_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_remote_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "ga_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "ga_channel": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "canonical_ga_target": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "attempt_terminal_slot": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "initial_customer_visibility": {
+      "const": "QUARANTINED"
+    },
+    "required_key_validity_horizon_seconds": {
+      "type": "integer",
+      "minimum": 60
+    },
+    "acquired_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "fence_semantics": {
+      "$ref": "#/$defs/fenceSemantics"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "attemptInputSetRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-attempt-input-set.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "freshnessCheckpointRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-freshness-checkpoint.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "preReleaseRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.pre-release-closure.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "releaseOperationAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-operation-assignment.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "signingPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m5-signing-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "keyHeadRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.signing-key-validity-revocation-head.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "quorumPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-quorum-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "promotionPlanRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.ga-promotion-plan.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "domainAttestationDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "contract-owner",
+        "capture-owner",
+        "consumer-owner",
+        "web-control-owner",
+        "network-owner",
+        "security-owner",
+        "build-platform-owner",
+        "qa-evidence-owner",
+        "hardware-owner",
+        "pipeline-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "capture-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "consumer-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "web-control-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "network-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "security-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "build-platform-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qa-evidence-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "hardware-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "pipeline-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "quorumSignatureDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "contract-owner",
+        "security-owner",
+        "qa-evidence-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "security-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qa-evidence-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "roleAssignmentBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person_id",
+        "assignment_ref"
+      ],
+      "properties": {
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "assignment_ref": {
+          "allOf": [
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+            },
+            {
+              "properties": {
+                "schema": {
+                  "const": "ylx.role-signing-key-assignment.v1"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "schema",
+                "revision"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "roleAssignmentBindingMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "contract-owner",
+        "security-owner",
+        "qa-evidence-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "$ref": "#/$defs/roleAssignmentBinding"
+        },
+        "contract-owner": {
+          "$ref": "#/$defs/roleAssignmentBinding"
+        },
+        "security-owner": {
+          "$ref": "#/$defs/roleAssignmentBinding"
+        },
+        "qa-evidence-owner": {
+          "$ref": "#/$defs/roleAssignmentBinding"
+        }
+      }
+    },
+    "fenceSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acquisition",
+        "active_derivation",
+        "parallel_attempts",
+        "ordinary_authority_successors",
+        "emergency_revocation",
+        "ga_visibility",
+        "recovery",
+        "release_condition",
+        "missing_manifest_state",
+        "orphan_final_payload_state",
+        "finalized_state",
+        "aborted_state",
+        "pre_finalized_cas_freshness_mismatch",
+        "post_finalized_cas_pre_readback_freshness_mismatch"
+      ],
+      "properties": {
+        "acquisition": {
+          "const": "CREATE_IF_ABSENT_SINGLE_ATTEMPT"
+        },
+        "active_derivation": {
+          "const": "TERMINAL_SLOT_ABSENT"
+        },
+        "parallel_attempts": {
+          "const": "FORBIDDEN"
+        },
+        "ordinary_authority_successors": {
+          "const": "BLOCKED_WHILE_ACTIVE"
+        },
+        "emergency_revocation": {
+          "const": "TERMINATE_ATTEMPT_AND_KEEP_GA_QUARANTINED"
+        },
+        "ga_visibility": {
+          "const": "QUARANTINED_UNTIL_VALID_ACTIVE_DISTRIBUTION_HEAD"
+        },
+        "recovery": {
+          "const": "SAME_IMMUTABLE_INPUTS_ONLY"
+        },
+        "release_condition": {
+          "const": "VALID_MANIFEST_AND_FINALIZED_SLOT_REFERENCE_DURABLE_EXACT_READBACK"
+        },
+        "missing_manifest_state": {
+          "const": "RELEASE_NOT_COMPLETE"
+        },
+        "orphan_final_payload_state": {
+          "const": "FINAL_PAYLOAD_DURABLE_NOT_ACTIVATED"
+        },
+        "finalized_state": {
+          "const": "FINAL_REFERENCE_DURABLE"
+        },
+        "aborted_state": {
+          "const": "ABORTED_REFERENCE_DURABLE"
+        },
+        "pre_finalized_cas_freshness_mismatch": {
+          "const": "ABORTED_AND_QUARANTINED"
+        },
+        "post_finalized_cas_pre_readback_freshness_mismatch": {
+          "const": "IMMUTABLE_INVALID_TERMINAL_NO_PASS_NO_RELEASE_COMPLETE_NO_OVERWRITE_OR_REUSE"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m4-candidate-assembly-v1.schema.json",
+  "title": "YLX M4 candidate product assembly v1",
+  "description": "Binds one candidate to exactly four candidate-neutral component sub-bundles and shared product inputs. Qualification, impact-graph, execution, support, deployment, and release-closure dry-run data are intentionally excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "predecessor_candidate_id",
+    "component_sub_bundle_sha256_by_id",
+    "rendered_config_sha256",
+    "product_contract_sha256",
+    "m3_binding_context_ref",
+    "base_bundle_sha256",
+    "base_core_input_projection",
+    "shared_input_sha256_by_id",
+    "integration_smoke_sha256",
+    "candidate_identity_input_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m4-candidate-assembly.v1"
+    },
+    "candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "predecessor_candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "component_sub_bundle_sha256_by_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "web",
+        "network",
+        "preview",
+        "transfer-calibration"
+      ],
+      "properties": {
+        "web": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "network": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "preview": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "transfer-calibration": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "rendered_config_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "product_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "m3_binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "base_bundle_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "base_core_input_projection": {
+      "$ref": "#/$defs/baseCoreInputProjection"
+    },
+    "shared_input_sha256_by_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "integration_smoke_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "candidate_identity_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "shaMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "emptyIdArray": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "baseCoreInputProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_core_input_sha256_by_id",
+        "target_core_input_sha256_by_id",
+        "added_product_input_sha256_by_id",
+        "removed_core_input_ids",
+        "changed_core_input_ids",
+        "unexplained_input_ids",
+        "source_rendered_core_config_sha256",
+        "target_rendered_core_config_projection_sha256",
+        "source_product_contract_sha256",
+        "target_product_contract_sha256",
+        "projection_algorithm_sha256",
+        "all_core_inputs_equal"
+      ],
+      "properties": {
+        "source_core_input_sha256_by_id": { "$ref": "#/$defs/shaMap" },
+        "target_core_input_sha256_by_id": { "$ref": "#/$defs/shaMap" },
+        "added_product_input_sha256_by_id": { "$ref": "#/$defs/shaMap" },
+        "removed_core_input_ids": { "$ref": "#/$defs/emptyIdArray" },
+        "changed_core_input_ids": { "$ref": "#/$defs/emptyIdArray" },
+        "unexplained_input_ids": { "$ref": "#/$defs/emptyIdArray" },
+        "source_rendered_core_config_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_rendered_core_config_projection_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "projection_algorithm_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "all_core_inputs_equal": { "const": true }
+      }
+    }
+  }
+}

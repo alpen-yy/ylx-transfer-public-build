@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/terminal-slot-readback-receipt-v1.schema.json",
+  "title": "YLX terminal slot durable readback receipt v1",
+  "description": "Immutable durable-readback receipt for the exact FINALIZED terminal reference. It binds the checkpoint-7 authorization and terminal CAS receipt; checkpoint 8 validates this receipt before signoff-derived distribution activation is attempted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "attempt_id",
+    "attempt_input_set_ref",
+    "authorizing_freshness_checkpoint_ref",
+    "authorizing_freshness_checkpoint_sequence",
+    "pre_cas_checkpoint_ref",
+    "pre_cas_checkpoint_sequence",
+    "planned_action_input_sha256",
+    "terminal_cas_receipt_ref",
+    "payload_readback_receipt_ref",
+    "terminal_slot",
+    "expected_terminal_reference",
+    "observed_terminal_reference",
+    "readback_authority_ref",
+    "readback_operation_id",
+    "observed_slot_version",
+    "observed_etag",
+    "durable_readback",
+    "result",
+    "read_back_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.terminal-slot-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "attempt_input_set_ref": {
+      "$ref": "#/$defs/attemptInputSetRef"
+    },
+    "authorizing_freshness_checkpoint_ref": {
+      "$ref": "#/$defs/freshnessCheckpointRef",
+      "description": "Procedurally equal to pre_cas_checkpoint_ref."
+    },
+    "authorizing_freshness_checkpoint_sequence": {
+      "const": 7
+    },
+    "pre_cas_checkpoint_ref": {
+      "$ref": "#/$defs/freshnessCheckpointRef"
+    },
+    "pre_cas_checkpoint_sequence": {
+      "const": 7
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "terminal_cas_receipt_ref": {
+      "$ref": "#/$defs/terminalCasReceiptRef"
+    },
+    "payload_readback_receipt_ref": {
+      "$ref": "#/$defs/payloadReadbackReceiptRef"
+    },
+    "terminal_slot": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "expected_terminal_reference": {
+      "$ref": "#/$defs/finalizedTerminalReference"
+    },
+    "observed_terminal_reference": {
+      "$ref": "#/$defs/finalizedTerminalReference"
+    },
+    "readback_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "readback_operation_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "observed_slot_version": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "observed_etag": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "durable_readback": {
+      "const": true
+    },
+    "result": {
+      "const": "EXACT_FINALIZED_REFERENCE"
+    },
+    "read_back_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "attemptInputSetRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-attempt-input-set.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "freshnessCheckpointRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-freshness-checkpoint.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "terminalCasReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.terminal-slot-cas-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "payloadReadbackReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.content-addressed-readback-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "releaseManifestRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-closure-manifest.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "finalizedTerminalReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload_ref",
+        "payload_locator",
+        "payload_sha256"
+      ],
+      "properties": {
+        "kind": {
+          "const": "FINALIZED"
+        },
+        "payload_ref": {
+          "$ref": "#/$defs/releaseManifestRef"
+        },
+        "payload_locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "payload_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

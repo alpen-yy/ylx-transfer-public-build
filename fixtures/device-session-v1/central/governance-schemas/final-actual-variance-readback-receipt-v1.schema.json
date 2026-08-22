@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/final-actual-variance-readback-receipt-v1.schema.json",
+  "title": "YLX final actual variance readback receipt v1",
+  "description": "Immutable external exact-byte readback receipt for one published FINAL_ACTUAL_VARIANCE bundle F. It exact-references the unique unrevisioned publication receipt P, whose digest already binds the exact F, post-F pre-action evaluation, publisher identity, complete publisher task actual and variance, and durability result. R repeats only the target tuple needed to prove exact F readback, avoiding a second malleable copy of P's execution tuple. It records observation only and grants no planning, milestone, signoff, release-completion, terminal-slot, or distribution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "publication_receipt_ref",
+    "final_bundle_ref",
+    "final_bundle_sha256",
+    "final_bundle_locator",
+    "final_bundle_byte_length",
+    "canonical_encoding",
+    "observed_final_bundle_sha256",
+    "observed_final_bundle_byte_length",
+    "digest_match",
+    "exact_bytes_match",
+    "read_back_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.final-actual-variance-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "description": "Deterministic ID equal to 'final-actual-variance-readback-' plus lowercase SHA-256 of RFC 8785 JSON UTF-8 over an object containing exactly publication_receipt_ref, final_bundle_ref, and final_bundle_sha256 from this receipt. publication_receipt_ref is a closed unrevisioned exact-byte reference to P, so its digest transitively binds P's complete execution and publisher-actual tuple without duplicating it here. Procedural validation recomputes the digest and permits exactly one effective receipt for this preimage.",
+      "type": "string",
+      "pattern": "^final-actual-variance-readback-[0-9a-f]{64}$"
+    },
+    "publication_receipt_ref": {
+      "description": "Exact four-field unrevisioned artifact reference to P. Revision is forbidden. Procedural validation dereferences these exact receipt bytes and requires publication_receipt_ref.artifact_id to equal P.receipt_id.",
+      "$ref": "#/$defs/publicationReceiptRef"
+    },
+    "final_bundle_ref": {
+      "description": "Exact reference to F. It must equal the final_bundle_ref in P and resolve to the accepted FINAL_ACTUAL_VARIANCE bundle named by the publisher closure.",
+      "$ref": "#/$defs/finalBundleRef"
+    },
+    "final_bundle_sha256": {
+      "description": "Expected lowercase SHA-256 of F's exact RFC 8785 JSON UTF-8 bytes. It must equal P.final_bundle_sha256, final_bundle_ref.artifact_sha256, observed_final_bundle_sha256, and the digest embedded in final_bundle_locator.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "final_bundle_locator": {
+      "description": "Canonical content-addressed target path read back for F. It must equal P.final_bundle_locator and final_bundle_ref.artifact_path exactly.",
+      "$ref": "#/$defs/finalBundleLocator"
+    },
+    "final_bundle_byte_length": {
+      "description": "Expected byte length of F's exact RFC 8785 JSON UTF-8 bytes. It must equal P.final_bundle_byte_length and observed_final_bundle_byte_length.",
+      "type": "integer",
+      "minimum": 2
+    },
+    "canonical_encoding": {
+      "const": "RFC8785-JSON-UTF8"
+    },
+    "observed_final_bundle_sha256": {
+      "description": "Lowercase SHA-256 computed from the exact bytes read back from final_bundle_locator.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "observed_final_bundle_byte_length": {
+      "description": "Observed byte length of the exact bytes read back from final_bundle_locator.",
+      "type": "integer",
+      "minimum": 2
+    },
+    "digest_match": {
+      "const": true
+    },
+    "exact_bytes_match": {
+      "const": true
+    },
+    "read_back_at": {
+      "description": "Time the exact target bytes were observed. Procedural validation requires P.publisher_task_actual.actual_finished_at equal P.published_at and P.published_at strictly before read_back_at.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_metadata": {
+            "properties": {
+              "classification": {
+                "const": "GOVERNANCE_ARTIFACT"
+              }
+            },
+            "required": [
+              "classification"
+            ]
+          }
+        },
+        "required": [
+          "artifact_metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "final_bundle_locator": {
+            "$ref": "#/$defs/governanceFinalBundleLocator"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "final_bundle_locator": {
+            "$ref": "#/$defs/syntheticFinalBundleLocator"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "finalBundleRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-planning-bundle.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 2
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "publicationReceiptRef": {
+      "description": "Exact reference to an immutable unrevisioned final-actual-variance publication receipt; revision is forbidden.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "schema",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "schema": {
+          "const": "ylx.final-actual-variance-publication-receipt.v1"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "finalBundleLocator": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "governanceFinalBundleLocator": {
+      "pattern": "^docs/evidence/M5/planning/final-actual-variance/[0-9a-f]{64}--delivery-planning-bundle\\.json$"
+    },
+    "syntheticFinalBundleLocator": {
+      "pattern": "^contracts/fixtures/governance-models/valid/final-actual-variance/[0-9a-f]{64}--delivery-planning-bundle\\.json$"
+    }
+  }
+}

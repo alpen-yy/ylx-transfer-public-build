@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/decision-history-anchor-v1.schema.json",
+  "title": "YLX observed decision history migration anchor v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "record_status",
+    "source_artifact_path",
+    "archived_prefix_path",
+    "archived_prefix_sha256",
+    "source_retention",
+    "historical_acceptance_exact_bytes_status",
+    "authority_effect",
+    "boundary_rule",
+    "anchored_prefix",
+    "decision_blocks",
+    "historical_limitations",
+    "publication_semantics",
+    "approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.decision-history-anchor.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^decision-history-anchor-[0-9a-f]{64}$"
+    },
+    "record_status": {
+      "const": "OBSERVED_MIGRATION_ANCHOR"
+    },
+    "source_artifact_path": {
+      "const": "docs/DECISIONS.md"
+    },
+    "archived_prefix_path": {
+      "const": "docs/evidence/governance/decision-history/archive/4f3c30ea7ad3a3a8f2fd85d9d47ef824157d9fd7c7439425316b9644558f9eb6--DECISIONS-prefix-61066.md"
+    },
+    "archived_prefix_sha256": {
+      "const": "4f3c30ea7ad3a3a8f2fd85d9d47ef824157d9fd7c7439425316b9644558f9eb6"
+    },
+    "source_retention": {
+      "const": "EXACT_PREFIX_AND_CONTENT_ADDRESSED_ARCHIVE"
+    },
+    "historical_acceptance_exact_bytes_status": {
+      "const": "UNAVAILABLE"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "boundary_rule": {
+      "const": "RAW_BYTE_OFFSETS_HALF_OPEN"
+    },
+    "anchored_prefix": {
+      "$ref": "#/$defs/byteRange"
+    },
+    "decision_blocks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/decisionBlock"
+      }
+    },
+    "historical_limitations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "original_accepted_bytes_available",
+        "observed_blocks_prove_original_acceptance_content",
+        "retrospective_acceptance_claim",
+        "statement"
+      ],
+      "properties": {
+        "original_accepted_bytes_available": {
+          "const": false
+        },
+        "observed_blocks_prove_original_acceptance_content": {
+          "const": false
+        },
+        "retrospective_acceptance_claim": {
+          "const": "NOT_MADE"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "byteRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_byte",
+        "end_byte",
+        "byte_length",
+        "sha256"
+      ],
+      "properties": {
+        "start_byte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "decisionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "observed_decision_date",
+        "observed_decision_status",
+        "claim_scope",
+        "start_byte",
+        "end_byte",
+        "byte_length",
+        "sha256",
+        "end_boundary"
+      ],
+      "properties": {
+        "decision_id": {
+          "enum": [
+            "D-025",
+            "D-026",
+            "D-027"
+          ]
+        },
+        "observed_decision_date": {
+          "const": "2026-08-08"
+        },
+        "observed_decision_status": {
+          "const": "accepted"
+        },
+        "claim_scope": {
+          "const": "STATUS_TOKEN_OBSERVED_IN_CURRENT_BLOCK_ONLY"
+        },
+        "start_byte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "end_boundary": {
+          "enum": [
+            "NEXT_DECISION_HEADING_START",
+            "ANCHORED_PREFIX_END"
+          ]
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

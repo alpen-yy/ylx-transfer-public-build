@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/decision-successor-proposal-v1.schema.json",
+  "title": "YLX immutable successor decision proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "decision_id",
+    "proposal_date",
+    "proposal_status",
+    "effective_status",
+    "relationship",
+    "prospective_only",
+    "source_artifact_path",
+    "semantic_predecessor",
+    "publication_predecessor",
+    "proposal_block",
+    "append_chain",
+    "covered_semantics",
+    "historical_limitations",
+    "acceptance",
+    "publication_semantics"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.decision-successor-proposal.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^decision-successor-proposal-D-[0-9]{3}-[0-9a-f]{64}$"
+    },
+    "decision_id": {
+      "type": "string",
+      "pattern": "^D-[0-9]{3}$"
+    },
+    "proposal_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "proposal_status": {
+      "const": "proposed"
+    },
+    "effective_status": {
+      "const": "NOT_EFFECTIVE_PENDING_AUTHORIZED_ACCEPTANCE"
+    },
+    "relationship": {
+      "const": "partially_supersedes"
+    },
+    "prospective_only": {
+      "const": true
+    },
+    "source_artifact_path": {
+      "const": "docs/DECISIONS.md"
+    },
+    "semantic_predecessor": {
+      "$ref": "#/$defs/semanticPredecessor"
+    },
+    "publication_predecessor": {
+      "$ref": "#/$defs/publicationPredecessor"
+    },
+    "proposal_block": {
+      "$ref": "#/$defs/proposalBlock"
+    },
+    "append_chain": {
+      "$ref": "#/$defs/appendChain"
+    },
+    "covered_semantics": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      }
+    },
+    "historical_limitations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_original_accepted_bytes_available",
+        "retrospective_acceptance_claim"
+      ],
+      "properties": {
+        "predecessor_original_accepted_bytes_available": {
+          "const": false
+        },
+        "retrospective_acceptance_claim": {
+          "const": "NOT_MADE"
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted_at",
+        "approval_event_ref",
+        "canonical_locator",
+        "canonical_commit",
+        "approvals"
+      ],
+      "properties": {
+        "accepted_at": {
+          "type": "null"
+        },
+        "approval_event_ref": {
+          "type": "null"
+        },
+        "canonical_locator": {
+          "type": "null"
+        },
+        "canonical_commit": {
+          "type": "null"
+        },
+        "approvals": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "byteRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_byte",
+        "end_byte",
+        "byte_length",
+        "sha256"
+      ],
+      "properties": {
+        "start_byte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "semanticPredecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "anchor_artifact_path",
+        "anchor_artifact_sha256",
+        "anchored_prefix_sha256",
+        "block_start_byte",
+        "block_end_byte",
+        "block_byte_length",
+        "block_sha256",
+        "original_accepted_bytes_available"
+      ],
+      "properties": {
+        "decision_id": {
+          "enum": [
+            "D-025",
+            "D-026",
+            "D-027"
+          ]
+        },
+        "anchor_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/decision-history/anchors/decision-history-anchor--[0-9a-f]{64}\\.json$"
+        },
+        "anchor_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "anchored_prefix_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "block_start_byte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "block_end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "block_byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "block_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "original_accepted_bytes_available": {
+          "const": false
+        }
+      }
+    },
+    "publicationPredecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "MIGRATION_ANCHOR",
+            "SUCCESSOR_PROPOSAL"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^decision-(history-anchor|successor-proposal-D-[0-9]{3})-[0-9a-f]{64}$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/decision-history/(anchors/decision-history-anchor|proposals/D-[0-9]{3})--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "proposalBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_byte",
+        "end_byte",
+        "byte_length",
+        "sha256",
+        "end_boundary"
+      ],
+      "properties": {
+        "start_byte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "end_boundary": {
+          "enum": [
+            "NEXT_PROPOSAL_HEADING_START",
+            "PUBLICATION_EOF"
+          ]
+        }
+      }
+    },
+    "prefixDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "end_byte",
+        "sha256"
+      ],
+      "properties": {
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "appendChain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prefix_before",
+        "prefix_after"
+      ],
+      "properties": {
+        "prefix_before": {
+          "$ref": "#/$defs/prefixDigest"
+        },
+        "prefix_after": {
+          "$ref": "#/$defs/prefixDigest"
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

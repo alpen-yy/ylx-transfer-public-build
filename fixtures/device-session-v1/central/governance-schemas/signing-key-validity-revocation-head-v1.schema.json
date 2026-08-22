@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/signing-key-validity-revocation-head-v1.schema.json",
+  "title": "YLX signing key validity and revocation head v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "head_id",
+    "revision",
+    "predecessor_head_sha256",
+    "effective_at",
+    "keys_by_fingerprint",
+    "published_at",
+    "approvals"
+  ],
+  "properties": {
+    "schema": { "const": "ylx.signing-key-validity-revocation-head.v1" },
+    "head_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "predecessor_head_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "effective_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "keys_by_fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[0-9a-f]{64}$": {
+          "$ref": "#/$defs/keyState"
+        }
+      }
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "keyState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_id",
+        "person_id",
+        "public_key_base64",
+        "valid_from",
+        "not_after",
+        "status",
+        "revocation_or_compromise_effective_at",
+        "reason"
+      ],
+      "properties": {
+        "key_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "public_key_base64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{43}=$"
+        },
+        "valid_from": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "not_after": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "status": {
+          "enum": ["VALID", "REVOKED", "COMPROMISED", "EXPIRED"]
+        },
+        "revocation_or_compromise_effective_at": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp" }
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 1, "maxLength": 240 }
+          ]
+        }
+      }
+    }
+  }
+}

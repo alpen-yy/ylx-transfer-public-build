@@ -1,0 +1,1642 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/execution-authorization-evaluation-v1.schema.json",
+  "title": "YLX immutable execution authorization evaluation v1",
+  "description": "A create-if-absent, post-publication evaluation of one schema-valid declared WBS action instance. Malformed, missing, multiple, unknown, or class/action-mismatched WBS declarations are rejected before evaluation and cannot be encoded by inventing valid declaration values. The WBS leaf carries only the class/action/authority/stop-rule declaration; this artifact binds the exact published planning bundle and WBS without introducing a self-digest cycle. PASS authorizes only the declared one-shot action instance, while FAIL is an immutable denied evaluation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "evaluation_id",
+    "evaluated_at",
+    "task_id",
+    "leaf_declaration_sha256",
+    "authorization_class",
+    "authorization_action",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "planning_bundle_ref",
+    "planning_bundle_sha256",
+    "delivery_wbs_ref",
+    "delivery_wbs_sha256",
+    "authorization_prerequisite_ref_by_kind",
+    "authorization_prerequisite_sha256_by_kind",
+    "authorization_environment_class",
+    "authorization_environment_ref",
+    "authorization_binding_context_ref",
+    "authorization_binding_context_sha256",
+    "authorization_authority_ref_by_artifact_id",
+    "authorization_authority_sha256_by_artifact_id",
+    "actor_assignment_ref",
+    "actor_person_id",
+    "authorization_stop_rules",
+    "typed_predecessor_state_by_task_id",
+    "phase_barrier_state_by_id",
+    "validator_artifact_ref",
+    "checker_assignment_ref",
+    "result",
+    "failure_codes",
+    "authorizes_action",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.execution-authorization-evaluation.v1"
+    },
+    "evaluation_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "evaluated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "task_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "leaf_declaration_sha256": {
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 over exactly the selected WBS leaf's four-field execution_authorization declaration: authorization_class, authorization_action, authority_refs, and stop_rules. The procedural validator verifies that task_id selects that declaration in delivery_wbs_ref.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "authorization_class": {
+      "$ref": "#/$defs/authorizationClass"
+    },
+    "authorization_action": {
+      "$ref": "#/$defs/authorizationAction"
+    },
+    "action_instance_id": {
+      "description": "Stable one-shot identifier for the concrete action attempt. Reuse with different inputs or a second effective evaluation is invalid.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 over an object containing exactly task_id, leaf_declaration_sha256, authorization_class, authorization_action, action_instance_id, planning_bundle_ref, planning_bundle_sha256, delivery_wbs_ref, delivery_wbs_sha256, authorization_prerequisite_ref_by_kind, authorization_prerequisite_sha256_by_kind, authorization_environment_class, authorization_environment_ref, authorization_binding_context_ref, authorization_binding_context_sha256, authorization_authority_ref_by_artifact_id, authorization_authority_sha256_by_artifact_id, actor_assignment_ref, actor_person_id, authorization_stop_rules, typed_predecessor_state_by_task_id, and phase_barrier_state_by_id from this evaluation. No validator/checker provenance, result field, timestamp, metadata, or digest field is part of the preimage.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planning_bundle_ref": {
+      "$ref": "#/$defs/planningBundleRef"
+    },
+    "planning_bundle_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "delivery_wbs_ref": {
+      "$ref": "#/$defs/deliveryWbsRef"
+    },
+    "delivery_wbs_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "authorization_prerequisite_ref_by_kind": {
+      "$ref": "#/$defs/exactEvidenceRefMap"
+    },
+    "authorization_prerequisite_sha256_by_kind": {
+      "$ref": "#/$defs/digestMap"
+    },
+    "authorization_environment_class": {
+      "description": "Closed environment class is resolved by the procedural class/action policy because the repository does not define one universal environment enum across all seven authorization classes.",
+      "$ref": "#/$defs/nullableIdentifier"
+    },
+    "authorization_environment_ref": {
+      "$ref": "#/$defs/nullableExactEvidenceRef"
+    },
+    "authorization_binding_context_ref": {
+      "description": "FAIL may record a null pair or a structurally valid mismatched evidence ref. PASS restricts null to the policy-defined M0/M1 stage-source actions and the pre-M2 bootstrap action, and otherwise requires a typed binding-context ref. The ref and digest must be null or non-null together.",
+      "$ref": "#/$defs/nullableExactEvidenceRef"
+    },
+    "authorization_binding_context_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "authorization_authority_ref_by_artifact_id": {
+      "description": "Closed map keyed by every artifact_id in the selected WBS declaration's authority_refs array. FAIL may preserve structurally valid mismatched evidence refs; PASS requires exact execution-authority.v1 artifact refs. Procedural validation requires an exact key-set match and proves every independent resolution and payload binding.",
+      "$ref": "#/$defs/exactEvidenceRefMap"
+    },
+    "authorization_authority_sha256_by_artifact_id": {
+      "description": "Closed digest map with exactly the same keys as authorization_authority_ref_by_artifact_id and the selected WBS declaration authority_refs artifact_id set.",
+      "$ref": "#/$defs/digestMap"
+    },
+    "actor_assignment_ref": {
+      "description": "FAIL may preserve a null or structurally valid mismatched artifact ref. PASS permits only an owner assignment or a release-operation-assignment.v2 selected procedurally for the declared action.",
+      "$ref": "#/$defs/nullableExactArtifactRef"
+    },
+    "actor_person_id": {
+      "$ref": "#/$defs/nullableIdentifier"
+    },
+    "authorization_stop_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/authorizationStopRule"
+      },
+      "uniqueItems": true
+    },
+    "typed_predecessor_state_by_task_id": {
+      "$ref": "#/$defs/typedPredecessorStateMap"
+    },
+    "phase_barrier_state_by_id": {
+      "$ref": "#/$defs/phaseBarrierStateMap"
+    },
+    "validator_artifact_ref": {
+      "$ref": "#/$defs/nullableExactEvidenceRef"
+    },
+    "checker_assignment_ref": {
+      "description": "FAIL may preserve a null or structurally valid mismatched artifact ref. PASS requires the selected WBS leaf reviewer's owner-assignment.v1 ref.",
+      "$ref": "#/$defs/nullableExactArtifactRef"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "failure_codes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/failureCode"
+      },
+      "uniqueItems": true
+    },
+    "authorizes_action": {
+      "description": "Null for FAIL. For PASS, the procedural validator requires exact equality with authorization_action; JSON Schema has no instance-field equality keyword.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/authorizationAction"
+        }
+      ]
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "authorizationClass": {
+      "enum": [
+        "may_prepare",
+        "may_implement",
+        "may_deploy",
+        "may_qualify",
+        "may_enable_writer",
+        "may_finalize_release",
+        "may_control_distribution"
+      ]
+    },
+    "authorizationAction": {
+      "enum": [
+        "preserve",
+        "observe",
+        "measure",
+        "produce-governance-input",
+        "run-disposable-prototype",
+        "publish-planning-record",
+        "implement-contract",
+        "implement-product",
+        "build-target-disabled",
+        "assemble-m4-target",
+        "run-integration-smoke",
+        "install-target",
+        "configure-target",
+        "deploy-target-disabled",
+        "publish-prerelease-rc",
+        "deploy-writer-disabled-production",
+        "execute-qualification",
+        "collect-evidence",
+        "issue-verdict",
+        "publish-qualified-adapter-output",
+        "rehearse-distribution-control",
+        "enable-rp-ylx-production-target-writer",
+        "assemble-release-projection",
+        "collect-domain-attestations",
+        "publish-pre-release-closure",
+        "collect-release-quorum",
+        "acquire-publication-fence",
+        "promote-exact-rc",
+        "publish-promotion-receipt",
+        "publish-final-manifest",
+        "cas-terminal-reference",
+        "publish-aborted-termination",
+        "publish-initial-active",
+        "publish-withdrawn",
+        "publish-redirected",
+        "publish-reactivated-active"
+      ]
+    },
+    "failureCode": {
+      "enum": [
+        "STALE_PLANNING_BUNDLE",
+        "STALE_DELIVERY_WBS",
+        "LEAF_DECLARATION_MISMATCH",
+        "PREREQUISITE_MISSING",
+        "PREREQUISITE_MISMATCH",
+        "ENVIRONMENT_MISMATCH",
+        "BINDING_CONTEXT_MISMATCH",
+        "AUTHORITY_MISMATCH",
+        "ACTOR_ASSIGNMENT_MISMATCH",
+        "TYPED_PREDECESSOR_UNSATISFIED",
+        "PHASE_BARRIER_UNSATISFIED",
+        "STOP_RULE_EVIDENCE_MISMATCH",
+        "STOP_RULE_TRIGGERED",
+        "PREMATURE_WRITER_ENABLE",
+        "PREMATURE_RELEASE_FINALIZATION",
+        "PREMATURE_DISTRIBUTION_CONTROL",
+        "QUALIFICATION_PREFIX_ESCAPE",
+        "ACTION_INSTANCE_REPLAY",
+        "PLANNED_ACTION_INPUT_MISMATCH",
+        "VALIDATOR_MISMATCH",
+        "CHECKER_ASSIGNMENT_MISMATCH"
+      ]
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "releaseOperationAssignmentV2Ref": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-operation-assignment.v2"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "actorAssignmentRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        },
+        {
+          "$ref": "#/$defs/releaseOperationAssignmentV2Ref"
+        }
+      ]
+    },
+    "checkerAssignmentRef": {
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "nullableExactArtifactRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        }
+      ]
+    },
+    "planningBundleRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-planning-bundle.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "deliveryWbsRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-wbs.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "exactEvidenceRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/exactEvidenceRef"
+        }
+      }
+    },
+    "exactEvidenceRef": {
+      "description": "A closed exact byte reference to either a governance artifact or an externally governed source. Artifact revisions are optional because immutable families such as execution-context.v1 are not revisioned.",
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      ]
+    },
+    "nullableExactEvidenceRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/exactEvidenceRef"
+        }
+      ]
+    },
+    "nullableIdentifier": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      ]
+    },
+    "digestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "stageSourceScopeRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-source-scope.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stopRuleObservationRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.authorization-stop-rule-observation.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorityRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authority.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorityRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/executionAuthorityRef"
+        }
+      }
+    },
+    "executionEnvironmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-environment.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationValidatorRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-validator.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "matchingAuthorizedAction": {
+      "description": "Closed sibling-value equality for every declared authorization action. JSON Schema has no generic instance-field equality keyword, so the finite action vocabulary is enumerated explicitly.",
+      "oneOf": [
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "preserve"
+            },
+            "authorizes_action": {
+              "const": "preserve"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "observe"
+            },
+            "authorizes_action": {
+              "const": "observe"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "measure"
+            },
+            "authorizes_action": {
+              "const": "measure"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "produce-governance-input"
+            },
+            "authorizes_action": {
+              "const": "produce-governance-input"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "run-disposable-prototype"
+            },
+            "authorizes_action": {
+              "const": "run-disposable-prototype"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-planning-record"
+            },
+            "authorizes_action": {
+              "const": "publish-planning-record"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "implement-contract"
+            },
+            "authorizes_action": {
+              "const": "implement-contract"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "implement-product"
+            },
+            "authorizes_action": {
+              "const": "implement-product"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "build-target-disabled"
+            },
+            "authorizes_action": {
+              "const": "build-target-disabled"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "assemble-m4-target"
+            },
+            "authorizes_action": {
+              "const": "assemble-m4-target"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "run-integration-smoke"
+            },
+            "authorizes_action": {
+              "const": "run-integration-smoke"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "install-target"
+            },
+            "authorizes_action": {
+              "const": "install-target"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "configure-target"
+            },
+            "authorizes_action": {
+              "const": "configure-target"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "deploy-target-disabled"
+            },
+            "authorizes_action": {
+              "const": "deploy-target-disabled"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-prerelease-rc"
+            },
+            "authorizes_action": {
+              "const": "publish-prerelease-rc"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "deploy-writer-disabled-production"
+            },
+            "authorizes_action": {
+              "const": "deploy-writer-disabled-production"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "execute-qualification"
+            },
+            "authorizes_action": {
+              "const": "execute-qualification"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "collect-evidence"
+            },
+            "authorizes_action": {
+              "const": "collect-evidence"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "issue-verdict"
+            },
+            "authorizes_action": {
+              "const": "issue-verdict"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-qualified-adapter-output"
+            },
+            "authorizes_action": {
+              "const": "publish-qualified-adapter-output"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "rehearse-distribution-control"
+            },
+            "authorizes_action": {
+              "const": "rehearse-distribution-control"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "enable-rp-ylx-production-target-writer"
+            },
+            "authorizes_action": {
+              "const": "enable-rp-ylx-production-target-writer"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "assemble-release-projection"
+            },
+            "authorizes_action": {
+              "const": "assemble-release-projection"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "collect-domain-attestations"
+            },
+            "authorizes_action": {
+              "const": "collect-domain-attestations"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-pre-release-closure"
+            },
+            "authorizes_action": {
+              "const": "publish-pre-release-closure"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "collect-release-quorum"
+            },
+            "authorizes_action": {
+              "const": "collect-release-quorum"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "acquire-publication-fence"
+            },
+            "authorizes_action": {
+              "const": "acquire-publication-fence"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "promote-exact-rc"
+            },
+            "authorizes_action": {
+              "const": "promote-exact-rc"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-promotion-receipt"
+            },
+            "authorizes_action": {
+              "const": "publish-promotion-receipt"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-final-manifest"
+            },
+            "authorizes_action": {
+              "const": "publish-final-manifest"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "cas-terminal-reference"
+            },
+            "authorizes_action": {
+              "const": "cas-terminal-reference"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-aborted-termination"
+            },
+            "authorizes_action": {
+              "const": "publish-aborted-termination"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-initial-active"
+            },
+            "authorizes_action": {
+              "const": "publish-initial-active"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-withdrawn"
+            },
+            "authorizes_action": {
+              "const": "publish-withdrawn"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-redirected"
+            },
+            "authorizes_action": {
+              "const": "publish-redirected"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        },
+        {
+          "properties": {
+            "authorization_action": {
+              "const": "publish-reactivated-active"
+            },
+            "authorizes_action": {
+              "const": "publish-reactivated-active"
+            }
+          },
+          "required": [
+            "authorization_action",
+            "authorizes_action"
+          ]
+        }
+      ]
+    },
+    "authorizationStopRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "rule_sha256",
+        "triggered",
+        "evidence_ref"
+      ],
+      "properties": {
+        "rule_id": {
+          "description": "Exact non-empty stop-rule string from the selected WBS execution_authorization.stop_rules array; the procedural validator requires a duplicate-free exact set match.",
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_sha256": {
+          "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 for the exact rule_id JSON string.",
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "triggered": {
+          "type": "boolean"
+        },
+        "evidence_ref": {
+          "description": "Exact content-addressed ref to the typed observation whose identity, inputs, checker, timestamp, and outcome are bound procedurally to this evaluation entry.",
+          "$ref": "#/$defs/stopRuleObservationRef"
+        }
+      }
+    },
+    "typedPredecessorState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_ref",
+        "state",
+        "evidence_ref"
+      ],
+      "properties": {
+        "predecessor_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/delivery-wbs-v2.schema.json#/$defs/typedPredecessorRef"
+        },
+        "state": {
+          "enum": [
+            "SATISFIED",
+            "UNSATISFIED",
+            "UNKNOWN"
+          ]
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/exactEvidenceRef"
+        }
+      }
+    },
+    "typedPredecessorStateMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/typedPredecessorState"
+        }
+      }
+    },
+    "phaseBarrierState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "evidence_ref"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "SATISFIED",
+            "UNSATISFIED",
+            "UNKNOWN"
+          ]
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/exactEvidenceRef"
+        }
+      }
+    },
+    "phaseBarrierStateMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/phaseBarrierState"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "authorization_binding_context_ref": {
+              "type": "null"
+            },
+            "authorization_binding_context_sha256": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "authorization_binding_context_ref": {
+              "$ref": "#/$defs/exactEvidenceRef"
+            },
+            "authorization_binding_context_sha256": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_prepare"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "preserve",
+              "observe",
+              "measure",
+              "produce-governance-input",
+              "run-disposable-prototype",
+              "publish-planning-record"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_implement"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "implement-contract",
+              "implement-product",
+              "build-target-disabled",
+              "assemble-m4-target",
+              "run-integration-smoke"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_deploy"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "install-target",
+              "configure-target",
+              "deploy-target-disabled",
+              "publish-prerelease-rc",
+              "deploy-writer-disabled-production"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_qualify"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "execute-qualification",
+              "collect-evidence",
+              "issue-verdict",
+              "publish-qualified-adapter-output",
+              "rehearse-distribution-control"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_enable_writer"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "const": "enable-rp-ylx-production-target-writer"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_finalize_release"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "assemble-release-projection",
+              "collect-domain-attestations",
+              "publish-pre-release-closure",
+              "collect-release-quorum",
+              "acquire-publication-fence",
+              "promote-exact-rc",
+              "publish-promotion-receipt",
+              "publish-final-manifest",
+              "cas-terminal-reference",
+              "publish-aborted-termination"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          },
+          "authorization_class": {
+            "const": "may_control_distribution"
+          }
+        },
+        "required": [
+          "result",
+          "authorization_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authorization_action": {
+            "enum": [
+              "publish-initial-active",
+              "publish-withdrawn",
+              "publish-redirected",
+              "publish-reactivated-active"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "authorization_class": {
+                "enum": [
+                  "may_prepare",
+                  "may_qualify"
+                ]
+              },
+              "authorization_action": {
+                "enum": [
+                  "observe",
+                  "produce-governance-input",
+                  "publish-planning-record",
+                  "issue-verdict"
+                ]
+              },
+              "authorization_binding_context_ref": {
+                "type": "null"
+              },
+              "authorization_binding_context_sha256": {
+                "type": "null"
+              },
+              "authorization_prerequisite_ref_by_kind": {
+                "properties": {
+                  "stage_source_scope": {
+                    "$ref": "#/$defs/stageSourceScopeRef"
+                  }
+                },
+                "required": [
+                  "stage_source_scope"
+                ]
+              },
+              "authorization_prerequisite_sha256_by_kind": {
+                "properties": {
+                  "stage_source_scope": {
+                    "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+                  }
+                },
+                "required": [
+                  "stage_source_scope"
+                ]
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "authorization_class": {
+                    "const": "may_prepare"
+                  },
+                  "authorization_action": {
+                    "const": "observe"
+                  },
+                  "authorization_environment_class": {
+                    "const": "read-only-observation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "authorization_class": {
+                    "const": "may_prepare"
+                  },
+                  "authorization_action": {
+                    "const": "produce-governance-input"
+                  },
+                  "authorization_environment_class": {
+                    "const": "governance-workspace"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "authorization_class": {
+                    "const": "may_prepare"
+                  },
+                  "authorization_action": {
+                    "const": "publish-planning-record"
+                  },
+                  "authorization_environment_class": {
+                    "const": "governance-publication"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "authorization_class": {
+                    "const": "may_qualify"
+                  },
+                  "authorization_action": {
+                    "const": "issue-verdict"
+                  },
+                  "authorization_environment_class": {
+                    "const": "governance-publication"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "properties": {
+              "authorization_binding_context_ref": {
+                "$ref": "#/$defs/bindingContextRef"
+              },
+              "authorization_binding_context_sha256": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/matchingAuthorizedAction",
+        "properties": {
+          "failure_codes": {
+            "maxItems": 0
+          },
+          "authorizes_action": {
+            "$ref": "#/$defs/authorizationAction"
+          },
+          "authorization_prerequisite_ref_by_kind": {
+            "minProperties": 1
+          },
+          "authorization_prerequisite_sha256_by_kind": {
+            "minProperties": 1
+          },
+          "authorization_environment_class": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "authorization_environment_ref": {
+            "$ref": "#/$defs/executionEnvironmentRef"
+          },
+          "authorization_authority_ref_by_artifact_id": {
+            "$ref": "#/$defs/executionAuthorityRefMap"
+          },
+          "authorization_authority_sha256_by_artifact_id": {
+            "minProperties": 1
+          },
+          "actor_assignment_ref": {
+            "$ref": "#/$defs/actorAssignmentRef"
+          },
+          "actor_person_id": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "authorization_stop_rules": {
+            "minItems": 1,
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/authorizationStopRule"
+                },
+                {
+                  "properties": {
+                    "triggered": {
+                      "const": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "validator_artifact_ref": {
+            "$ref": "#/$defs/executionAuthorizationValidatorRef"
+          },
+          "checker_assignment_ref": {
+            "$ref": "#/$defs/checkerAssignmentRef"
+          },
+          "typed_predecessor_state_by_task_id": {
+            "patternProperties": {
+              "^.+$": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/typedPredecessorState"
+                  },
+                  {
+                    "properties": {
+                      "state": {
+                        "const": "SATISFIED"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "phase_barrier_state_by_id": {
+            "patternProperties": {
+              "^.+$": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/phaseBarrierState"
+                  },
+                  {
+                    "properties": {
+                      "state": {
+                        "const": "SATISFIED"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failure_codes": {
+            "minItems": 1
+          },
+          "authorizes_action": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-distribution-head-transition-receipt-v1.schema.json",
+  "title": "YLX release distribution head CAS transition receipt v1",
+  "description": "Immutable evidence for one create-if-absent or compare-and-swap transition of the stable distribution head. CREATED_EXACT and ALREADY_EXACT prove that the attempted exact control is the durable winner. CAS_CONFLICT records the losing proposal and requires an exact durable reload and validation of the winner before that winner may be used as the only base for a direct successor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "transition_attempt_id",
+    "transition_kind",
+    "operation_assignment_ref",
+    "finalized_release_binding",
+    "channel_binding",
+    "incident_lineage",
+    "expected_predecessor_control_ref",
+    "attempted_successor_control_ref",
+    "predecessor_transition_receipt_ref",
+    "operation_result",
+    "cas_observation",
+    "observed_winner_control_ref",
+    "conflict_recovery",
+    "completed_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-distribution-head-transition-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "transition_attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "transition_kind": {
+      "enum": ["INITIAL_ACTIVE", "WITHDRAW", "REDIRECT", "REACTIVATE"]
+    },
+    "operation_assignment_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/releaseOperationAssignmentRef",
+      "description": "The exact v2 assignment must bind this release, channel, predecessor, and incident lineage procedurally. Its authorized_operation must map INITIAL_ACTIVE to PUBLISH_INITIAL_ACTIVE_HEAD, WITHDRAW to PUBLISH_WITHDRAWN_HEAD, REDIRECT to PUBLISH_REDIRECTED_HEAD, and REACTIVATE to PUBLISH_REACTIVATED_HEAD."
+    },
+    "finalized_release_binding": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/finalizedReleaseBinding"
+    },
+    "channel_binding": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/channelBinding"
+    },
+    "incident_lineage": {
+      "oneOf": [
+        { "$ref": "#/$defs/noIncidentLineage" },
+        { "$ref": "#/$defs/boundIncidentLineage" }
+      ]
+    },
+    "expected_predecessor_control_ref": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+        }
+      ]
+    },
+    "attempted_successor_control_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+    },
+    "predecessor_transition_receipt_ref": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/transitionReceiptRef" }
+      ]
+    },
+    "operation_result": {
+      "enum": ["CREATED_EXACT", "ALREADY_EXACT", "CAS_CONFLICT"]
+    },
+    "cas_observation": {
+      "$ref": "#/$defs/casObservation"
+    },
+    "observed_winner_control_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+    },
+    "conflict_recovery": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/conflictRecovery" }
+      ]
+    },
+    "completed_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "transition_kind": { "const": "INITIAL_ACTIVE" } },
+        "required": ["transition_kind"]
+      },
+      "then": {
+        "properties": {
+          "incident_lineage": { "$ref": "#/$defs/noIncidentLineage" },
+          "expected_predecessor_control_ref": { "type": "null" },
+          "predecessor_transition_receipt_ref": { "type": "null" },
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "expected_head_reference_sha256": { "type": "null" }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "incident_lineage": { "$ref": "#/$defs/boundIncidentLineage" },
+          "expected_predecessor_control_ref": {
+            "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+          },
+          "predecessor_transition_receipt_ref": { "$ref": "#/$defs/transitionReceiptRef" },
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "expected_head_reference_sha256": {
+                    "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "transition_kind": { "const": "REACTIVATE" } },
+        "required": ["transition_kind"]
+      },
+      "then": {
+        "properties": {
+          "incident_lineage": {
+            "allOf": [
+              { "$ref": "#/$defs/boundIncidentLineage" },
+              {
+                "properties": {
+                  "incident_resolution_ref": {
+                    "$ref": "https://schemas.ylx.invalid/governance/release-incident-resolution-v1.schema.json#/$defs/incidentResolutionRef"
+                  },
+                  "reactivation_evidence_refs": { "minItems": 1 }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation_result": { "enum": ["CREATED_EXACT", "ALREADY_EXACT"] }
+        },
+        "required": ["operation_result"]
+      },
+      "then": {
+        "properties": {
+          "conflict_recovery": { "type": "null" },
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "attempted_value_exact_match": { "const": true }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "operation_result": { "const": "CREATED_EXACT" } },
+        "required": ["operation_result"]
+      },
+      "then": {
+        "properties": {
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "head_created": { "const": true }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "operation_result": { "const": "ALREADY_EXACT" } },
+        "required": ["operation_result"]
+      },
+      "then": {
+        "properties": {
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "head_created": { "const": false }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "operation_result": { "const": "CAS_CONFLICT" } },
+        "required": ["operation_result"]
+      },
+      "then": {
+        "properties": {
+          "conflict_recovery": { "$ref": "#/$defs/conflictRecovery" },
+          "cas_observation": {
+            "allOf": [
+              { "$ref": "#/$defs/casObservation" },
+              {
+                "properties": {
+                  "head_created": { "const": false },
+                  "attempted_value_exact_match": { "const": false }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "transitionReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-distribution-head-transition-receipt.v1"
+            }
+          }
+        }
+      ]
+    },
+    "releaseIncidentRef": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-incident-v1.schema.json#/$defs/releaseIncidentRef"
+    },
+    "reactivationEvidenceRef": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-reactivation-evidence-v1.schema.json#/$defs/reactivationEvidenceRef"
+    },
+    "noIncidentLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lineage_kind",
+        "incident_ref",
+        "incident_resolution_ref",
+        "reactivation_evidence_refs"
+      ],
+      "properties": {
+        "lineage_kind": { "const": "NO_INCIDENT_INITIAL_ACTIVE" },
+        "incident_ref": { "type": "null" },
+        "incident_resolution_ref": { "type": "null" },
+        "reactivation_evidence_refs": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "boundIncidentLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lineage_kind",
+        "incident_ref",
+        "incident_resolution_ref",
+        "reactivation_evidence_refs"
+      ],
+      "properties": {
+        "lineage_kind": { "const": "BOUND_INCIDENT" },
+        "incident_ref": { "$ref": "#/$defs/releaseIncidentRef" },
+        "incident_resolution_ref": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/release-incident-resolution-v1.schema.json#/$defs/incidentResolutionRef"
+            }
+          ]
+        },
+        "reactivation_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/reactivationEvidenceRef" }
+        }
+      }
+    },
+    "casObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_head_reference_sha256",
+        "attempted_head_reference_sha256",
+        "observed_head_reference_sha256",
+        "durable_readback_sha256",
+        "head_created",
+        "attempted_value_exact_match",
+        "cas_at",
+        "readback_at"
+      ],
+      "properties": {
+        "expected_head_reference_sha256": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            }
+          ]
+        },
+        "attempted_head_reference_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "observed_head_reference_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "durable_readback_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "head_created": { "type": "boolean" },
+        "attempted_value_exact_match": { "type": "boolean" },
+        "cas_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "readback_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "winnerReload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "winner_control_ref",
+        "winner_control_bytes_sha256",
+        "winner_head_reference_readback_sha256",
+        "reloaded_at",
+        "schema_valid",
+        "signatures_valid",
+        "lineage_valid",
+        "finalized_release_match",
+        "channel_scope_match"
+      ],
+      "properties": {
+        "winner_control_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+        },
+        "winner_control_bytes_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "winner_head_reference_readback_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "reloaded_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "schema_valid": { "const": true },
+        "signatures_valid": { "const": true },
+        "lineage_valid": { "const": true },
+        "finalized_release_match": { "const": true },
+        "channel_scope_match": { "const": true }
+      }
+    },
+    "conflictRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "losing_control_ref",
+        "winner_control_ref",
+        "winner_reload",
+        "successor_base_control_ref",
+        "successor_rule",
+        "successor_allowed_after_reload"
+      ],
+      "properties": {
+        "losing_control_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+        },
+        "winner_control_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+        },
+        "winner_reload": { "$ref": "#/$defs/winnerReload" },
+        "successor_base_control_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/distributionControlRef"
+        },
+        "successor_rule": {
+          "const": "REBASE_DIRECT_SUCCESSOR_ON_RELOADED_WINNER_ONLY"
+        },
+        "successor_allowed_after_reload": { "const": true }
+      },
+      "description": "winner_control_ref, winner_reload.winner_control_ref, and successor_base_control_ref must be the same exact artifact procedurally; losing_control_ref must be the attempted proposal and must never be used as the successor base."
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "ylx.api-error.v2",
+  "error": {
+    "code": "session_not_verified",
+    "message": "No current usable verdict exists for the exact manifest bytes.",
+    "request_id": "a11e37bd-b5c2-4464-b6ff-c941088d76ed",
+    "retryable": true,
+    "details": {
+      "reason": "absent"
+    }
+  }
+}

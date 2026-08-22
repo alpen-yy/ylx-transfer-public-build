@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-quorum-policy-v1.schema.json",
+  "title": "YLX release quorum policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "revision",
+    "predecessor_policy_sha256",
+    "mandatory_role_slots",
+    "distinct_natural_person_count",
+    "signature_domain_template",
+    "signed_artifact_schema",
+    "qa_independence",
+    "delegation_rule",
+    "freshness_checkpoints",
+    "freshness_checkpoint_rule",
+    "terminal_drift_rule",
+    "published_at",
+    "approvals"
+  ],
+  "properties": {
+    "schema": { "const": "ylx.release-quorum-policy.v1" },
+    "policy_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "predecessor_policy_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "mandatory_role_slots": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["release-owner", "contract-owner", "security-owner", "qa-evidence-owner"]
+      }
+    },
+    "distinct_natural_person_count": { "const": 4 },
+    "signature_domain_template": {
+      "const": "ylx.release-closure.quorum.v1/<role_slot>"
+    },
+    "signed_artifact_schema": { "const": "ylx.pre-release-closure.v1" },
+    "qa_independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not_result_map_producer", "not_promotion_operator"],
+      "properties": {
+        "not_result_map_producer": { "const": true },
+        "not_promotion_operator": { "const": true }
+      }
+    },
+    "delegation_rule": {
+      "const": "PREAPPROVED_DIRECT_PREDECESSOR_ASSIGNMENT_ONLY"
+    },
+    "freshness_checkpoints": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "prefixItems": [
+        { "const": "quorum_signature_collection" },
+        { "const": "publication_fence_acquisition" },
+        { "const": "pre_promotion" },
+        { "const": "promotion_readback" },
+        { "const": "final_manifest_publish" },
+        { "const": "final_manifest_readback" },
+        { "const": "finalized_terminal_reference_cas" },
+        { "const": "finalized_terminal_reference_readback" }
+      ],
+      "items": false
+    },
+    "freshness_checkpoint_rule": {
+      "const": "at every checkpoint revalidate the exact issue-reconciliation set, binding context and all three contract roots, role assignments, signing/quorum/key heads, domain-attestation map, promotion plan/operator, RC/GA target, fence inputs, and every already-created receipt or payload; the CAS checkpoint runs immediately before the write and the readback checkpoint runs immediately after durable readback, with no omitted or mixed head"
+    },
+    "terminal_drift_rule": {
+      "const": "any mismatch before finalized_terminal_reference_cas must prevent FINALIZED and use the exact ABORTED/quarantine path; a mismatch after a FINALIZED CAS but before valid finalized_terminal_reference_readback cannot derive M5-SIGNOFF PASS or RELEASE_COMPLETE, cannot overwrite or release the slot, and enters immutable invalid-terminal incident handling"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  }
+}

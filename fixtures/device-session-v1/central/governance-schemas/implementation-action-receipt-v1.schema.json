@@ -1,0 +1,457 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/implementation-action-receipt-v1.schema.json",
+  "title": "YLX implementation action receipt v1",
+  "description": "Immutable durable receipt for one bootstrap-bound M2 contract-package or seven-consumer dual-read implementation, build, or integration action. The closed action scope excludes the release control plane, which is implemented and qualified in a separate M4 provenance lane. The receipt exact-binds the action-specific pre-action PASS evaluation tuple, actor and environment, its closed produced byte set, and an ordered exact readback without embedding its own digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "bootstrap_context_ref",
+    "action_scope",
+    "execution_authorization_evaluation_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "authorization_action",
+    "actor_person_id",
+    "execution_environment_ref",
+    "started_at",
+    "output_ref_by_id",
+    "output_sha256_by_id",
+    "operation_result",
+    "completed_at",
+    "readback_ref_by_id",
+    "readback_sha256_by_id",
+    "readback_at",
+    "readback_matches_expected",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.implementation-action-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "bootstrap_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "action_scope": {
+      "$ref": "#/$defs/m2ActionScope"
+    },
+    "execution_authorization_evaluation_ref": {
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "authorization_action": {
+      "enum": [
+        "implement-contract",
+        "implement-product",
+        "build-target-disabled",
+        "run-integration-smoke"
+      ]
+    },
+    "actor_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "execution_environment_ref": {
+      "$ref": "#/$defs/exactArtifactRef"
+    },
+    "started_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "output_ref_by_id": {
+      "$ref": "#/$defs/exactOutputRefMap"
+    },
+    "output_sha256_by_id": {
+      "$ref": "#/$defs/digestMap"
+    },
+    "operation_result": {
+      "enum": [
+        "IMPLEMENTED_CONTRACT_TARGET_DISABLED",
+        "IMPLEMENTED_DUAL_READ_CONSUMERS_TARGET_DISABLED",
+        "BUILT_DUAL_READ_CONSUMERS_TARGET_DISABLED",
+        "DUAL_READ_CONSUMER_SMOKE_PASSED_TARGET_DISABLED"
+      ]
+    },
+    "completed_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_ref_by_id": {
+      "$ref": "#/$defs/exactOutputRefMap"
+    },
+    "readback_sha256_by_id": {
+      "$ref": "#/$defs/digestMap"
+    },
+    "readback_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_matches_expected": {
+      "const": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "implement-contract"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "operation_result": {
+            "const": "IMPLEMENTED_CONTRACT_TARGET_DISABLED"
+          },
+          "output_ref_by_id": {
+            "$ref": "#/$defs/exactContractPackageOutputRefMap"
+          },
+          "output_sha256_by_id": {
+            "required": ["contract-release", "governance-fixture-corpus"],
+            "maxProperties": 2
+          },
+          "readback_ref_by_id": {
+            "$ref": "#/$defs/exactContractPackageOutputRefMap"
+          },
+          "readback_sha256_by_id": {
+            "required": ["contract-release", "governance-fixture-corpus"],
+            "maxProperties": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "implement-product"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "operation_result": {
+            "const": "IMPLEMENTED_DUAL_READ_CONSUMERS_TARGET_DISABLED"
+          },
+          "output_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "output_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          },
+          "readback_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "readback_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "build-target-disabled"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "operation_result": {
+            "const": "BUILT_DUAL_READ_CONSUMERS_TARGET_DISABLED"
+          },
+          "output_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "output_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          },
+          "readback_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "readback_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "run-integration-smoke"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "operation_result": {
+            "const": "DUAL_READ_CONSUMER_SMOKE_PASSED_TARGET_DISABLED"
+          },
+          "output_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "output_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          },
+          "readback_ref_by_id": {
+            "$ref": "#/$defs/exactConsumerOutputRefMap"
+          },
+          "readback_sha256_by_id": {
+            "$ref": "#/$defs/exactConsumerDigestMap"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": ["artifact_sha256"]
+      },
+      {
+        "required": ["receipt_sha256"]
+      },
+      {
+        "required": ["self_sha256"]
+      }
+    ]
+  },
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    },
+    "m2ActionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "contract_package_included",
+        "consumer_boundary_ids",
+        "release_control_plane_included"
+      ],
+      "properties": {
+        "scope_kind": {
+          "const": "M2_CONTRACT_PACKAGE_AND_DUAL_READ_CONSUMERS"
+        },
+        "contract_package_included": {
+          "const": true
+        },
+        "consumer_boundary_ids": {
+          "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+        },
+        "release_control_plane_included": {
+          "const": false
+        }
+      }
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    },
+    "outputRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "not": {
+            "properties": {
+              "schema": {
+                "enum": [
+                  "ylx.implementation-action-receipt.v1",
+                  "ylx.target-disabled-deployment-receipt.v1"
+                ]
+              }
+            },
+            "required": ["schema"]
+          }
+        }
+      ]
+    },
+    "contractReleaseOutputRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/outputRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.contract-release.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "governanceFixtureCorpusOutputRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/outputRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.governance-fixture-corpus.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "consumerOutputRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/outputRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m2-dual-read-consumer-action-output.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "exactOutputRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/outputRef"
+        }
+      }
+    },
+    "digestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "exactContractPackageOutputRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract-release",
+        "governance-fixture-corpus"
+      ],
+      "properties": {
+        "contract-release": {
+          "$ref": "#/$defs/contractReleaseOutputRef"
+        },
+        "governance-fixture-corpus": {
+          "$ref": "#/$defs/governanceFixtureCorpusOutputRef"
+        }
+      }
+    },
+    "exactConsumerOutputRefMap": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactOutputRefMap"
+        },
+        {
+          "required": [
+            "rp-ylx-target-session-reader",
+            "rp-ylx-v1-projection-adapter",
+            "spectacular-calibration-reader",
+            "ylx-card-pipeline",
+            "ylx-transfer",
+            "egoview-console",
+            "g3-egoview-v5-wrapper"
+          ],
+          "maxProperties": 7,
+          "patternProperties": {
+            "^.+$": {
+              "$ref": "#/$defs/consumerOutputRef"
+            }
+          }
+        }
+      ]
+    },
+    "exactConsumerDigestMap": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/digestMap"
+        },
+        {
+          "required": [
+            "rp-ylx-target-session-reader",
+            "rp-ylx-v1-projection-adapter",
+            "spectacular-calibration-reader",
+            "ylx-card-pipeline",
+            "ylx-transfer",
+            "egoview-console",
+            "g3-egoview-v5-wrapper"
+          ],
+          "maxProperties": 7
+        }
+      ]
+    }
+  }
+}

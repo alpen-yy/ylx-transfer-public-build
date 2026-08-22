@@ -1,0 +1,17 @@
+{
+  "schema": "ylx.capture-event.v3",
+  "sse_delivery_id": "1041",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_revision": 41,
+  "type": "progress",
+  "occurred_at": "2026-08-08T10:24:31+08:00",
+  "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+  "data": {
+    "schema": "ylx.capture-progress-event.v2",
+    "phase": "verifying",
+    "elapsed_seconds": 31.0,
+    "completed_units": 4,
+    "total_units": 6,
+    "unit": "artifacts"
+  }
+}

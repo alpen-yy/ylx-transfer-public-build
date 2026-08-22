@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m4-component-sub-bundle-v1.schema.json",
+  "title": "YLX candidate-neutral M4 component sub-bundle v1",
+  "description": "An exact component byte inventory. Candidate, qualification, graph, execution, ownership, and support-cell metadata are intentionally outside these bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "component_id",
+    "artifact_refs",
+    "config_refs",
+    "import_contract_refs",
+    "export_contract_refs",
+    "lineage_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m4-component-sub-bundle.v1"
+    },
+    "component_id": {
+      "enum": [
+        "web",
+        "network",
+        "preview",
+        "transfer-calibration"
+      ]
+    },
+    "artifact_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "config_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "import_contract_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "export_contract_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "lineage_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    }
+  }
+}

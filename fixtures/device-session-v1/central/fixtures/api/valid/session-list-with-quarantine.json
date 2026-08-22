@@ -1,0 +1,37 @@
+{
+  "schema": "ylx.session-list.v2",
+  "items": [],
+  "diagnostics": [
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0c",
+      "code": "manifest_unreadable",
+      "observed_at": "2026-08-08T10:25:58+08:00",
+      "message": "Candidate bytes contain malformed JSON."
+    },
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0b",
+      "code": "manifest_unreadable",
+      "observed_at": "2026-08-08T10:25:59+08:00",
+      "message": "Candidate could not be read because discovery I/O failed."
+    },
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0d",
+      "code": "unsupported_schema",
+      "observed_at": "2026-08-08T10:26:00+08:00",
+      "message": "Candidate uses an unsupported manifest schema discriminator."
+    },
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0e",
+      "code": "manifest_invalid",
+      "observed_at": "2026-08-08T10:26:02+08:00",
+      "message": "Candidate failed closed schema or manifest-local semantic validation."
+    },
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0f",
+      "code": "manifest_not_sealed",
+      "observed_at": "2026-08-08T10:26:04+08:00",
+      "message": "Candidate is readable but does not carry sealed success semantics."
+    }
+  ],
+  "next_cursor": "opaque-cursor-after-quarantine-page"
+}

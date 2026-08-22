@@ -1,0 +1,10 @@
+{
+  "schema": "ylx.capture-event.v3",
+  "sse_delivery_id": "1045",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_revision": 45,
+  "type": "snapshot",
+  "occurred_at": "2026-08-08T10:25:04+08:00",
+  "session_id": null,
+  "data": {}
+}

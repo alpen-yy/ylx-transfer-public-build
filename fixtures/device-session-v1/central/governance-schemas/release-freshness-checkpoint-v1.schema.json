@@ -1,0 +1,1276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-freshness-checkpoint-v1.schema.json",
+  "title": "YLX release freshness checkpoint v1",
+  "description": "One of exactly eight ordered action-precondition authority snapshots. Each checkpoint revalidates the immutable attempt input set and every artifact already created. Phase rules require the exact known-artifact key set, force future artifacts to null, and bind the next action to the most recent successful snapshot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "checkpoint_id",
+    "attempt_id",
+    "sequence",
+    "checkpoint",
+    "phase",
+    "attempt_input_set_ref",
+    "predecessor_checkpoint_ref",
+    "predecessor_checkpoint_sequence",
+    "authority_snapshot",
+    "authority_snapshot_sha256",
+    "known_artifact_ref_by_kind",
+    "event_receipt_refs",
+    "planned_action_input_sha256",
+    "authorizes_action",
+    "validator_artifact_ref",
+    "checker_assignment_ref",
+    "result",
+    "failure_codes",
+    "checked_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-freshness-checkpoint.v1"
+    },
+    "checkpoint_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "checkpoint": {
+      "enum": [
+        "quorum_signature_collection",
+        "publication_fence_acquisition",
+        "pre_promotion",
+        "promotion_readback",
+        "final_manifest_publish",
+        "final_manifest_readback",
+        "finalized_terminal_reference_cas",
+        "finalized_terminal_reference_readback"
+      ]
+    },
+    "phase": {
+      "enum": [
+        "PRE_PUBLICATION_FENCE",
+        "POST_PUBLICATION_FENCE",
+        "PRE_GA_PROMOTION",
+        "POST_GA_READBACK_PRE_MANIFEST_CONSTRUCTION",
+        "PRE_FINAL_MANIFEST_PUBLICATION",
+        "POST_FINAL_MANIFEST_READBACK",
+        "PRE_FINALIZED_TERMINAL_REFERENCE_CAS",
+        "POST_FINALIZED_TERMINAL_REFERENCE_READBACK"
+      ]
+    },
+    "attempt_input_set_ref": {
+      "$ref": "#/$defs/releaseAttemptInputSetRef"
+    },
+    "predecessor_checkpoint_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/freshnessCheckpointRef"
+        }
+      ]
+    },
+    "predecessor_checkpoint_sequence": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        }
+      ]
+    },
+    "authority_snapshot": {
+      "$ref": "#/$defs/authoritySnapshot"
+    },
+    "authority_snapshot_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "known_artifact_ref_by_kind": {
+      "$ref": "#/$defs/knownArtifactRefByKind"
+    },
+    "event_receipt_refs": {
+      "$ref": "#/$defs/eventReceiptRefs"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "authorizes_action": {
+      "enum": [
+        null,
+        "ACQUIRE_PUBLICATION_FENCE",
+        "ADVANCE_TO_PRE_PROMOTION_CHECK",
+        "PROMOTE_EXACT_RC_AND_READBACK",
+        "CONSTRUCT_FINAL_MANIFEST_PAYLOAD",
+        "PUBLISH_AND_READBACK_FINAL_MANIFEST",
+        "ADVANCE_TO_PRE_TERMINAL_CAS_CHECK",
+        "CAS_AND_READBACK_FINALIZED_TERMINAL_REFERENCE",
+        "PUBLISH_INITIAL_ACTIVE_DISTRIBUTION"
+      ]
+    },
+    "validator_artifact_ref": {
+      "$ref": "#/$defs/freshnessValidatorRef"
+    },
+    "checker_assignment_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "failure_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "STALE_INPUT",
+          "LOWER_REVISION",
+          "FORK_DETECTED",
+          "MIXED_AUTHORITY_HEAD",
+          "DIGEST_MISMATCH",
+          "MISSING_ARTIFACT",
+          "INVALID_SIGNATURE",
+          "REVOKED_KEY",
+          "ASSIGNMENT_MISMATCH",
+          "OPERATOR_MISMATCH",
+          "AUTHORITY_UNAVAILABLE",
+          "TERMINAL_STATE_MISMATCH"
+        ]
+      }
+    },
+    "checked_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failure_codes": {
+            "maxItems": 0
+          },
+          "authorizes_action": {
+            "not": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failure_codes": {
+            "minItems": 1
+          },
+          "authorizes_action": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 1
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "quorum_signature_collection"
+          },
+          "phase": {
+            "const": "PRE_PUBLICATION_FENCE"
+          },
+          "predecessor_checkpoint_ref": {
+            "type": "null"
+          },
+          "predecessor_checkpoint_sequence": {
+            "type": "null"
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "ACQUIRE_PUBLICATION_FENCE"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint1"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 2
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "publication_fence_acquisition"
+          },
+          "phase": {
+            "const": "POST_PUBLICATION_FENCE"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 1
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "ADVANCE_TO_PRE_PROMOTION_CHECK"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint2"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint2"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 3
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "pre_promotion"
+          },
+          "phase": {
+            "const": "PRE_GA_PROMOTION"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 2
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "PROMOTE_EXACT_RC_AND_READBACK"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint2"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint2"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 4
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "promotion_readback"
+          },
+          "phase": {
+            "const": "POST_GA_READBACK_PRE_MANIFEST_CONSTRUCTION"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 3
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "CONSTRUCT_FINAL_MANIFEST_PAYLOAD"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint4"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint4"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 5
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "final_manifest_publish"
+          },
+          "phase": {
+            "const": "PRE_FINAL_MANIFEST_PUBLICATION"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 4
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "PUBLISH_AND_READBACK_FINAL_MANIFEST"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint5"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint4"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 6
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "final_manifest_readback"
+          },
+          "phase": {
+            "const": "POST_FINAL_MANIFEST_READBACK"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 5
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "ADVANCE_TO_PRE_TERMINAL_CAS_CHECK"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint6"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint6"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 7
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "finalized_terminal_reference_cas"
+          },
+          "phase": {
+            "const": "PRE_FINALIZED_TERMINAL_REFERENCE_CAS"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 6
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "CAS_AND_READBACK_FINALIZED_TERMINAL_REFERENCE"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint6"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint6"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 8
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkpoint": {
+            "const": "finalized_terminal_reference_readback"
+          },
+          "phase": {
+            "const": "POST_FINALIZED_TERMINAL_REFERENCE_READBACK"
+          },
+          "predecessor_checkpoint_ref": {
+            "$ref": "#/$defs/freshnessCheckpointRef"
+          },
+          "predecessor_checkpoint_sequence": {
+            "const": 7
+          },
+          "authorizes_action": {
+            "enum": [
+              null,
+              "PUBLISH_INITIAL_ACTIVE_DISTRIBUTION"
+            ]
+          },
+          "known_artifact_ref_by_kind": {
+            "$ref": "#/$defs/knownAtCheckpoint8"
+          },
+          "event_receipt_refs": {
+            "$ref": "#/$defs/eventsAtCheckpoint8"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "releaseAttemptInputSetRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-attempt-input-set.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "freshnessCheckpointRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-freshness-checkpoint.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "releasePublicationFenceRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-publication-fence.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "gaPromotionReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.ga-promotion-receipt.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "releaseClosureManifestRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-closure-manifest.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "contentPublicationReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.content-addressed-publication-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "contentReadbackReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.content-addressed-readback-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "terminalSlotCasReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.terminal-slot-cas-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "terminalSlotReadbackReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.terminal-slot-readback-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "nullableFenceRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/releasePublicationFenceRef"
+        }
+      ]
+    },
+    "nullablePromotionReceiptRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/gaPromotionReceiptRef"
+        }
+      ]
+    },
+    "nullableManifestRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/releaseClosureManifestRef"
+        }
+      ]
+    },
+    "nullablePublicationReceiptRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/contentPublicationReceiptRef"
+        }
+      ]
+    },
+    "nullableReadbackReceiptRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/contentReadbackReceiptRef"
+        }
+      ]
+    },
+    "nullableCasReceiptRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/terminalSlotCasReceiptRef"
+        }
+      ]
+    },
+    "nullableSlotReadbackReceiptRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/terminalSlotReadbackReceiptRef"
+        }
+      ]
+    },
+    "knownArtifactRefByKind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_attempt_input_set",
+        "release_publication_fence",
+        "ga_promotion_receipt",
+        "release_closure_manifest",
+        "content_addressed_publication_receipt",
+        "content_addressed_readback_receipt",
+        "terminal_slot_cas_receipt",
+        "terminal_slot_readback_receipt"
+      ],
+      "properties": {
+        "release_attempt_input_set": {
+          "$ref": "#/$defs/releaseAttemptInputSetRef"
+        },
+        "release_publication_fence": {
+          "$ref": "#/$defs/nullableFenceRef"
+        },
+        "ga_promotion_receipt": {
+          "$ref": "#/$defs/nullablePromotionReceiptRef"
+        },
+        "release_closure_manifest": {
+          "$ref": "#/$defs/nullableManifestRef"
+        },
+        "content_addressed_publication_receipt": {
+          "$ref": "#/$defs/nullablePublicationReceiptRef"
+        },
+        "content_addressed_readback_receipt": {
+          "$ref": "#/$defs/nullableReadbackReceiptRef"
+        },
+        "terminal_slot_cas_receipt": {
+          "$ref": "#/$defs/nullableCasReceiptRef"
+        },
+        "terminal_slot_readback_receipt": {
+          "$ref": "#/$defs/nullableSlotReadbackReceiptRef"
+        }
+      }
+    },
+    "knownAtCheckpoint1": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_attempt_input_set": {
+              "$ref": "#/$defs/releaseAttemptInputSetRef"
+            },
+            "release_publication_fence": {
+              "type": "null"
+            },
+            "ga_promotion_receipt": {
+              "type": "null"
+            },
+            "release_closure_manifest": {
+              "type": "null"
+            },
+            "content_addressed_publication_receipt": {
+              "type": "null"
+            },
+            "content_addressed_readback_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_cas_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_readback_receipt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "knownAtCheckpoint2": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_publication_fence": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt": {
+              "type": "null"
+            },
+            "release_closure_manifest": {
+              "type": "null"
+            },
+            "content_addressed_publication_receipt": {
+              "type": "null"
+            },
+            "content_addressed_readback_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_cas_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_readback_receipt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "knownAtCheckpoint4": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_publication_fence": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "release_closure_manifest": {
+              "type": "null"
+            },
+            "content_addressed_publication_receipt": {
+              "type": "null"
+            },
+            "content_addressed_readback_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_cas_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_readback_receipt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "knownAtCheckpoint5": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_publication_fence": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "release_closure_manifest": {
+              "$ref": "#/$defs/releaseClosureManifestRef"
+            },
+            "content_addressed_publication_receipt": {
+              "type": "null"
+            },
+            "content_addressed_readback_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_cas_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_readback_receipt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "knownAtCheckpoint6": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_publication_fence": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "release_closure_manifest": {
+              "$ref": "#/$defs/releaseClosureManifestRef"
+            },
+            "content_addressed_publication_receipt": {
+              "$ref": "#/$defs/contentPublicationReceiptRef"
+            },
+            "content_addressed_readback_receipt": {
+              "$ref": "#/$defs/contentReadbackReceiptRef"
+            },
+            "terminal_slot_cas_receipt": {
+              "type": "null"
+            },
+            "terminal_slot_readback_receipt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "knownAtCheckpoint8": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/knownArtifactRefByKind"
+        },
+        {
+          "properties": {
+            "release_publication_fence": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "release_closure_manifest": {
+              "$ref": "#/$defs/releaseClosureManifestRef"
+            },
+            "content_addressed_publication_receipt": {
+              "$ref": "#/$defs/contentPublicationReceiptRef"
+            },
+            "content_addressed_readback_receipt": {
+              "$ref": "#/$defs/contentReadbackReceiptRef"
+            },
+            "terminal_slot_cas_receipt": {
+              "$ref": "#/$defs/terminalSlotCasReceiptRef"
+            },
+            "terminal_slot_readback_receipt": {
+              "$ref": "#/$defs/terminalSlotReadbackReceiptRef"
+            }
+          }
+        }
+      ]
+    },
+    "eventReceiptRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publication_fence_ref",
+        "ga_promotion_receipt_ref",
+        "content_publication_receipt_ref",
+        "content_readback_receipt_ref",
+        "terminal_cas_receipt_ref",
+        "terminal_readback_receipt_ref"
+      ],
+      "properties": {
+        "publication_fence_ref": {
+          "$ref": "#/$defs/nullableFenceRef"
+        },
+        "ga_promotion_receipt_ref": {
+          "$ref": "#/$defs/nullablePromotionReceiptRef"
+        },
+        "content_publication_receipt_ref": {
+          "$ref": "#/$defs/nullablePublicationReceiptRef"
+        },
+        "content_readback_receipt_ref": {
+          "$ref": "#/$defs/nullableReadbackReceiptRef"
+        },
+        "terminal_cas_receipt_ref": {
+          "$ref": "#/$defs/nullableCasReceiptRef"
+        },
+        "terminal_readback_receipt_ref": {
+          "$ref": "#/$defs/nullableSlotReadbackReceiptRef"
+        }
+      }
+    },
+    "eventsAtCheckpoint1": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/eventReceiptRefs"
+        },
+        {
+          "properties": {
+            "publication_fence_ref": {
+              "type": "null"
+            },
+            "ga_promotion_receipt_ref": {
+              "type": "null"
+            },
+            "content_publication_receipt_ref": {
+              "type": "null"
+            },
+            "content_readback_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_cas_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_readback_receipt_ref": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "eventsAtCheckpoint2": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/eventReceiptRefs"
+        },
+        {
+          "properties": {
+            "publication_fence_ref": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt_ref": {
+              "type": "null"
+            },
+            "content_publication_receipt_ref": {
+              "type": "null"
+            },
+            "content_readback_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_cas_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_readback_receipt_ref": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "eventsAtCheckpoint4": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/eventReceiptRefs"
+        },
+        {
+          "properties": {
+            "publication_fence_ref": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt_ref": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "content_publication_receipt_ref": {
+              "type": "null"
+            },
+            "content_readback_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_cas_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_readback_receipt_ref": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "eventsAtCheckpoint6": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/eventReceiptRefs"
+        },
+        {
+          "properties": {
+            "publication_fence_ref": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt_ref": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "content_publication_receipt_ref": {
+              "$ref": "#/$defs/contentPublicationReceiptRef"
+            },
+            "content_readback_receipt_ref": {
+              "$ref": "#/$defs/contentReadbackReceiptRef"
+            },
+            "terminal_cas_receipt_ref": {
+              "type": "null"
+            },
+            "terminal_readback_receipt_ref": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "eventsAtCheckpoint8": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/eventReceiptRefs"
+        },
+        {
+          "properties": {
+            "publication_fence_ref": {
+              "$ref": "#/$defs/releasePublicationFenceRef"
+            },
+            "ga_promotion_receipt_ref": {
+              "$ref": "#/$defs/gaPromotionReceiptRef"
+            },
+            "content_publication_receipt_ref": {
+              "$ref": "#/$defs/contentPublicationReceiptRef"
+            },
+            "content_readback_receipt_ref": {
+              "$ref": "#/$defs/contentReadbackReceiptRef"
+            },
+            "terminal_cas_receipt_ref": {
+              "$ref": "#/$defs/terminalSlotCasReceiptRef"
+            },
+            "terminal_readback_receipt_ref": {
+              "$ref": "#/$defs/terminalSlotReadbackReceiptRef"
+            }
+          }
+        }
+      ]
+    },
+    "authoritySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "m5_binding_context_ref",
+        "effective_m4_lineage_ref",
+        "pre_release_ref",
+        "readiness_ref",
+        "distribution_drill_ref",
+        "domain_attestation_ref_by_role",
+        "quorum_signature_ref_by_role",
+        "role_assignment_ref_by_role",
+        "signing_policy_ref",
+        "key_head_ref",
+        "quorum_policy_ref",
+        "promotion_plan_ref",
+        "promotion_operation_assignment_ref",
+        "release_bundle_sha256",
+        "contract_release_sha256",
+        "product_contract_sha256",
+        "qualification_governance_contract_sha256",
+        "issue_head",
+        "issue_reconciliation_set_sha256"
+      ],
+      "properties": {
+        "m5_binding_context_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/bindingContextRef"
+        },
+        "effective_m4_lineage_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/m4ContextLineageRef"
+        },
+        "pre_release_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/preReleaseRef"
+        },
+        "readiness_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/readinessRef"
+        },
+        "distribution_drill_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/distributionDrillRef"
+        },
+        "domain_attestation_ref_by_role": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/domainAttestationRefMap"
+        },
+        "quorum_signature_ref_by_role": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/quorumSignatureRefMap"
+        },
+        "role_assignment_ref_by_role": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/roleAssignmentRefMap"
+        },
+        "signing_policy_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/signingPolicyRef"
+        },
+        "key_head_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/keyHeadRef"
+        },
+        "quorum_policy_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/quorumPolicyRef"
+        },
+        "promotion_plan_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/promotionPlanRef"
+        },
+        "promotion_operation_assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/release-attempt-input-set-v1.schema.json#/$defs/releaseOperationAssignmentRef"
+        },
+        "release_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract_release_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_governance_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "issue_head": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+        },
+        "issue_reconciliation_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "freshnessValidatorRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-freshness-validator.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    }
+  }
+}

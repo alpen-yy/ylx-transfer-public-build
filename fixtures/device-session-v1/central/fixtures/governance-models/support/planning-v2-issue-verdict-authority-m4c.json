@@ -1,0 +1,1 @@
+{"authority_id":"fixture-planning-v2-issue-verdict-authority-m4c","authorization_class":"may_qualify","authorized_action":"issue-verdict","milestone_gate":"M4","notice":"SYNTHETIC EXAMPLE ONLY; NOT EVIDENCE; NOT A PASS VERDICT","requirement_ids":["M4C-ISSUES-01"],"revision":1,"schema":"ylx.execution-authority.v1"}

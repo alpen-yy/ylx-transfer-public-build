@@ -1,0 +1,34 @@
+{
+  "schema": "ylx.external-authority-boundaries.v1",
+  "legacy_v1": {
+    "status": "BLOCKED",
+    "profile_binding": "same-explicit-deployment-profile-as-v2",
+    "lab_destructive_mutation": "unreachable-or-rejected-before-handler",
+    "lab_network_mutation": "unreachable-or-rejected-before-handler",
+    "customer_destructive_mutation": "target-disabled-pending-STORE-DELETE-01",
+    "deployed_contract_authority": {
+      "immutable_ref": null,
+      "contract_sha256": null,
+      "fixture_set_sha256": null,
+      "status": "BLOCKED",
+      "blocked_on": [
+        "immutable-deployed-contract-ref",
+        "deployed-v1-fixture-digest"
+      ]
+    }
+  },
+  "tls_pin": {
+    "status": "BLOCKED",
+    "authority_requirement": "m1-versioned-machine-contract",
+    "expected_pin_owner": "ylx-transfer",
+    "server_credential_owner": "device-gateway",
+    "configuration": {
+      "target": null,
+      "algorithm": null,
+      "encoding": null,
+      "provisioning": null,
+      "rotation": null
+    },
+    "blocked_on": ["target", "algorithm", "encoding", "provisioning", "rotation"]
+  }
+}

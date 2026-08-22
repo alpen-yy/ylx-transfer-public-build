@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bootstrap-post-reconciliation-candidate-derivation-v1.schema.json",
+  "title": "YLX planning bootstrap Phase B post-reconciliation candidate derivation v1",
+  "description": "Authority-NONE record proving deterministic Phase B child candidate digests and exact wrapperless planning approval subject S after owner F/P/R and issue reconciliation Q. Ref/digest equality, attempt joins, chronology, and equality of bundle_subject_projection_sha256 with planning_approval_subject_sha256 are procedural validation rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "derivation_id",
+    "bootstrap_attempt_id",
+    "input_closure_ref",
+    "input_closure_sha256",
+    "derivation_contract_ref",
+    "derivation_contract_sha256",
+    "owner_payload_ref",
+    "owner_payload_sha256",
+    "owner_publication_receipt_ref",
+    "owner_publication_receipt_sha256",
+    "owner_readback_receipt_ref",
+    "owner_readback_receipt_sha256",
+    "g0_issue_reconciliation_ref",
+    "g0_issue_reconciliation_sha256",
+    "candidate_sha256_by_artifact_kind",
+    "bundle_subject_projection_sha256",
+    "planning_approval_subject_ref",
+    "planning_approval_subject_sha256",
+    "derived_at",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bootstrap-post-reconciliation-candidate-derivation.v1"
+    },
+    "derivation_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "bootstrap_attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "input_closure_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "input_closure_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "derivation_contract_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "derivation_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_payload_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_publication_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_publication_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_readback_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_readback_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "g0_issue_reconciliation_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "g0_issue_reconciliation_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "candidate_sha256_by_artifact_kind": {
+      "$ref": "#/$defs/candidateSha256ByArtifactKind"
+    },
+    "bundle_subject_projection_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planning_approval_subject_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "planning_approval_subject_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "derived_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    }
+  },
+  "$defs": {
+    "candidateSha256ByArtifactKind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "resource_calendar": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "delivery_wbs": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "forecast_snapshot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

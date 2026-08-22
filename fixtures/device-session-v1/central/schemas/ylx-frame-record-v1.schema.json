@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ylx:schema:frame-record:v1",
+  "title": "YLX Frame JSONL Record v1",
+  "description": "Schema for one line of imu/frames.jsonl. Sequence gaps are allowed only when the sealed session manifest records matching drop events.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "session_id",
+    "clock",
+    "timestamp",
+    "sequence",
+    "source_frame_id",
+    "output_frame_index",
+    "video_associations",
+    "imu_association"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.frame-record.v1"
+    },
+    "session_id": {
+      "$ref": "#/$defs/uuidV7"
+    },
+    "clock": {
+      "$ref": "#/$defs/clock"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Timestamp ticks in the declared clock domain and unit."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sequence assigned after configured decimation and before bounded dropping; manifest drop_events account for gaps."
+    },
+    "source_frame_id": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Camera or replay-source native frame identifier, before configured decimation."
+    },
+    "output_frame_index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Dense zero-based index among frames actually persisted for this session."
+    },
+    "video_associations": {
+      "oneOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/$defs/rawVideoAssociation"
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/splitVideoAssociation"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["role"],
+                "properties": {
+                  "role": {
+                    "const": "video.left"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["role"],
+                "properties": {
+                  "role": {
+                    "const": "video.right"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      ]
+    },
+    "imu_association": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "first_sequence", "last_sequence", "sample_count"],
+          "properties": {
+            "status": {
+              "const": "associated"
+            },
+            "first_sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "last_sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sample_count": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": {
+              "const": "unassociated"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "uuidV7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Canonical lowercase UUIDv7."
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "unit", "epoch_id"],
+      "properties": {
+        "domain": {
+          "const": "session_monotonic"
+        },
+        "unit": {
+          "const": "nanosecond"
+        },
+        "epoch_id": {
+          "$ref": "#/$defs/uuidV7",
+          "description": "Clock epoch identity; MUST equal session_id."
+        }
+      }
+    },
+    "rawVideoAssociation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "artifact_id", "artifact_frame_index"],
+      "properties": {
+        "role": {
+          "const": "video.raw-side-by-side"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifact_frame_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "splitVideoAssociation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "artifact_id", "artifact_frame_index", "segment_index"],
+      "properties": {
+        "role": {
+          "enum": ["video.left", "video.right"]
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifact_frame_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "segment_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

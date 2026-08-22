@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-result-projection-publication-receipt-v1.schema.json",
+  "title": "YLX release result projection publication receipt v1",
+  "description": "Immutable receipt for create-if-absent publication of exact RFC 8785 release-result-projection v2 bytes at their canonical content-addressed locator. The referenced execution-authorization evaluation must procedurally be a fresh PASS for this one-shot projection action before publication starts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "projection_ref",
+    "projection_sha256",
+    "projection_locator",
+    "execution_authorization_evaluation_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "actor_person_id",
+    "operation_result",
+    "file_fsynced",
+    "parent_directory_fsynced",
+    "published_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-result-projection-publication-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "projection_ref": {
+      "$ref": "#/$defs/releaseResultProjectionRef"
+    },
+    "projection_sha256": {
+      "description": "Digest of the exact published projection bytes; procedural validation requires equality with projection_ref.artifact_sha256 and the digest embedded in projection_locator.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "projection_locator": {
+      "description": "Canonical content-addressed projection path. Procedural validation requires exact equality with projection_ref.artifact_path and requires its digest segment to equal projection_sha256 and projection_ref.artifact_sha256.",
+      "$ref": "#/$defs/projectionLocator"
+    },
+    "execution_authorization_evaluation_ref": {
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "actor_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "operation_result": {
+      "enum": [
+        "CREATED_EXACT",
+        "ALREADY_EXACT"
+      ]
+    },
+    "file_fsynced": {
+      "const": true
+    },
+    "parent_directory_fsynced": {
+      "const": true
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_metadata": {
+            "properties": {
+              "classification": {
+                "const": "GOVERNANCE_ARTIFACT"
+              }
+            },
+            "required": [
+              "classification"
+            ]
+          }
+        },
+        "required": [
+          "artifact_metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "projection_locator": {
+            "$ref": "#/$defs/governanceProjectionLocator"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "projection_locator": {
+            "$ref": "#/$defs/syntheticProjectionLocator"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "releaseResultProjectionRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-result-projection.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "projectionLocator": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "governanceProjectionLocator": {
+      "pattern": "^docs/evidence/M5/signoff/M5-MATRIX-COMPLETE-01/release-result-projections/[0-9a-f]{64}--release-result-projection\\.json$"
+    },
+    "syntheticProjectionLocator": {
+      "pattern": "^contracts/fixtures/governance-models/valid/release-result-projections/[0-9a-f]{64}--release-result-projection\\.json$"
+    }
+  }
+}

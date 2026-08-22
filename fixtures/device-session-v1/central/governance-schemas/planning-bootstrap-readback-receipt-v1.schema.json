@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bootstrap-readback-receipt-v1.schema.json",
+  "title": "YLX planning bootstrap root exact readback receipt R v1",
+  "description": "Signed terminal external audit-sink receipt for a separately authorized exact read of an M0-B revision-1 planning root F or containing-bundle approval subject S after its valid publication receipt P. R exact-binds P, the immutable artifact ref, raw digest and byte length, the real reader and pre-existing readback authority, a strictly later read time, and MATCH. R is an append-only sink output, is embedded in neither F/S nor P, and grants no planning, approval, execution, evidence, verdict, release, or recovery authority. Procedural validation resolves publication_receipt_ref and publication_receipt_sha256 to one valid ylx.planning-bootstrap-publication-receipt.v1, requires the artifact tuple to equal P field-for-field, retrieves and byte-compares the exact target under readback authority, requires read_back_at to be strictly later than P.published_at, recomputes UTF8(\"YLX-PLANNING-BOOTSTRAP-TERMINAL-RECEIPT-V1\") || 0x00 || RFC8785(receipt fields excluding signed_payload_sha256 and signature), and verifies the Ed25519 signature under the terminal sink's current trusted key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "publication_receipt_ref",
+    "publication_receipt_sha256",
+    "reader_id",
+    "readback_authority_ref",
+    "readback_authority_sha256",
+    "artifact_ref",
+    "artifact_sha256",
+    "byte_length",
+    "read_back_at",
+    "result",
+    "terminal_sink_id",
+    "receipt_issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bootstrap-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "publication_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "publication_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "reader_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "readback_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "readback_authority_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "artifact_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "byte_length": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "read_back_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "result": {
+      "const": "MATCH"
+    },
+    "terminal_sink_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "receipt_issuer_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  }
+}

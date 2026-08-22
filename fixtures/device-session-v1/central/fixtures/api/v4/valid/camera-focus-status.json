@@ -1,0 +1,10 @@
+{
+  "schema": "ylx.camera-focus.v1",
+  "value": 42,
+  "minimum": 0,
+  "maximum": 255,
+  "step": 1,
+  "default": 32,
+  "auto_supported": true,
+  "auto_enabled": false
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-quorum-policy-v1.schema.json",
+  "title": "YLX G0 external ratification quorum policy v1",
+  "description": "Signed quorum and conflict policy issued under one exact external organizational authority. Procedural validation requires every field to agree with the authority's own quorum branch and verifies the signature under that authority's grant issuer key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "revision",
+    "predecessor_policy_sha256",
+    "external_authority_ref",
+    "external_authority_sha256",
+    "scope",
+    "required_role_ids",
+    "minimum_approval_count",
+    "require_all_roles",
+    "distinct_natural_persons",
+    "conflict_rule",
+    "approval_order_rule",
+    "approval_decision",
+    "subject_schema",
+    "subject_digest_algorithm",
+    "approval_signature_domain_template",
+    "effective_from",
+    "not_after",
+    "issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "ylx.g0-quorum-policy.v1"},
+    "policy_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"},
+    "revision": {"type": "integer", "minimum": 1},
+    "predecessor_policy_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "external_authority_ref": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"},
+    "external_authority_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "scope": {"const": "PROSPECTIVE_G0_POLICY_RATIFICATION"},
+    "required_role_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"}
+    },
+    "minimum_approval_count": {"type": "integer", "minimum": 1},
+    "require_all_roles": {"const": true},
+    "distinct_natural_persons": {"const": true},
+    "conflict_rule": {"const": "DISTINCT_NATURAL_PERSONS_AND_CONFLICT_GROUPS"},
+    "approval_order_rule": {"const": "NO_REQUIRED_ORDER"},
+    "approval_decision": {"const": "APPROVE_PROSPECTIVE_ONLY"},
+    "subject_schema": {"const": "ylx.g0-policy-ratification-subject.v1"},
+    "subject_digest_algorithm": {"const": "SHA-256"},
+    "approval_signature_domain_template": {"const": "YLX-G0-EXTERNAL-APPROVAL-V1/<role_id>"},
+    "effective_from": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "not_after": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "issuer_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signing_key_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signed_payload_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "signature": {"$ref": "#/$defs/ed25519Signature"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"revision": {"const": 1}}, "required": ["revision"]},
+      "then": {"properties": {"predecessor_policy_sha256": {"type": "null"}}},
+      "else": {"properties": {"predecessor_policy_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"}}}
+    }
+  ],
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"}
+      ]
+    },
+    "ed25519Signature": {"type": "string", "minLength": 88, "maxLength": 88, "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"}
+  }
+}

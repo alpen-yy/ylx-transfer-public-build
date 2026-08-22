@@ -1,0 +1,30 @@
+{
+  "schema": "ylx.imu-sample.v1",
+  "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+  "clock": {
+    "domain": "session_monotonic",
+    "unit": "nanosecond",
+    "epoch_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283"
+  },
+  "timestamp": 1400000000,
+  "sequence": 287,
+  "raw_axes": {
+    "units": "m/s2",
+    "accelerometer": {
+      "x": -120,
+      "y": 48,
+      "z": 16320
+    },
+    "gyroscope": {
+      "x": 7,
+      "y": -11,
+      "z": 3
+    }
+  },
+  "frame_association": {
+    "status": "associated",
+    "frame_sequence": 42,
+    "method": "nearest",
+    "offset_nanoseconds": -1250000
+  }
+}

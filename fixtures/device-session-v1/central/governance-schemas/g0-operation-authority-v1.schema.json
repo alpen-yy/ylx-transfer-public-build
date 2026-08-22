@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-operation-authority-v1.schema.json",
+  "title": "YLX exact external operation authority for the G0 protocol v1",
+  "description": "One signed, time-bounded grant issued by the external organizational authority. The closed grant branch prevents publisher, repository, readback, outreach, canonical-locator, and terminal-sink privileges from being spliced or inferred from one another.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "grant_id",
+    "grant_kind",
+    "external_authority_ref",
+    "external_authority_sha256",
+    "grant",
+    "issued_at",
+    "valid_from",
+    "not_after",
+    "authority_origin",
+    "issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "ylx.g0-operation-authority.v1"},
+    "grant_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"},
+    "grant_kind": {"enum": ["G0_EVENT_PUBLISHER", "REPOSITORY_PERMISSION", "G0_EVENT_READBACK", "EXTERNAL_OUTREACH_SEND", "CANONICAL_LOCATOR_READBACK", "TERMINAL_AUDIT_SINK"]},
+    "external_authority_ref": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"},
+    "external_authority_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "grant": {"$ref": "#/$defs/grant"},
+    "issued_at": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "valid_from": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "not_after": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"},
+    "authority_origin": {"const": "PREEXISTING_OUTSIDE_CANDIDATE_POLICY"},
+    "issuer_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signing_key_id": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "signed_payload_sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "signature": {"type": "string", "minLength": 88, "maxLength": 88, "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"}
+  },
+  "$defs": {
+    "sha256": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"},
+    "identifier": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"},
+    "locator": {"$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"},
+    "sinkAuthorityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "eventPublisherGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publisher_id", "repository_locator", "event_schema", "event_id", "event_revision", "subject_sha256", "event_sha256", "operation", "target_scope", "terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "publisher_id": {"$ref": "#/$defs/identifier"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "event_schema": {"const": "ylx.g0-policy-ratification.v1"},
+        "event_id": {"$ref": "#/$defs/identifier"},
+        "event_revision": {"type": "integer", "minimum": 1},
+        "subject_sha256": {"$ref": "#/$defs/sha256"},
+        "event_sha256": {"$ref": "#/$defs/sha256"},
+        "operation": {"const": "CREATE_IF_ABSENT"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "repositoryPermissionGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_locator", "actor_id", "operation", "target_scope", "payload_sha256", "terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "operation": {"enum": ["CREATE_IF_ABSENT", "APPEND_ONLY_CREATE", "COMPARE_AND_SWAP", "IMPORT_EXACT", "CREATE_CLEAN_COMMIT"]},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "eventReadbackGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reader_id", "repository_locator", "event_schema", "event_id", "event_revision", "event_sha256", "operation", "target_scope", "terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "reader_id": {"$ref": "#/$defs/identifier"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "event_schema": {"const": "ylx.g0-policy-ratification.v1"},
+        "event_id": {"$ref": "#/$defs/identifier"},
+        "event_revision": {"type": "integer", "minimum": 1},
+        "event_sha256": {"$ref": "#/$defs/sha256"},
+        "operation": {"const": "EXACT_READBACK"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "outreachSendGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sender_id", "recipient_id", "channel", "subject_sha256", "request_ref", "request_sha256", "operation", "target_scope", "terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "sender_id": {"$ref": "#/$defs/identifier"},
+        "recipient_id": {"$ref": "#/$defs/identifier"},
+        "channel": {"$ref": "#/$defs/identifier"},
+        "subject_sha256": {"$ref": "#/$defs/sha256"},
+        "request_ref": {"$ref": "#/$defs/locator"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "operation": {"const": "SEND"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "canonicalLocatorReadbackGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reader_id", "repository_locator", "subject_commit_id", "subject_commit_tree_sha256", "exact_five_path_sha256_by_path", "operation", "target_scope", "terminal_sink_authority_ref", "terminal_sink_authority_sha256"],
+      "properties": {
+        "reader_id": {"$ref": "#/$defs/identifier"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "subject_commit_id": {"$ref": "#/$defs/identifier"},
+        "subject_commit_tree_sha256": {"$ref": "#/$defs/sha256"},
+        "exact_five_path_sha256_by_path": {"$ref": "#/$defs/fivePathDigestMap"},
+        "operation": {"const": "EXACT_READBACK"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "terminalAuditSinkGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sink_id", "sink_locator", "receipt_schema", "receipt_issuer_id", "receipt_signing_key_id", "receipt_signing_public_key_base64", "operation_class"],
+      "properties": {
+        "sink_id": {"$ref": "#/$defs/identifier"},
+        "sink_locator": {"$ref": "#/$defs/locator"},
+        "receipt_schema": {"enum": ["ylx.repository-operation-receipt.v1", "ylx.external-outreach-send-receipt.v1", "ylx.g0-canonical-locator-readback.v1", "ylx.g0-policy-ratification-publication-receipt.v1", "ylx.g0-policy-ratification-readback-receipt.v1"]},
+        "receipt_issuer_id": {"$ref": "#/$defs/identifier"},
+        "receipt_signing_key_id": {"$ref": "#/$defs/identifier"},
+        "receipt_signing_public_key_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$"},
+        "operation_class": {"enum": ["REPOSITORY_WRITE", "OUTBOUND_SEND", "CANONICAL_LOCATOR_READBACK", "G0_EVENT_PUBLICATION", "G0_EVENT_READBACK"]}
+      }
+    },
+    "fivePathDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 5,
+      "maxProperties": 5,
+      "propertyNames": {"$ref": "#/$defs/locator"},
+      "patternProperties": {"^.+$": {"$ref": "#/$defs/sha256"}}
+    },
+    "grant": {
+      "oneOf": [
+        {"$ref": "#/$defs/eventPublisherGrant"},
+        {"$ref": "#/$defs/repositoryPermissionGrant"},
+        {"$ref": "#/$defs/eventReadbackGrant"},
+        {"$ref": "#/$defs/outreachSendGrant"},
+        {"$ref": "#/$defs/canonicalLocatorReadbackGrant"},
+        {"$ref": "#/$defs/terminalAuditSinkGrant"}
+      ]
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"grant_kind": {"const": "G0_EVENT_PUBLISHER"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/eventPublisherGrant"}}}},
+    {"if": {"properties": {"grant_kind": {"const": "REPOSITORY_PERMISSION"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/repositoryPermissionGrant"}}}},
+    {"if": {"properties": {"grant_kind": {"const": "G0_EVENT_READBACK"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/eventReadbackGrant"}}}},
+    {"if": {"properties": {"grant_kind": {"const": "EXTERNAL_OUTREACH_SEND"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/outreachSendGrant"}}}},
+    {"if": {"properties": {"grant_kind": {"const": "CANONICAL_LOCATOR_READBACK"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/canonicalLocatorReadbackGrant"}}}},
+    {"if": {"properties": {"grant_kind": {"const": "TERMINAL_AUDIT_SINK"}}, "required": ["grant_kind"]}, "then": {"properties": {"grant": {"$ref": "#/$defs/terminalAuditSinkGrant"}}}}
+  ]
+}

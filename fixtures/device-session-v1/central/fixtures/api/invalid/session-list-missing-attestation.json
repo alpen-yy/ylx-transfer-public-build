@@ -1,0 +1,23 @@
+{
+  "schema": "ylx.session-list.v2",
+  "items": [
+    {
+      "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+      "producer_outcome": "sealed",
+      "take_id": "01989f69-f000-7c3d-ae4f-5061728394a5",
+      "take_sequence": 1,
+      "continuation_of": null,
+      "display_name": "2026-08-08_10-24-00_YLX-30D5872D",
+      "device": {
+        "device_id": "550e8400-e29b-41d4-a716-446655440000",
+        "device_label": "YLX-30D5872D"
+      },
+      "started_at": "2026-08-08T10:24:00+08:00",
+      "ended_at": "2026-08-08T10:24:30+08:00",
+      "duration_seconds": 30,
+      "total_bytes": 60656697
+    }
+  ],
+  "diagnostics": [],
+  "next_cursor": null
+}

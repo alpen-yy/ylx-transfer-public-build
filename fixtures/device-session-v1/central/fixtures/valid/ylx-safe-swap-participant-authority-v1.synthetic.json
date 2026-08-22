@@ -1,0 +1,29 @@
+{
+  "schema": "ylx.safe-swap-participant-authority.v1",
+  "authority_scope": "m4-qualified-deployment-record",
+  "binding_context_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "deployment_record_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "participants": [
+    {
+      "participant_id": "capture-daemon",
+      "access_paths": ["capture-seal"]
+    },
+    {
+      "participant_id": "device-gateway",
+      "access_paths": [
+        "artifact-get-head-range",
+        "gateway-validation",
+        "lan-transfer",
+        "preview"
+      ]
+    },
+    {
+      "participant_id": "media-adapter",
+      "access_paths": ["media-adapter"]
+    },
+    {
+      "participant_id": "worker-supervisor",
+      "access_paths": ["worker"]
+    }
+  ]
+}

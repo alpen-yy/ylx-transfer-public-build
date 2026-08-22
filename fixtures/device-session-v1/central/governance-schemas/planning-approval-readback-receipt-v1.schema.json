@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-approval-readback-receipt-v1.schema.json",
+  "title": "YLX planning approval exact readback receipt R v1",
+  "description": "Signed append-only external terminal receipt for a separately authorized, strictly later byte-exact readback of the same unrevisioned planning approval record published by P. The signed payload is RFC 8785 canonical JSON UTF-8 over every field except signed_payload_sha256 and signature, under domain YLX-PLANNING-BOOTSTRAP-TERMINAL-RECEIPT-V1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "publication_receipt_ref",
+    "publication_receipt_sha256",
+    "approval_id",
+    "role_id",
+    "approval_ref",
+    "approval_sha256",
+    "reader_id",
+    "readback_authority_ref",
+    "readback_authority_sha256",
+    "byte_length",
+    "read_back_at",
+    "result",
+    "terminal_sink_id",
+    "receipt_issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-approval-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "publication_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "publication_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "approval_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "role_id": {
+      "enum": [
+        "release-owner",
+        "build-platform-owner",
+        "qa-evidence-owner"
+      ]
+    },
+    "approval_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "approval_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "reader_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "readback_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "readback_authority_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "byte_length": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "read_back_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "result": {
+      "const": "MATCH"
+    },
+    "terminal_sink_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "receipt_issuer_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "description": "Canonical padded RFC 4648 base64 encoding of exactly 64 Ed25519 signature bytes.",
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  }
+}

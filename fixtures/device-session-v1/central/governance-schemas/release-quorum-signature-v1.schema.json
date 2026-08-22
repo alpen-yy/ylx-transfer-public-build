@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-quorum-signature-v1.schema.json",
+  "title": "YLX distinct-person release quorum signature v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "signed_payload",
+    "signature_b64"
+  ],
+  "properties": {
+    "signed_payload": {
+      "$ref": "#/$defs/signedPayload"
+    },
+    "signature_b64": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{86}==$"
+    }
+  },
+  "$defs": {
+    "signedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload_schema",
+        "signature_domain",
+        "pre_release_closure_ref",
+        "pre_release_closure_sha256",
+        "role_slot",
+        "person_id",
+        "signer_identity",
+        "signing_key_fingerprint",
+        "key_validity_at_signature",
+        "role_assignment_ref",
+        "role_assignment_revision",
+        "signing_policy_sha256",
+        "key_validity_revocation_head_sha256",
+        "quorum_policy_sha256",
+        "binding_context_ref",
+        "fresh_issue_head",
+        "issue_reconciliation_set_sha256",
+        "domain_attestation_sha256_by_role_slot",
+        "signed_at"
+      ],
+      "properties": {
+        "payload_schema": {
+          "const": "ylx.release-quorum-signature.signed-payload.v1"
+        },
+        "signature_domain": {
+          "type": "string",
+          "pattern": "^ylx\\.release-closure\\.quorum\\.v1/(release-owner|contract-owner|security-owner|qa-evidence-owner)$"
+        },
+        "pre_release_closure_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "pre_release_closure_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "role_slot": {
+          "enum": [
+            "release-owner",
+            "contract-owner",
+            "security-owner",
+            "qa-evidence-owner"
+          ]
+        },
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "signer_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "natural_person_identity_sha256",
+            "identity_authority_ref"
+          ],
+          "properties": {
+            "natural_person_identity_sha256": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            },
+            "identity_authority_ref": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+            }
+          }
+        },
+        "signing_key_fingerprint": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "key_validity_at_signature": {
+          "$ref": "#/$defs/keyValidityAtSignature"
+        },
+        "role_assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "role_assignment_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "signing_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "key_validity_revocation_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "quorum_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "binding_context_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "fresh_issue_head": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+        },
+        "issue_reconciliation_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "domain_attestation_sha256_by_role_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/pre-release-closure-v1.schema.json#/$defs/domainAttestationMap"
+        },
+        "signed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "keyValidityAtSignature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "not_before",
+        "not_after",
+        "evaluated_revocation_head_sha256",
+        "status",
+        "required_remaining_validity_seconds",
+        "validity_horizon_satisfied",
+        "post_signature_expiry_rule",
+        "retroactive_compromise_rule"
+      ],
+      "properties": {
+        "not_before": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "not_after": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "evaluated_revocation_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "status": {
+          "const": "VALID_AT_SIGNED_AT"
+        },
+        "required_remaining_validity_seconds": {
+          "type": "integer",
+          "minimum": 60
+        },
+        "validity_horizon_satisfied": {
+          "const": true
+        },
+        "post_signature_expiry_rule": {
+          "const": "NORMAL_EXPIRY_DOES_NOT_INVALIDATE_A_SIGNATURE_VALID_AT_SIGNED_AT"
+        },
+        "retroactive_compromise_rule": {
+          "const": "ONLY_REVOCATION_OR_COMPROMISE_EFFECTIVE_AT_OR_BEFORE_SIGNED_AT_INVALIDATES"
+        }
+      }
+    }
+  }
+}

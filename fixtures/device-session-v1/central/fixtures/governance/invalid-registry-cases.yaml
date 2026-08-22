@@ -1,0 +1,1290 @@
+schema_version: ylx.governance-negative-cases.v1
+cases:
+  - id: g0-signed-decision-removed
+    mutation:
+      target: policy
+      path: [policy_ratification, proposal_extension_reconciliation, required_g0_signed_decision]
+      operation: remove
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation: required G0 signed decision must be exact and closed"
+
+  - id: g0-signed-decision-type-tampered
+    mutation:
+      target: policy
+      path: [policy_ratification, proposal_extension_reconciliation, required_g0_signed_decision, decision]
+      operation: replace
+      value: RATIFY_THREE_FIELD_ONLY
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation: required G0 signed decision must be exact and closed"
+
+  - id: g0-signed-decision-allows-implicit-union
+    mutation:
+      target: policy
+      path: [policy_ratification, proposal_extension_reconciliation, required_g0_signed_decision, implicit_union]
+      operation: replace
+      value: ALLOWED
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation: required G0 signed decision must be exact and closed"
+
+  - id: g0-signed-decision-payload-binding-tampered
+    mutation:
+      target: policy
+      path: [policy_ratification, proposal_extension_reconciliation, required_g0_signed_decision, payload_ref_binding, artifact_sha256_equals]
+      operation: replace
+      value: payload_ref.artifact_sha256
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation: required G0 signed decision must be exact and closed"
+
+  - id: g0-canonical-locator-claims-m1-product-ownership
+    mutation:
+      target: policy
+      path: [policy_ratification, canonical_locator_ownership_separation, g0_scope]
+      operation: replace
+      value: the G0 governance-subject locator establishes M1 product-repository ownership
+    expected_error_contains: "policy.policy_ratification.canonical_locator_ownership_separation:"
+
+  - id: g0-request-candidate-self-grants-maintenance-permission
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, permission_prerequisite, candidate_policy_grants_permission]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.g0_ratification_request_boundary.permission_prerequisite:"
+
+  - id: g0-request-permission-drops-exact-binding-field
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, permission_prerequisite, exact_binding_fields]
+      operation: remove_value
+      value: target_scope
+    expected_error_contains: "policy.g0_ratification_request_boundary.permission_prerequisite:"
+
+  - id: g0-request-one-permission-authorizes-multiple-writes
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, permission_prerequisite, rule]
+      operation: replace
+      value: one valid repository-maintenance permission authorizes every later G0-R write
+    expected_error_contains: "policy.g0_ratification_request_boundary.permission_prerequisite:"
+
+  - id: g0-request-permission-claims-external-approval-authority
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, permission_prerequisite, separation_rule]
+      operation: replace
+      value: repository-maintenance permission also supplies external organizational approval authority
+    expected_error_contains: "policy.g0_ratification_request_boundary.permission_prerequisite:"
+
+  - id: g0-request-permission-substitutes-for-canonical-locator
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, permission_prerequisite, separation_rule]
+      operation: replace
+      value: repository-maintenance permission establishes the canonical governance-subject locator and clean commit
+    expected_error_contains: "policy.g0_ratification_request_boundary.permission_prerequisite:"
+
+  - id: g0-request-proposal-head-approves-itself
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, proposal_head_status_rule]
+      operation: replace
+      value: every G0-R proposal/head may approve itself while remaining append-only
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-subject-includes-self-digest
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, subject_input_rule]
+      operation: replace
+      value: the G0 subject may include its own event digest and an invented sixth path
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-external-approval-skips-canonical-readback
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, external_approval_record_rule]
+      operation: replace
+      value: received external approvals are effective without canonical locator or durable readback validation
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-permission-inventory-collapsed
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, clean_commit_and_readback_rule]
+      operation: replace
+      value: every G0-R item reuses one previously checked permission
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-selector-gains-authority
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, separation_rule]
+      operation: replace
+      value: G0-R selector publication establishes policy authority
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: status-baseline-becomes-mutable
+    mutation:
+      target: policy
+      path: [status_projection_boundary, baseline_observation, mutability]
+      operation: replace
+      value: MUTABLE_CURRENT_STATUS
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: status-baseline-omits-m0-input-lane-state
+    mutation:
+      target: policy
+      path: [status_projection_boundary, baseline_observation, allowed_registry_selectors]
+      operation: remove_value
+      value: policy.m0_work_partition.input_lane.current_state
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: status-current-projection-uses-baseline-cell
+    mutation:
+      target: policy
+      path: [status_projection_boundary, current_projection, source_families_by_axis, g0]
+      operation: replace_value
+      old_value: ylx.g0-policy-ratification.v1
+      new_value: policy.policy_ratification.current_state
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: status-projection-allows-fixtures-as-current
+    mutation:
+      target: policy
+      path: [status_projection_boundary, forbidden_current_sources]
+      operation: remove_value
+      value: fixtures or synthetic records
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: status-projection-falls-back-to-lower-revision
+    mutation:
+      target: policy
+      path: [status_projection_boundary, exact_digest_resolution]
+      operation: replace
+      value: use the highest revision whose digest happens to resolve
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: g0-exploration-permission-self-granted
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, permission_prerequisite, candidate_policy_grants_permission]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: g0-exploration-allows-product-implementation
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, allowed_work]
+      operation: replace_value
+      old_value: local-only-builds
+      new_value: governed-product-implementation
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: g0-exploration-gains-authority
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, authority_effect]
+      operation: replace
+      value: EXEC_AUTHORIZED
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: g0-exploration-allows-production-mutation
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, forbidden_effects]
+      operation: remove_value
+      value: production mutation
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: g0-exploration-becomes-third-m0p-exception
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, separation_rule]
+      operation: replace
+      value: G0-X is the third M0-P administrative exception
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: g0-exploration-promotes-bytes-as-evidence
+    mutation:
+      target: policy
+      path: [g0_exploration_boundary, adoption_rule]
+      operation: replace
+      value: G0-X bytes may be relabelled directly as governed evidence after G0
+    expected_error_contains: "policy.g0_exploration_boundary:"
+
+  - id: m0-bootstrap-lane-removed
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane]
+      operation: remove
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-lane-removed
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane]
+      operation: remove
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-lane-allows-canonical-reserved-artifact
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, forbidden_outputs]
+      operation: remove_value
+      value: canonical-or-reserved-planning-artifact
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-lane-records-approved-authority
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, approval_boundary]
+      operation: replace
+      value: M0-I may record APPROVED decisions and claim role authority
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-lane-promotes-draft-into-canonical-root
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, draft_boundary]
+      operation: replace
+      value: M0-B promotes and renames an M0-I draft directly into the canonical root
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-lane-drops-source-provenance
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, exact_input_closure_rule]
+      operation: replace
+      value: M0-I may close an input manifest without source, observation time, attestor, or validity provenance
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-access-not-actor-scoped
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, access_rule]
+      operation: replace
+      value: any pre-existing access authorizes every actor and source
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-closes-without-approval-subject
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, close_rule]
+      operation: replace
+      value: M0-I closes without a generated_at-free planning approval subject
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-input-approval-subject-authorizes-nonaccepted-publication
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, approval_boundary]
+      operation: replace
+      value: M0-I approval subjects may authorize rejected child and bundle publications
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-performs-interview-and-inventory
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, allowed_work]
+      operation: replace_value
+      old_value: validate-and-consume-exact-M0-I-fact-closure
+      new_value: interview-and-inventory-missing-planning-inputs
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-fills-missing-input
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, exact_input_consumption_rule]
+      operation: replace
+      value: M0-B may infer, re-estimate, or fill any value missing from the M0-I closure
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-consumes-approval-before-owner-readback
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, exact_input_consumption_rule]
+      operation: replace
+      value: M0-B may consume external bundle approvals before the owner root durable readback
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-closes-without-wbs-readback
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, close_rule]
+      operation: replace
+      value: M0-B closes after publishing the bundle without exact WBS durable readback
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-closes-without-owner-child-readbacks
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, close_rule]
+      operation: replace
+      value: M0-B closes when the owner and child roots publish without durable readback
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-bootstrap-omits-input-closure-prerequisite
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, entry_predicates]
+      operation: remove_value
+      value: M0_I_EXACT_INPUT_CLOSURE_VALID
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-execution-omits-input-closure-prerequisite
+    mutation:
+      target: policy
+      path: [m0_work_partition, executable_lane, entry_predicates]
+      operation: remove_value
+      value: M0_I_EXACT_INPUT_CLOSURE_VALID
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0-execution-omits-bootstrap-closure-prerequisite
+    mutation:
+      target: policy
+      path: [m0_work_partition, executable_lane, entry_predicates]
+      operation: remove_value
+      value: M0_B_PERMANENTLY_CLOSED
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0p-adds-third-administrative-exception
+    mutation:
+      target: policy
+      path: [m0_work_partition, preservation_lane, allowed_work]
+      operation: replace_value
+      old_value: authorized-backup-restore-rehearsal
+      new_value: third-administrative-migration
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: m0p-custody-erases-two-exception-boundary
+    mutation:
+      target: policy
+      path: [m0_work_partition, preservation_lane, custody_write_boundary]
+      operation: replace
+      value: M0-P may perform arbitrary repository writes before G0
+    expected_error_contains: "policy.m0_work_partition: M0-P custody, M0-I input, M0-B bootstrap, and M0-E execution lanes must remain exact"
+
+  - id: owner-bootstrap-wrong-artifact-id
+    mutation:
+      target: policy
+      path: [delivery_planning, owner_assignment_bootstrap_authority, required_values, authorized_artifact_id]
+      operation: replace
+      value: M0-GOV-01-owner-assignment
+    expected_error_contains: "policy.delivery_planning.owner_assignment_bootstrap_authority: must bind only the reserved governed owner-assignment revision 1"
+
+  - id: reduced-customer-ga-scope
+    mutation:
+      target: requirement_set
+      operation: remove_and_reseal
+      requirement_id: M4C-ISSUES-01
+    expected_error_contains: "policy.release_scope:"
+
+  - id: relabel-release-as-beta
+    mutation:
+      target: policy
+      path: [release_scope, release_class]
+      operation: replace
+      value: beta
+    expected_error_contains: "policy.release_scope: release scope must remain full 173-row customer GA"
+
+  - id: weaken-batch-context-closure
+    mutation:
+      target: policy
+      path: [release_scope, batch_expansion_rule]
+      operation: replace
+      value: a batch may summarize any rows from any context
+    expected_error_contains: "policy.release_scope: batch expansion must be exact and single-context"
+
+  - id: require-per-row-signature-transaction
+    mutation:
+      target: policy
+      path: [release_scope, per_row_human_or_signature_transaction_required]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.release_scope: batch expansion must be exact and single-context"
+
+  - id: planning-drops-forecast-artifact
+    mutation:
+      target: policy
+      path: [delivery_planning, exact_artifact_map, forecast_snapshot]
+      operation: remove
+    expected_error_contains: "policy.delivery_planning: must bind the exact four-artifact M0 bundle"
+
+  - id: planning-common-fields-drop-status
+    mutation:
+      target: policy
+      path: [delivery_planning, common_artifact_fields]
+      operation: remove_value
+      value: overall_status
+    expected_error_contains: "policy.delivery_planning: must bind the exact four-artifact M0 bundle"
+
+  - id: planning-allows-wbs-cycles
+    mutation:
+      target: policy
+      path: [delivery_planning, wbs_rule]
+      operation: replace
+      value: cycles and orphan blockers are accepted
+    expected_error_contains: "policy.delivery_planning: unresolved planning inputs must fail closed"
+
+  - id: m2-context-drops-deployment-state
+    mutation:
+      target: policy
+      path: [evidence_contexts, binding_context, stage_body_fields, M2, qualification]
+      operation: remove_value
+      value: deployment_state
+    expected_error_contains: "policy.evidence_contexts.binding_context:"
+
+  - id: m4-context-drops-product-assembly
+    mutation:
+      target: policy
+      path: [evidence_contexts, binding_context, stage_body_fields, M4]
+      operation: remove_value
+      value: product_assembly_sha256
+    expected_error_contains: "policy.evidence_contexts.binding_context:"
+
+  - id: execution-context-drops-deployment-refs
+    mutation:
+      target: policy
+      path: [evidence_contexts, execution_context, common_fields]
+      operation: remove_value
+      value: deployment_refs
+    expected_error_contains: "policy.evidence_contexts.execution_context:"
+
+  - id: evidence-binding-drops-reverse-coverage
+    mutation:
+      target: policy
+      path: [evidence_contexts, evidence_binding, required_fields]
+      operation: remove_value
+      value: reverse_coverage
+    expected_error_contains: "policy.evidence_contexts.evidence_binding:"
+
+  - id: consumer-registry-collapses-product-contract
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, registry_closed_fields]
+      operation: replace_value
+      old_value: product_contract_sha256
+      new_value: contract_sha256
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: seven-boundary scope must be exact"
+
+  - id: consumer-m4-receipt-drops-execution-context
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, m4_attestation, receipt_required_bindings]
+      operation: remove_value
+      value: execution_context_refs
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: M4 receipts must bind context and deployment digests"
+
+  - id: consumer-m4-receipt-drops-deployment-digest
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, m4_attestation, receipt_required_bindings]
+      operation: remove_value
+      value: deployment_record_sha256
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: M4 receipts must bind context and deployment digests"
+
+  - id: component-acceptance-drops-execution-context
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, component_acceptance, required_bindings]
+      operation: remove_value
+      value: execution_context_refs
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: M5 component acceptance must bind one context and execution records"
+
+  - id: component-acceptance-allows-mixed-context
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, component_acceptance, m5_binding_context_relation]
+      operation: replace
+      value: each record may use any independently valid M5 context
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: M5 component acceptance must bind one context and execution records"
+
+  - id: final-consumer-attestation-drops-context
+    mutation:
+      target: policy
+      path: [ownership, consumer_boundary_registry, final_consumer_domain_attestation, required_bindings]
+      operation: remove_value
+      value: binding_context_ref
+    expected_error_contains: "policy.ownership.consumer_boundary_registry: final consumer domain attestation must bind the exact record map"
+
+  - id: m4-selector-cardinality-is-71
+    mutation:
+      target: policy
+      path: [m4_qualification, registry_selector, expected_cardinality]
+      operation: replace
+      value: 71
+    expected_error_contains: "policy.m4_qualification.registry_selector:"
+
+  - id: qualification-plan-points-to-self-containing-context
+    mutation:
+      target: policy
+      path: [m4_qualification, qualification_plan, binding_context_relation]
+      operation: replace
+      value: qualification plan points to the M4 context that binds its own digest
+    expected_error_contains: "policy.m4_qualification.qualification_input_map:"
+
+  - id: qualification-input-map-drops-support-cell
+    mutation:
+      target: policy
+      path: [m4_qualification, qualification_plan, qualification_input_map, required_categories]
+      operation: remove_value
+      value: support-cell
+    expected_error_contains: "policy.m4_qualification.qualification_input_map:"
+
+  - id: qualification-revision-allows-zero-input-diff
+    mutation:
+      target: policy
+      path: [m4_qualification, qualification_plan, qualification_input_map, revision_rule]
+      operation: replace
+      value: equal assembly implies no qualification input diff is required
+    expected_error_contains: "policy.m4_qualification.qualification_input_map:"
+
+  - id: candidate-assembly-drops-product-contract
+    mutation:
+      target: policy
+      path: [m4_qualification, candidate_assembly, required_bindings]
+      operation: remove_value
+      value: product_contract_sha256
+    expected_error_contains: "policy.m4_qualification.candidate_assembly:"
+
+  - id: impact-graph-drops-qualification-inputs
+    mutation:
+      target: policy
+      path: [m4_qualification, impact_graph, required_bindings]
+      operation: remove_value
+      value: qualification_inputs
+    expected_error_contains: "policy.m4_qualification.impact_graph:"
+
+  - id: impact-graph-skips-transitive-propagation
+    mutation:
+      target: policy
+      path: [m4_qualification, impact_graph, propagation_rule]
+      operation: replace
+      value: compare only the four component digests
+    expected_error_contains: "policy.m4_qualification.impact_graph:"
+
+  - id: verdict-rebase-not-target-bound
+    mutation:
+      target: policy
+      path: [m4_qualification, verdict_rebase, target_bound]
+      operation: replace
+      value: false
+    expected_error_contains: "policy.m4_qualification.verdict_rebase:"
+
+  - id: verdict-rebase-drops-qualification-input-diff
+    mutation:
+      target: policy
+      path: [m4_qualification, verdict_rebase, required_bindings]
+      operation: remove_value
+      value: qualification_input_diff
+    expected_error_contains: "policy.m4_qualification.verdict_rebase:"
+
+  - id: verdict-rebase-directly-reuses-source
+    mutation:
+      target: policy
+      path: [m4_qualification, verdict_rebase, unaffected_rule]
+      operation: replace
+      value: insert the unaffected source verdict directly into the target aggregate
+    expected_error_contains: "policy.m4_qualification.verdict_rebase:"
+
+  - id: verdict-rebase-carries-na-forward
+    mutation:
+      target: policy
+      path: [m4_qualification, verdict_rebase, na_rule]
+      operation: replace
+      value: N/A is automatically copied to every successor context
+    expected_error_contains: "policy.m4_qualification.verdict_rebase:"
+
+  - id: all-up-drops-stale-qualification-input
+    mutation:
+      target: policy
+      path: [m4_qualification, all_up_fallback, triggers]
+      operation: remove_value
+      value: stale-qualification-input
+    expected_error_contains: "policy.m4_qualification.all_up_fallback:"
+
+  - id: all-up-allows-partial-pass
+    mutation:
+      target: policy
+      path: [m4_qualification, all_up_fallback, outcome]
+      operation: replace
+      value: PARTIAL_PASS
+    expected_error_contains: "policy.m4_qualification.all_up_fallback:"
+
+  - id: closure-dry-run-becomes-new-requirement
+    mutation:
+      target: policy
+      path: [m4_qualification, release_closure_dry_run, separate_requirement_id]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.m4_qualification.release_closure_dry_run:"
+
+  - id: release-control-controller-implemented-in-m2
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, m2_machine_package, release_control_plane_boundary]
+      operation: replace
+      value: M2 implements and deploys the stateful controller and resolver
+    expected_error_contains: "policy.governance_contract_lifecycle: M2 must remain the closed contract package"
+
+  - id: release-control-m2-owns-implementation-requirement
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, release_publication_control_plane, implementation_requirement_id]
+      operation: replace
+      value: M2-SCHEMA-01
+    expected_error_contains: "policy.governance_contract_lifecycle: controller/resolver ownership, M2 contract packaging"
+
+  - id: release-control-m3-implements-controller
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, release_publication_control_plane, m3_relation]
+      operation: replace
+      value: M3 implements and deploys the release controller before M2 exit
+    expected_error_contains: "policy.governance_contract_lifecycle: controller/resolver ownership, M2 contract packaging"
+
+  - id: release-control-m4-drops-named-deployment
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, m4_dry_run, obligation]
+      operation: replace
+      value: run contract fixtures without a named target-disabled controller deployment
+    expected_error_contains: "policy.governance_contract_lifecycle: M4 must own the independent controller/resolver implementation"
+
+  - id: release-control-m4-enters-product-candidate
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, m4_dry_run, candidate_identity_relation]
+      operation: replace
+      value: controller build is the fifth product component sub-bundle and changes T
+    expected_error_contains: "policy.governance_contract_lifecycle: M4 must own the independent controller/resolver implementation"
+
+  - id: release-distribution-runtime-exercised-in-m2
+    mutation:
+      target: policy
+      path: [governance_contract_lifecycle, release_distribution_control, m2_package_rule]
+      operation: replace
+      value: M2 implements, deploys, and runtime-exercises the stateful controller
+    expected_error_contains: "policy.governance_contract_lifecycle: signed post-GA distribution withdrawal and redirect semantics must be exact"
+
+  - id: issue-selector-version-is-caller-chosen
+    mutation:
+      target: policy
+      path: [issue_register, selector, exact_version]
+      operation: replace
+      value: caller-selected
+    expected_error_contains: "policy.issue_register: selector identity and predicate must be exact"
+
+  - id: issue-reconciliation-omits-m4c
+    mutation:
+      target: policy
+      path: [issue_register, gate_reconciliation, m5_full_requirement_ids]
+      operation: remove_value
+      value: M4C-ISSUES-01
+    expected_error_contains: "policy.issue_register: M5 reconciliation must cover all ten gates including M4c on one head"
+
+  - id: issue-reconciliation-drops-final-readback
+    mutation:
+      target: policy
+      path: [issue_register, gate_reconciliation, m5_full_checkpoints]
+      operation: remove_value
+      value: final_manifest_readback
+    expected_error_contains: "policy.issue_register: M5 reconciliation must cover all ten gates including M4c on one head"
+
+  - id: issue-head-selects-source-match-before-global-max
+    mutation:
+      target: policy
+      path: [issue_register, exact_source, current_head_rule]
+      operation: replace
+      value: select any historical head whose source digest matches
+    expected_error_contains: "policy.issue_register: global maximum must be selected before source freshness"
+
+  - id: contract-roots-collapse-candidate-identity
+    mutation:
+      target: policy
+      path: [contract_digest_layers, candidate_rule]
+      operation: replace
+      value: every governance-only contract drift creates a new product candidate
+    expected_error_contains: "policy.contract_digest_layers:"
+
+  - id: m5-context-drops-governance-root
+    mutation:
+      target: policy
+      path: [digest_binding, m5_effective_tuple, body_fields]
+      operation: remove_value
+      value: qualification_governance_contract_sha256
+    expected_error_contains: "policy.digest_binding: m5_effective_tuple"
+
+  - id: pre-release-drops-product-contract-root
+    mutation:
+      target: policy
+      path: [m5_execution, closure, pre_release, required_bindings]
+      operation: remove_value
+      value: product_contract_sha256
+    expected_error_contains: "policy.m5_execution.closure.pre_release:"
+
+  - id: pre-release-allows-multiple-pending-rows
+    mutation:
+      target: policy
+      path: [m5_execution, closure, pre_release, current_result_map_rule]
+      operation: replace
+      value: any number of rows may remain pending
+    expected_error_contains: "policy.m5_execution.closure.pre_release:"
+
+  - id: pre-release-allows-self-digest
+    mutation:
+      target: policy
+      path: [m5_execution, closure, pre_release, self_reference_rule]
+      operation: replace
+      value: embed the pre-release digest in its own payload
+    expected_error_contains: "policy.m5_execution.closure.pre_release:"
+
+  - id: pre-release-has-only-ten-domain-attestations
+    mutation:
+      target: policy
+      path: [m5_execution, closure, pre_release, domain_attestation_relation]
+      operation: replace
+      value: any ten role attestations are sufficient
+    expected_error_contains: "policy.m5_execution.closure.pre_release:"
+
+  - id: quorum-drops-security-role
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, mandatory_role_slots]
+      operation: remove_value
+      value: security-owner
+    expected_error_contains: "policy.m5_execution.closure.quorum:"
+
+  - id: quorum-allows-three-people
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, distinct_natural_person_count]
+      operation: replace
+      value: 3
+    expected_error_contains: "policy.m5_execution.closure.quorum:"
+
+  - id: quorum-moves-schema-outside-signed-payload
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, signature_required_bindings]
+      operation: replace
+      value: [schema, signed_payload, signature_b64]
+    expected_error_contains: "policy.m5_execution.closure.quorum:"
+
+  - id: quorum-payload-drops-signed-at
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, signed_payload_required_fields]
+      operation: remove_value
+      value: signed_at
+    expected_error_contains: "policy.m5_execution.closure.quorum:"
+
+  - id: quorum-allows-qa-as-promotion-operator
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, qa_independence_rule]
+      operation: replace
+      value: QA may operate promotion after signing
+    expected_error_contains: "policy.m5_execution.closure.quorum:"
+
+  - id: quorum-expiry-is-retroactive
+    mutation:
+      target: policy
+      path: [m5_execution, closure, quorum, verification_rule]
+      operation: replace
+      value: reject every signature when its key later expires
+    expected_error_contains: "policy.m5_execution.closure.quorum: expiry and revocation semantics"
+
+  - id: final-signing-allows-yaml-reserialization
+    mutation:
+      target: policy
+      path: [m5_execution, closure, canonical_encoding, exact_bytes]
+      operation: replace
+      value: canonical YAML parsed and reserialized by each consumer
+    expected_error_contains: "policy.m5_execution.closure: final signing artifacts must use RFC8785 JSON exact bytes"
+
+  - id: publication-fence-drops-domain-map
+    mutation:
+      target: policy
+      path: [m5_execution, closure, publication_fence, required_bindings]
+      operation: remove_value
+      value: domain_attestation_sha256_by_role
+    expected_error_contains: "policy.m5_execution.closure.publication_fence:"
+
+  - id: publication-fence-allows-parallel-attempts
+    mutation:
+      target: policy
+      path: [m5_execution, closure, publication_fence, exact_semantics, parallel_attempts]
+      operation: replace
+      value: ALLOWED
+    expected_error_contains: "policy.m5_execution.closure.publication_fence:"
+
+  - id: publication-fence-makes-ga-visible-before-manifest
+    mutation:
+      target: policy
+      path: [m5_execution, closure, publication_fence, exact_semantics, ga_visibility]
+      operation: replace
+      value: CUSTOMER_VISIBLE_AFTER_PROMOTION
+    expected_error_contains: "policy.m5_execution.closure.publication_fence:"
+
+  - id: publication-fence-termination-reuses-old-quorum
+    mutation:
+      target: policy
+      path: [m5_execution, closure, publication_fence, termination_rule]
+      operation: replace
+      value: terminated attempts may resume with their old pre-release closure and quorum
+    expected_error_contains: "policy.m5_execution.closure.publication_fence:"
+
+  - id: ga-plan-disables-create-if-absent
+    mutation:
+      target: policy
+      path: [m5_execution, closure, ga_promotion, plan_required_values, create_if_absent]
+      operation: replace
+      value: false
+    expected_error_contains: "policy.m5_execution.closure.ga_promotion:"
+
+  - id: ga-plan-allows-rebuild
+    mutation:
+      target: policy
+      path: [m5_execution, closure, ga_promotion, plan_required_values, rebuild_allowed]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.m5_execution.closure.ga_promotion:"
+
+  - id: ga-receipt-drops-publication-fence
+    mutation:
+      target: policy
+      path: [m5_execution, closure, ga_promotion, receipt_required_bindings]
+      operation: remove_value
+      value: publication_fence_sha256
+    expected_error_contains: "policy.m5_execution.closure.ga_promotion:"
+
+  - id: ga-allows-operator-substitution
+    mutation:
+      target: policy
+      path: [m5_execution, closure, ga_promotion, operator_relation]
+      operation: replace
+      value: any authorized operator may replace the planned person
+    expected_error_contains: "policy.m5_execution.closure.ga_promotion:"
+
+  - id: final-manifest-drops-publication-fence
+    mutation:
+      target: policy
+      path: [m5_execution, closure, final_manifest, required_bindings]
+      operation: remove_value
+      value: publication_fence_sha256
+    expected_error_contains: "policy.m5_execution.closure.final_manifest:"
+
+  - id: final-manifest-publishes-beta-decision
+    mutation:
+      target: policy
+      path: [m5_execution, closure, final_manifest, release_decision_value]
+      operation: replace
+      value: BETA_COMPLETE
+    expected_error_contains: "policy.m5_execution.closure.final_manifest:"
+
+  - id: final-manifest-allows-self-reference
+    mutation:
+      target: policy
+      path: [m5_execution, closure, final_manifest, self_reference_rule]
+      operation: replace
+      value: include the manifest digest and final ledger root inside the manifest
+    expected_error_contains: "policy.m5_execution.closure.final_manifest:"
+
+  - id: ga-without-manifest-is-complete
+    mutation:
+      target: policy
+      path: [m5_execution, closure, final_manifest, failure_outcome]
+      operation: replace
+      value: RELEASE_COMPLETE after GA promotion
+    expected_error_contains: "policy.m5_execution.closure.final_manifest:"
+
+  - id: signoff-activates-before-final-readback
+    mutation:
+      target: policy
+      path: [m5_execution, closure, final_manifest, signoff_derivation]
+      operation: replace
+      value: M5-SIGNOFF-01 becomes PASS immediately after promotion
+    expected_error_contains: "policy.m5_execution.closure.final_manifest:"
+
+  - id: status-projection-g0-drops-publication-receipt
+    mutation:
+      target: policy
+      path: [status_projection_boundary, current_projection, source_families_by_axis, g0]
+      operation: remove_value
+      value: ylx.g0-policy-ratification-publication-receipt.v1
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: status-projection-g0-drops-readback-receipt
+    mutation:
+      target: policy
+      path: [status_projection_boundary, current_projection, source_families_by_axis, g0]
+      operation: remove_value
+      value: ylx.g0-policy-ratification-readback-receipt.v1
+    expected_error_contains: "policy.status_projection_boundary:"
+
+  - id: g0-subject-drops-canonical-governance-subject
+    mutation:
+      target: policy
+      path: [policy_ratification, ratification_subject, exact_key_set]
+      operation: remove_value
+      value: canonical_governance_subject
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation:"
+
+  - id: g0-subject-drops-locator-readback-digest
+    mutation:
+      target: policy
+      path: [policy_ratification, ratification_subject, canonical_governance_subject_exact_fields]
+      operation: remove_value
+      value: locator_readback_sha256
+    expected_error_contains: "policy.policy_ratification.proposal_extension_reconciliation:"
+
+  - id: g0-request-outreach-self-granted
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, external_outreach_prerequisite, candidate_policy_grants_permission]
+      operation: replace
+      value: true
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-outreach-drops-subject-digest
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, external_outreach_prerequisite, exact_binding_fields]
+      operation: remove_value
+      value: subject_sha256
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-request-terminal-receipt-is-recursive
+    mutation:
+      target: policy
+      path: [g0_ratification_request_boundary, terminal_audit_boundary, terminality_rule]
+      operation: replace
+      value: "every audit receipt is a repository write that requires another receipt-of-receipt"
+    expected_error_contains: "policy.g0_ratification_request_boundary:"
+
+  - id: g0-event-lineage-allows-revision-reuse
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, event_lineage_rule]
+      operation: replace
+      value: "an event may reuse a revision and replace the earlier event bytes"
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-lineage-falls-back-to-lower-revision
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, event_lineage_rule]
+      operation: replace
+      value: "a lower complete revision may become current when the highest revision is invalid"
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-drops-revision-binding
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, event_required_bindings]
+      operation: remove_value
+      value: revision
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-drops-predecessor-binding
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, event_required_bindings]
+      operation: remove_value
+      value: predecessor_event_sha256
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-publication-drops-event-revision
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, publication_receipt_required_fields]
+      operation: remove_value
+      value: event_revision
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-readback-drops-observed-digest
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, readback_receipt_required_fields]
+      operation: remove_value
+      value: observed_event_sha256
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-publication-allows-cross-actor-join
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, publication_join_rule]
+      operation: replace
+      value: "the publisher and repository-permission actor may differ"
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: g0-event-readback-allows-copied-digest
+    mutation:
+      target: policy
+      path: [g0_ratification_event_boundary, readback_join_rule]
+      operation: replace
+      value: "a copied event digest or locator-only assertion proves exact readback"
+    expected_error_contains: "policy.g0_ratification_event_boundary:"
+
+  - id: m0-input-closure-embeds-operation-time-authority
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, closure_required_fields]
+      operation: replace_value
+      old_value: operation_constraint_by_step
+      new_value: planning_publisher_authority_by_step
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-input-closure-embeds-child-candidate
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, closure_required_fields]
+      operation: replace_value
+      old_value: fact_entry_by_id
+      new_value: child_candidate_by_kind
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-candidate-derivation-drops-bundle-subject-projection
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, candidate_derivation_contract, required_fields]
+      operation: remove_value
+      value: phase_b_bundle_subject_projection
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-candidate-derivation-allows-pre-q-child
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, candidate_derivation_contract, rule]
+      operation: replace
+      value: "Phase B may derive child and S digests before reconciliation receipt Q"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-input-closure-readback-is-unsigned
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, closure_readback_receipt_required_fields]
+      operation: remove_value
+      value: signature
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-input-closure-readback-is-recursive
+    mutation:
+      target: policy
+      path: [m0_work_partition, input_lane, closure_durability_rule]
+      operation: replace
+      value: "a nonterminal readback receipt may be embedded in C and grant planning authority"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-bootstrap-attempt-drops-ratified-recovery
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, attempt_states]
+      operation: remove_value
+      value: BLOCKED_REQUIRES_RATIFIED_RECOVERY
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-bootstrap-silently-reenters-after-owner
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, attempt_reentry_and_recovery_rule]
+      operation: replace
+      value: "after owner F publishes, M0-I may silently replace C and resume the same attempt"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-bootstrap-allows-mixed-c-child-set
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, attempt_reentry_and_recovery_rule]
+      operation: replace
+      value: "children may be assembled from multiple C records after owner F publishes"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-bootstrap-allows-revision-one-repair
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, attempt_reentry_and_recovery_rule]
+      operation: replace
+      value: "semantic drift after owner F may be repaired by another revision-1 owner successor"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: m0-bootstrap-approves-after-child-publication
+    mutation:
+      target: policy
+      path: [m0_work_partition, bootstrap_lane, close_rule]
+      operation: replace
+      value: "M0-B closes permanently only after owner F/P/R, issue reconciliation Q, remaining child F/P/R, then the three approvals, and finally bundle F/P/R"
+    expected_error_contains: "policy.m0_work_partition:"
+
+  - id: planning-phase-a-drops-derivation-contract-digest
+    mutation:
+      target: policy
+      path: [delivery_planning, pre_bundle_bootstrap_boundary, phase_a_owner_derivation_record, required_fields]
+      operation: remove_value
+      value: derivation_contract_sha256
+    expected_error_contains: "policy.delivery_planning: the pre-bundle bootstrap boundary"
+
+  - id: planning-phase-b-drops-issue-reconciliation-digest
+    mutation:
+      target: policy
+      path: [delivery_planning, pre_bundle_bootstrap_boundary, phase_b_candidate_derivation_record, required_fields]
+      operation: remove_value
+      value: g0_issue_reconciliation_sha256
+    expected_error_contains: "policy.delivery_planning: the pre-bundle bootstrap boundary"
+
+  - id: planning-bootstrap-drops-readback-authority
+    mutation:
+      target: policy
+      path: [delivery_planning, pre_bundle_bootstrap_boundary, planning_publication_prerequisite, readback_authority_required]
+      operation: remove
+    expected_error_contains: "policy.delivery_planning: the pre-bundle bootstrap boundary"
+
+  - id: planning-bootstrap-receipts-become-recursive
+    mutation:
+      target: policy
+      path: [delivery_planning, pre_bundle_bootstrap_boundary, terminal_receipt_boundary, terminality_rule]
+      operation: replace
+      value: "M0-B writes its own mutable P and R and recursively emits receipts of receipts"
+    expected_error_contains: "policy.delivery_planning: the pre-bundle bootstrap boundary"
+
+  - id: planning-bootstrap-publication-receipt-drops-signature
+    mutation:
+      target: policy
+      path: [delivery_planning, pre_bundle_bootstrap_boundary, root_durability_protocol, publication_receipt_required_fields]
+      operation: remove_value
+      value: signature
+    expected_error_contains: "policy.delivery_planning: the pre-bundle bootstrap boundary"
+
+  - id: planning-approval-map-drops-readback-digest
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, approval_map_value_required_fields]
+      operation: remove_value
+      value: readback_receipt_sha256
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: planning-approval-publication-drops-permission-digest
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, approval_publication_receipt_required_fields]
+      operation: remove_value
+      value: repository_permission_sha256
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: planning-approval-signed-payload-drops-key-id
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, signed_payload_field_set]
+      operation: remove_value
+      value: signing_key_id
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: planning-approval-uses-wrong-signature-domain
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, signature_domain]
+      operation: replace
+      value: YLX-PLANNING-BUNDLE-APPROVAL-V2
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: planning-approval-drops-final-variance-durability-profile
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, durability_profiles]
+      operation: remove_value
+      value: FINAL_ACTUAL_VARIANCE
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: planning-approval-occurs-after-child-publication
+    mutation:
+      target: policy
+      path: [delivery_planning, planning_bundle_approval, ordering_rule]
+      operation: replace
+      value: "remaining child P may publish before the three external approvals"
+    expected_error_contains: "policy.delivery_planning: planning-bundle approval"
+
+  - id: rolling-wave-publication-drops-action-instance
+    mutation:
+      target: policy
+      path: [delivery_planning, rolling_wave_successor, durability_protocol, publication_receipt_required_fields]
+      operation: remove_value
+      value: action_instance_id
+    expected_error_contains: "policy.delivery_planning: M1/M2/M3/M4 exits"
+
+  - id: rolling-wave-drops-containing-bundle-kind
+    mutation:
+      target: policy
+      path: [delivery_planning, rolling_wave_successor, durability_protocol, artifact_kind_set]
+      operation: remove_value
+      value: containing_bundle
+    expected_error_contains: "policy.delivery_planning: M1/M2/M3/M4 exits"
+
+  - id: rolling-wave-reuses-bootstrap-receipts
+    mutation:
+      target: policy
+      path: [delivery_planning, rolling_wave_successor, durability_protocol, rule]
+      operation: replace
+      value: "a rolling-wave successor may reuse its bootstrap P and R"
+    expected_error_contains: "policy.delivery_planning: M1/M2/M3/M4 exits"
+
+  - id: final-variance-invokes-effective-approval-predicate
+    mutation:
+      target: policy
+      path: [delivery_planning, final_actual_variance_successor, accepted_predicate]
+      operation: replace
+      value: "F invokes planning_bundle_approval.accepted_predicate before publication"
+    expected_error_contains: "policy.delivery_planning: final actual/variance successor"
+
+  - id: final-variance-fabricates-cancelled-actuals
+    mutation:
+      target: policy
+      path: [delivery_planning, final_actual_variance_successor, nonexecuted_leaf_rule]
+      operation: replace
+      value: "CANCELLED leaves fabricate execution timestamps, effort, and resource use"
+    expected_error_contains: "policy.delivery_planning: final actual/variance successor"
+
+  - id: issue-transition-readback-drops-archive-digest
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, transition_readback_receipt_required_fields]
+      operation: remove_value
+      value: archive_sha256
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"
+
+  - id: issue-transition-allows-head-only-readback
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, transition_readback_receipt_rule]
+      operation: replace
+      value: "a head-only readback proves the source, archive, and head tuple"
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"
+
+  - id: issue-reconciliation-drops-source-operation-receipt
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, reconciliation_receipt_required_fields]
+      operation: remove_value
+      value: source_operation_receipt_ref
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"
+
+  - id: issue-reconciliation-drops-terminal-signature
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, reconciliation_receipt_required_fields]
+      operation: remove_value
+      value: signature
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"
+
+  - id: issue-reconciliation-allows-nonzero-selector
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, reconciliation_receipt_rule]
+      operation: replace
+      value: "result RECONCILED permits a nonzero G0 selector cardinality"
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"
+
+  - id: issue-reconciliation-allows-head-only-reference
+    mutation:
+      target: policy
+      path: [issue_register, bootstrap, reconciliation_ref_rule]
+      operation: replace
+      value: "a governed head ref alone substitutes for the signed reconciliation receipt"
+    expected_error_contains: "policy.issue_register: selector-v2 cutover"

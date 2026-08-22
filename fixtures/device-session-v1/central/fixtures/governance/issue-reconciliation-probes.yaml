@@ -1,0 +1,9 @@
+schema_version: ylx.issue-reconciliation-probes.v1
+cases:
+  - id: nonclosed-s2-explicitly-blocks-gate
+    issue:
+      status: 开放
+      severity: S2
+      blocks_gates: [M1]
+    gate: M1
+    expected_selected: true

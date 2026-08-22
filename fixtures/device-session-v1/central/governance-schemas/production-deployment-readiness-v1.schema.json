@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/production-deployment-readiness-v1.schema.json",
+  "title": "YLX production deployment readiness v1",
+  "description": "Immutable BUILD-DEPLOY-01 PASS evidence over the exact M5 production deployment, authorities, customer-profile verdict, storage verdicts, and isolated distribution drill. It is prerequisite lineage only: no later release action or ACTIVE distribution revision can be used as reverse evidence for this decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "readiness_id",
+    "revision",
+    "predecessor_readiness_ref",
+    "requirement_id",
+    "m5_binding_context_ref",
+    "effective_m4_lineage_ref",
+    "release_bundle_sha256",
+    "controller_deployment_ref",
+    "resolver_deployment_ref",
+    "service_authority_ref",
+    "storage_authority_ref",
+    "credential_authority_ref",
+    "visibility_authority_ref",
+    "customer_profile_verdict_ref",
+    "production_storage_verdict_refs",
+    "distribution_drill_ref",
+    "customer_visibility",
+    "actual_distribution_activation",
+    "readiness_checks",
+    "result",
+    "readiness_result",
+    "assessed_by_role",
+    "reviewed_by_role",
+    "closed_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.production-deployment-readiness.v1"
+    },
+    "readiness_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_readiness_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/productionDeploymentReadinessRef"
+        }
+      ],
+      "description": "Exact direct predecessor readiness artifact. Procedural validation requires the same readiness_id and the immediately preceding revision."
+    },
+    "requirement_id": {
+      "const": "BUILD-DEPLOY-01"
+    },
+    "m5_binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "effective_m4_lineage_ref": {
+      "$ref": "#/$defs/m4ContextLineageRef"
+    },
+    "release_bundle_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "controller_deployment_ref": {
+      "$ref": "#/$defs/productionDeploymentRecordRef"
+    },
+    "resolver_deployment_ref": {
+      "$ref": "#/$defs/productionDeploymentRecordRef"
+    },
+    "service_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "storage_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "credential_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "visibility_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "customer_profile_verdict_ref": {
+      "$ref": "#/$defs/stageTerminalResultRef"
+    },
+    "production_storage_verdict_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stageTerminalResultRef"
+      }
+    },
+    "distribution_drill_ref": {
+      "$ref": "#/$defs/distributionDrillRef"
+    },
+    "customer_visibility": {
+      "const": "QUARANTINED"
+    },
+    "actual_distribution_activation": {
+      "const": "PENDING_SIGNOFF"
+    },
+    "readiness_checks": {
+      "$ref": "#/$defs/readinessChecks"
+    },
+    "result": {
+      "const": "PASS"
+    },
+    "readiness_result": {
+      "const": "READY_FOR_RELEASE_ATTEMPT"
+    },
+    "assessed_by_role": {
+      "const": "build-platform-owner"
+    },
+    "reviewed_by_role": {
+      "const": "qa-evidence-owner"
+    },
+    "closed_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_readiness_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_readiness_ref": {
+            "$ref": "#/$defs/productionDeploymentReadinessRef"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": [
+          "release_attempt_input_set_ref"
+        ]
+      },
+      {
+        "required": [
+          "release_publication_fence_ref"
+        ]
+      },
+      {
+        "required": [
+          "ga_promotion_receipt_ref"
+        ]
+      },
+      {
+        "required": [
+          "release_closure_manifest_ref"
+        ]
+      },
+      {
+        "required": [
+          "terminal_slot_readback_receipt_ref"
+        ]
+      },
+      {
+        "required": [
+          "release_distribution_control_ref"
+        ]
+      }
+    ]
+  },
+  "$defs": {
+    "productionDeploymentReadinessRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.production-deployment-readiness.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "productionDeploymentRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.production-deployment-record.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "stageTerminalResultRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-terminal-result.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "distributionDrillRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-distribution-drill.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "readinessChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effective_m4_lineage_exact",
+        "release_bundle_exact",
+        "same_qualified_controller_build",
+        "same_qualified_resolver_build",
+        "production_service_identity_bound",
+        "rendered_config_and_deployment_bound",
+        "production_storage_and_cas_bound",
+        "production_credentials_bound",
+        "visibility_authority_bound",
+        "customer_profile_auth_rerun_passed",
+        "production_storage_verdicts_passed",
+        "distribution_drill_passed",
+        "writer_disabled",
+        "customer_visibility_quarantined",
+        "rollback_and_recovery_passed",
+        "active_distribution_not_used_as_evidence"
+      ],
+      "properties": {
+        "effective_m4_lineage_exact": {
+          "const": true
+        },
+        "release_bundle_exact": {
+          "const": true
+        },
+        "same_qualified_controller_build": {
+          "const": true
+        },
+        "same_qualified_resolver_build": {
+          "const": true
+        },
+        "production_service_identity_bound": {
+          "const": true
+        },
+        "rendered_config_and_deployment_bound": {
+          "const": true
+        },
+        "production_storage_and_cas_bound": {
+          "const": true
+        },
+        "production_credentials_bound": {
+          "const": true
+        },
+        "visibility_authority_bound": {
+          "const": true
+        },
+        "customer_profile_auth_rerun_passed": {
+          "const": true
+        },
+        "production_storage_verdicts_passed": {
+          "const": true
+        },
+        "distribution_drill_passed": {
+          "const": true
+        },
+        "writer_disabled": {
+          "const": true
+        },
+        "customer_visibility_quarantined": {
+          "const": true
+        },
+        "rollback_and_recovery_passed": {
+          "const": true
+        },
+        "active_distribution_not_used_as_evidence": {
+          "const": true
+        }
+      }
+    }
+  }
+}

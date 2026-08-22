@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/consumer-deployment-set-v1.schema.json",
+  "title": "YLX consumer deployment set v1",
+  "description": "The immutable M2 inventory of the seven actual target-disabled dual-read consumer deployments. Behavioral evidence is deliberately kept outside this artifact so evidence can bind the M2 context without creating a content-addressed cycle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "deployment_set_id",
+    "revision",
+    "predecessor_deployment_set_sha256",
+    "consumer_boundary_registry_sha256",
+    "deployment_state",
+    "boundary_ids",
+    "deployment_record_by_boundary",
+    "created_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.consumer-deployment-set.v1"
+    },
+    "deployment_set_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_deployment_set_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "consumer_boundary_registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "deployment_state": {
+      "const": "target-disabled"
+    },
+    "boundary_ids": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+    },
+    "deployment_record_by_boundary": {
+      "$ref": "#/$defs/deploymentRecordByBoundary"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_deployment_set_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_deployment_set_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "deploymentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary_id",
+        "component_artifact_identity",
+        "component_artifact_version",
+        "component_artifact_sha256",
+        "deployed_environment_identity",
+        "deployment_ref",
+        "reader_strategy",
+        "legacy_reader_artifact_sha256",
+        "target_reader_artifact_sha256",
+        "version_router_artifact_sha256",
+        "producer_target_write_enabled"
+      ],
+      "properties": {
+        "boundary_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryId"
+        },
+        "component_artifact_identity": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "component_artifact_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "component_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "deployed_environment_identity": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "deployment_ref": {
+          "allOf": [
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/execution-context-v1.schema.json#/$defs/deploymentRef"
+            },
+            {
+              "properties": {
+                "deployment_state": {
+                  "const": "target-disabled"
+                }
+              }
+            }
+          ]
+        },
+        "reader_strategy": {
+          "enum": [
+            "DUAL_READER",
+            "VERSION_ROUTER_WITH_PINNED_READERS"
+          ]
+        },
+        "legacy_reader_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_reader_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "version_router_artifact_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "producer_target_write_enabled": {
+          "const": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reader_strategy": {
+                "const": "DUAL_READER"
+              }
+            },
+            "required": [
+              "reader_strategy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "version_router_artifact_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "version_router_artifact_sha256": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "deploymentRecordByBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rp-ylx-target-session-reader",
+        "rp-ylx-v1-projection-adapter",
+        "spectacular-calibration-reader",
+        "ylx-card-pipeline",
+        "ylx-transfer",
+        "egoview-console",
+        "g3-egoview-v5-wrapper"
+      ],
+      "properties": {
+        "rp-ylx-target-session-reader": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "rp-ylx-target-session-reader"
+                }
+              }
+            }
+          ]
+        },
+        "rp-ylx-v1-projection-adapter": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "rp-ylx-v1-projection-adapter"
+                }
+              }
+            }
+          ]
+        },
+        "spectacular-calibration-reader": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "spectacular-calibration-reader"
+                }
+              }
+            }
+          ]
+        },
+        "ylx-card-pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "ylx-card-pipeline"
+                }
+              }
+            }
+          ]
+        },
+        "ylx-transfer": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "ylx-transfer"
+                }
+              }
+            }
+          ]
+        },
+        "egoview-console": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "egoview-console"
+                }
+              }
+            }
+          ]
+        },
+        "g3-egoview-v5-wrapper": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/deploymentRecord"
+            },
+            {
+              "properties": {
+                "boundary_id": {
+                  "const": "g3-egoview-v5-wrapper"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

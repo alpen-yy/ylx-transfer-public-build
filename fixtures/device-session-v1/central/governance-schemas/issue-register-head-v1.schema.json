@@ -1,0 +1,754 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/issue-register-head-v1.schema.json",
+  "title": "YLX immutable issue register head v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "issue_register_revision",
+    "predecessor_revision",
+    "predecessor_head_artifact_sha256",
+    "source_artifact_path",
+    "issue_register_sha256",
+    "archived_source_path",
+    "archived_source_sha256",
+    "selector_version",
+    "overview_cardinality",
+    "issue_slices_by_id",
+    "published_at",
+    "publisher_role_slot",
+    "approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.issue-register-head.v1"
+    },
+    "issue_register_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_revision": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "integer", "minimum": 1 }
+      ]
+    },
+    "predecessor_head_artifact_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "source_artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "issue_register_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "archived_source_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "archived_source_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "selector_version": {
+      "enum": [
+        "issue-register-gate-selector.v1",
+        "issue-register-gate-selector.v2"
+      ]
+    },
+    "overview_cardinality": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "issue_slices_by_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^O-[1-9][0-9]*$": {
+          "$ref": "#/$defs/issueSlice"
+        }
+      }
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "publisher_role_slot": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    },
+    "publication_mode": {
+      "enum": [
+        "OBSERVED_PRE_AUTHORITY",
+        "AUTHORIZED_GOVERNANCE_PUBLICATION"
+      ]
+    },
+    "authority_effect": {
+      "enum": [
+        "DENIAL_ONLY",
+        "GOVERNED_ISSUE_SELECTION"
+      ]
+    },
+    "policy_authority_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/g0PolicyRatificationRef"
+        }
+      ]
+    },
+    "publisher_assignment_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "issue_register_revision": { "const": 1 }
+        },
+        "required": ["issue_register_revision"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_revision": { "type": "null" },
+          "predecessor_head_artifact_sha256": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_revision": { "type": "integer", "minimum": 1 },
+          "predecessor_head_artifact_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "selector_version": {
+            "const": "issue-register-gate-selector.v1"
+          }
+        },
+        "required": [
+          "selector_version"
+        ]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "publication_mode"
+              ]
+            },
+            {
+              "required": [
+                "authority_effect"
+              ]
+            },
+            {
+              "required": [
+                "policy_authority_ref"
+              ]
+            },
+            {
+              "required": [
+                "publisher_assignment_ref"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "publication_mode",
+          "authority_effect",
+          "policy_authority_ref",
+          "publisher_assignment_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "selector_version": {
+            "const": "issue-register-gate-selector.v2"
+          }
+        },
+        "required": [
+          "selector_version"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "publication_mode": {
+                "const": "OBSERVED_PRE_AUTHORITY"
+              },
+              "authority_effect": {
+                "const": "DENIAL_ONLY"
+              },
+              "policy_authority_ref": {
+                "type": "null"
+              },
+              "publisher_assignment_ref": {
+                "type": "null"
+              },
+              "approvals": {
+                "maxItems": 0
+              }
+            },
+            "required": [
+              "publication_mode",
+              "authority_effect",
+              "policy_authority_ref",
+              "publisher_assignment_ref"
+            ]
+          },
+          {
+            "properties": {
+              "publication_mode": {
+                "const": "AUTHORIZED_GOVERNANCE_PUBLICATION"
+              },
+              "authority_effect": {
+                "const": "GOVERNED_ISSUE_SELECTION"
+              },
+              "policy_authority_ref": {
+                "$ref": "#/$defs/g0PolicyRatificationRef"
+              },
+              "publisher_assignment_ref": {
+                "$ref": "#/$defs/ownerAssignmentRef"
+              },
+              "approvals": {
+                "minItems": 1,
+                "maxItems": 11,
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/approvedReleaseOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedContractOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedCaptureOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedConsumerOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedWebControlOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedNetworkOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedSecurityOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedBuildPlatformOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedQaEvidenceOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedHardwareOwnerApproval"
+                    },
+                    {
+                      "$ref": "#/$defs/approvedPipelineOwnerApproval"
+                    }
+                  ]
+                },
+                "allOf": [
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedReleaseOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedContractOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedCaptureOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedConsumerOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedWebControlOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedNetworkOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedSecurityOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedBuildPlatformOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedQaEvidenceOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedHardwareOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/approvedPipelineOwnerApproval"
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                  }
+                ]
+              }
+            },
+            "required": [
+              "publication_mode",
+              "authority_effect",
+              "policy_authority_ref",
+              "publisher_assignment_ref"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "g0PolicyRatificationRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.g0-policy-ratification.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "approvedReleaseOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "release-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedContractOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "contract-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedCaptureOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "capture-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedConsumerOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "consumer-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedWebControlOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "web-control-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedNetworkOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "network-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedSecurityOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "security-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedBuildPlatformOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "build-platform-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedQaEvidenceOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "qa-evidence-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedHardwareOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "hardware-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "approvedPipelineOwnerApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "const": "pipeline-owner"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "issueSlice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overview_start_byte",
+        "overview_end_byte",
+        "overview_sha256",
+        "body_start_byte",
+        "body_end_byte",
+        "body_sha256"
+      ],
+      "properties": {
+        "overview_start_byte": { "type": "integer", "minimum": 0 },
+        "overview_end_byte": { "type": "integer", "minimum": 1 },
+        "overview_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "body_start_byte": { "type": "integer", "minimum": 0 },
+        "body_end_byte": { "type": "integer", "minimum": 1 },
+        "body_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

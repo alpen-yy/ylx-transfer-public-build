@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/final-actual-variance-publication-receipt-v1.schema.json",
+  "title": "YLX final actual variance publication receipt v1",
+  "description": "Immutable external receipt for the one publisher leaf omitted from an accepted FINAL_ACTUAL_VARIANCE bundle F. After exact approval-bearing F bytes exist, the receipt exact-binds a durable pre-action PASS execution-authorization evaluation E over F and F's selected WBS, records the complete publisher task actual and variance, and proves create-if-absent publication plus file and directory fsync of F's RFC 8785 JSON UTF-8 bytes. It grants no planning approval, signoff, release-completion, terminal-slot, or distribution authority; exact readback still requires R.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "final_bundle_ref",
+    "final_bundle_sha256",
+    "final_bundle_locator",
+    "final_bundle_byte_length",
+    "canonical_encoding",
+    "execution_authorization_evaluation_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "actor_person_id",
+    "publisher_task_node_id",
+    "publisher_task_actual",
+    "publisher_task_variance",
+    "create_if_absent",
+    "operation_result",
+    "file_fsynced",
+    "parent_directory_fsynced",
+    "published_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.final-actual-variance-publication-receipt.v1"
+    },
+    "receipt_id": {
+      "description": "Deterministic ID equal to 'final-actual-variance-publication-' plus lowercase SHA-256 of RFC 8785 JSON UTF-8 over an object containing exactly final_bundle_ref, final_bundle_sha256, execution_authorization_evaluation_ref, action_instance_id, planned_action_input_sha256, actor_person_id, publisher_task_node_id, publisher_task_actual, and publisher_task_variance from this receipt. Every reference in this preimage has a closed revisioned or unrevisioned shape. Procedural validation recomputes the digest and permits exactly one effective receipt for this preimage.",
+      "type": "string",
+      "pattern": "^final-actual-variance-publication-[0-9a-f]{64}$"
+    },
+    "final_bundle_ref": {
+      "description": "Exact reference to F. Dereferenced bytes must be an accepted delivery-planning-bundle v2 with planning_gate M5, bundle_kind FINAL_ACTUAL_VARIANCE, and the matching closed publisher_closure tuple.",
+      "$ref": "#/$defs/finalBundleRef"
+    },
+    "final_bundle_sha256": {
+      "description": "Lowercase SHA-256 of the exact RFC 8785 JSON UTF-8 bytes published for F. Procedural validation requires equality with final_bundle_ref.artifact_sha256 and the digest segment in final_bundle_locator.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "final_bundle_locator": {
+      "description": "Canonical content-addressed target path for F. Procedural validation requires exact equality with final_bundle_ref.artifact_path and requires the embedded digest to equal final_bundle_sha256 and final_bundle_ref.artifact_sha256.",
+      "$ref": "#/$defs/finalBundleLocator"
+    },
+    "final_bundle_byte_length": {
+      "description": "Byte length of the exact RFC 8785 JSON UTF-8 target bytes for F.",
+      "type": "integer",
+      "minimum": 2
+    },
+    "canonical_encoding": {
+      "const": "RFC8785-JSON-UTF8"
+    },
+    "execution_authorization_evaluation_ref": {
+      "description": "Exact four-field unrevisioned reference to E. Procedural validation requires a durable pre-action PASS for may_prepare/publish-planning-record created after approval-bearing F exists, with planning_bundle_ref bound to exact F, delivery_wbs_ref bound to F's exact selected WBS, and task_id equal to publisher_task_node_id.",
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+    },
+    "action_instance_id": {
+      "description": "One-shot publication action instance. It must equal the action instance in E.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "description": "Exact planned-action input digest. It must equal the digest in E, whose current planning bundle and WBS are F and F/W.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "actor_person_id": {
+      "description": "Natural-person publisher. It must equal the actor in E and the executor selected by F/W for publisher_task_node_id.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "publisher_task_node_id": {
+      "description": "Exact publisher_closure.task_node_id from F and E.task_id. F intentionally omits this sole leaf from its task actual and variance maps.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "publisher_task_actual": {
+      "description": "Complete terminal actual for the sole publisher leaf omitted from F. It is COMPLETED, has an empty terminal_evidence_refs array because P and R are its external durability evidence, and exact-completes F's non-publisher actual map.",
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/executedTaskActual"
+        },
+        {
+          "properties": {
+            "terminal_status": {
+              "const": "COMPLETED"
+            },
+            "terminal_evidence_refs": {
+              "maxItems": 0
+            }
+          },
+          "required": [
+            "terminal_status",
+            "terminal_evidence_refs"
+          ]
+        }
+      ]
+    },
+    "publisher_task_variance": {
+      "description": "Exact planned-versus-actual effort and elapsed variance for publisher_task_node_id. Procedural validation recomputes it from F/W, F's accepted forecast history, and publisher_task_actual.",
+      "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/taskVariance"
+    },
+    "create_if_absent": {
+      "const": true
+    },
+    "operation_result": {
+      "enum": [
+        "CREATED_EXACT",
+        "ALREADY_EXACT"
+      ]
+    },
+    "file_fsynced": {
+      "const": true
+    },
+    "parent_directory_fsynced": {
+      "const": true
+    },
+    "published_at": {
+      "description": "Completion time of the durable exact create-if-absent publication and required file and parent-directory fsync operations. Procedural validation requires F.generated_at and every F approval before E, E.evaluated_at strictly before publisher_task_actual.actual_started_at, and publisher_task_actual.actual_finished_at exactly equal to published_at.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_metadata": {
+            "properties": {
+              "classification": {
+                "const": "GOVERNANCE_ARTIFACT"
+              }
+            },
+            "required": [
+              "classification"
+            ]
+          }
+        },
+        "required": [
+          "artifact_metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "final_bundle_locator": {
+            "$ref": "#/$defs/governanceFinalBundleLocator"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "final_bundle_locator": {
+            "$ref": "#/$defs/syntheticFinalBundleLocator"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "finalBundleRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-planning-bundle.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 2
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "description": "Exact reference to an immutable unrevisioned execution-authorization evaluation; revision is forbidden.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "schema",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "schema": {
+          "const": "ylx.execution-authorization-evaluation.v1"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "finalBundleLocator": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "governanceFinalBundleLocator": {
+      "pattern": "^docs/evidence/M5/planning/final-actual-variance/[0-9a-f]{64}--delivery-planning-bundle\\.json$"
+    },
+    "syntheticFinalBundleLocator": {
+      "pattern": "^contracts/fixtures/governance-models/valid/final-actual-variance/[0-9a-f]{64}--delivery-planning-bundle\\.json$"
+    }
+  }
+}

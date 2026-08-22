@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-approval-subject-v1.schema.json",
+  "title": "YLX planning bundle approval subject S v1",
+  "description": "Closed validator schema for the wrapperless planning approval subject S. The wire payload is exactly the containing ylx.delivery-planning-bundle.v2 approval projection, so its schema field deliberately remains ylx.delivery-planning-bundle.v2. RFC 8785 canonical JSON UTF-8 over these exact twelve fields is the approved preimage; generated_at, approvals, their receipts, overall_status, and final bundle self-addresses are absent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_id",
+    "revision",
+    "predecessor_sha256",
+    "source_refs",
+    "artifact_metadata",
+    "planning_gate",
+    "detail_horizon",
+    "registry_binding",
+    "artifacts",
+    "bundle_kind",
+    "final_actual_variance_reconciliation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.delivery-planning-bundle.v2",
+      "description": "The subject contract is named ylx.planning-approval-subject.v1, but the wrapperless wire projection retains the containing bundle discriminator."
+    },
+    "artifact_id": {
+      "const": "M0-GOV-01-governed-delivery-planning-bundle"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+      },
+      "uniqueItems": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "planning_gate": {
+      "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/gate"
+    },
+    "detail_horizon": {
+      "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/detailHorizon"
+    },
+    "registry_binding": {
+      "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/registryBinding"
+    },
+    "artifacts": {
+      "$ref": "#/$defs/artifactMap"
+    },
+    "bundle_kind": {
+      "enum": [
+        "ROLLING_WAVE",
+        "FINAL_ACTUAL_VARIANCE"
+      ]
+    },
+    "final_actual_variance_reconciliation": {
+      "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/nullableFinalReconciliation"
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "artifact_id": {
+              "const": "M0-GOV-01-governed-owner-assignment"
+            },
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "schema"
+          ]
+        }
+      ]
+    },
+    "resourceCalendarRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "artifact_id": {
+              "const": "M0-GOV-01-governed-resource-calendar"
+            },
+            "schema": {
+              "const": "ylx.resource-calendar.v1"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "schema"
+          ]
+        }
+      ]
+    },
+    "deliveryWbsRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "artifact_id": {
+              "const": "M0-GOV-01-governed-delivery-wbs"
+            },
+            "schema": {
+              "const": "ylx.delivery-wbs.v2"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "schema"
+          ]
+        }
+      ]
+    },
+    "forecastSnapshotRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "artifact_id": {
+              "const": "M0-GOV-01-governed-forecast-snapshot"
+            },
+            "schema": {
+              "const": "ylx.forecast-snapshot.v1"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "schema"
+          ]
+        }
+      ]
+    },
+    "artifactMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        },
+        "resource_calendar": {
+          "$ref": "#/$defs/resourceCalendarRef"
+        },
+        "delivery_wbs": {
+          "$ref": "#/$defs/deliveryWbsRef"
+        },
+        "forecast_snapshot": {
+          "$ref": "#/$defs/forecastSnapshotRef"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "source_refs": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/governedPhaseBPlanningRootSourceRefs"
+          },
+          "artifacts": {
+            "properties": {
+              "owner_assignment": {
+                "properties": {
+                  "revision": {
+                    "const": 1
+                  }
+                }
+              },
+              "resource_calendar": {
+                "properties": {
+                  "revision": {
+                    "const": 1
+                  }
+                }
+              },
+              "delivery_wbs": {
+                "properties": {
+                  "revision": {
+                    "const": 1
+                  }
+                }
+              },
+              "forecast_snapshot": {
+                "properties": {
+                  "revision": {
+                    "const": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M0"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M0"
+              },
+              "executable_through_gate": {
+                "const": "M1"
+              },
+              "next_expansion_gate": {
+                "const": "M1"
+              }
+            }
+          },
+          "bundle_kind": {
+            "const": "ROLLING_WAVE"
+          },
+          "final_actual_variance_reconciliation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M1"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M1"
+              },
+              "executable_through_gate": {
+                "const": "M2"
+              },
+              "next_expansion_gate": {
+                "const": "M2"
+              }
+            }
+          },
+          "bundle_kind": {
+            "const": "ROLLING_WAVE"
+          },
+          "final_actual_variance_reconciliation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M2"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M2"
+              },
+              "executable_through_gate": {
+                "const": "M3"
+              },
+              "next_expansion_gate": {
+                "const": "M3"
+              }
+            }
+          },
+          "bundle_kind": {
+            "const": "ROLLING_WAVE"
+          },
+          "final_actual_variance_reconciliation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M3"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M3"
+              },
+              "executable_through_gate": {
+                "const": "M4"
+              },
+              "next_expansion_gate": {
+                "const": "M4"
+              }
+            }
+          },
+          "bundle_kind": {
+            "const": "ROLLING_WAVE"
+          },
+          "final_actual_variance_reconciliation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M4"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M4"
+              },
+              "executable_through_gate": {
+                "const": "M5"
+              },
+              "next_expansion_gate": {
+                "const": "M5"
+              }
+            }
+          },
+          "bundle_kind": {
+            "const": "ROLLING_WAVE"
+          },
+          "final_actual_variance_reconciliation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planning_gate": {
+            "const": "M5"
+          }
+        },
+        "required": [
+          "planning_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "detail_horizon": {
+            "properties": {
+              "planning_gate": {
+                "const": "M5"
+              },
+              "executable_through_gate": {
+                "const": "M5"
+              },
+              "next_expansion_gate": {
+                "type": "null"
+              }
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "bundle_kind": {
+            "const": "FINAL_ACTUAL_VARIANCE"
+          },
+          "final_actual_variance_reconciliation": {
+            "$ref": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json#/$defs/finalReconciliation"
+          }
+        }
+      }
+    }
+  ]
+}

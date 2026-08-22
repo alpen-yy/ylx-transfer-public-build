@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-policy-ratification-v1.schema.json",
+  "title": "YLX G0 policy ratification event payload F v1",
+  "description": "Closed, self-reference-free G0-C event payload. The event binds one durable four-key subject, one pre-existing external authority and quorum policy, and the exact approval-record digest map. Authority is derived only after a matching external publication receipt P and later exact readback receipt R exist.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "event_id",
+    "revision",
+    "predecessor_event_sha256",
+    "subject_ref",
+    "subject_sha256",
+    "external_authority_ref",
+    "external_authority_sha256",
+    "approval_sha256_by_required_role",
+    "quorum_policy_ref",
+    "quorum_policy_sha256",
+    "canonical_governance_subject",
+    "proposal_extension_reconciliation_decision",
+    "effective_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.g0-policy-ratification.v1"
+    },
+    "event_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_event_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "subject_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "subject_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "external_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "external_authority_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "approval_sha256_by_required_role": {
+      "$ref": "#/$defs/approvalDigestMap"
+    },
+    "quorum_policy_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "quorum_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_governance_subject": {
+      "$ref": "https://schemas.ylx.invalid/governance/g0-policy-ratification-subject-v1.schema.json#/$defs/canonicalGovernanceSubject"
+    },
+    "proposal_extension_reconciliation_decision": {
+      "$ref": "https://schemas.ylx.invalid/governance/g0-policy-ratification-subject-v1.schema.json#/$defs/proposalExtensionReconciliationDecision"
+    },
+    "effective_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "approvalDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"revision": {"const": 1}},
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": {"predecessor_event_sha256": {"type": "null"}}
+      },
+      "else": {
+        "properties": {
+          "revision": {"type": "integer", "minimum": 2},
+          "predecessor_event_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ]
+}

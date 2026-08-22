@@ -1,0 +1,344 @@
+{
+  "schema": "ylx.imu-physical-acceptance.v1",
+  "evidence_id": "imu-physical-synthetic-partial-20260821",
+  "created_at": "2026-08-21T19:30:00Z",
+  "test_only": true,
+  "physical_hardware_claim": false,
+  "device_identity": {
+    "device_label": "YLX-2UQ2",
+    "usb_vid_pid": "1bcf:0b15",
+    "bcd_device": null,
+    "video_node": null,
+    "uvc_extension": {
+      "guid": "00000000-0000-0000-0000-000000000000",
+      "unit": 0,
+      "selector": 1,
+      "get_len_bytes": 27
+    }
+  },
+  "build_identity": {
+    "pi_dev_commit": "9ba7ab95fac9fe64b54a602e4ec1068a60852dd3",
+    "rp_ylx_commit": "unknown",
+    "wheel": null,
+    "kernel": null
+  },
+  "session_identity": {
+    "session_id": null,
+    "capture_started_at": null,
+    "capture_ended_at": null,
+    "source_manifest_sha256": null
+  },
+  "vendor_docs": [],
+  "raw_artifacts": [
+    {
+      "kind": "analysis_report",
+      "path": "contracts/fixtures/valid/ylx-imu-physical-acceptance-v1.synthetic-partial.json",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "bytes": 0
+    }
+  ],
+  "packet_facts": {
+    "packet_length_bytes": 27,
+    "timestamp_bits": 24,
+    "timestamp_byte_order": "big_endian",
+    "sample_groups_per_packet": 2,
+    "raw_sample_format": "big_endian_i16",
+    "fields": [
+      {
+        "offset": 0,
+        "width_bytes": 3,
+        "signed": false,
+        "endian": "big",
+        "group": "packet",
+        "semantic": "timestamp24"
+      },
+      {
+        "offset": 3,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 5,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 7,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 9,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 11,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 13,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_z"
+      },
+      {
+        "offset": 15,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 17,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 19,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 21,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 23,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 25,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_z"
+      }
+    ]
+  },
+  "chip_identity": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "chip_model": null
+  },
+  "accelerometer_range": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "lsb_per_g": null,
+    "full_scale_g": null
+  },
+  "gyroscope_range": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "lsb_per_dps": null,
+    "full_scale_dps": null
+  },
+  "axis_mapping": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "coordinate_frame": "raw_device_axes",
+    "raw_to_camera_axes": []
+  },
+  "tick_clock": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "device_tick_hz": 1000000,
+    "fit_residual_p95_s": 0.0002
+  },
+  "sample_phase": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "groups_per_packet": 2,
+    "phase_description": "Synthetic analyzer fixture; not a device fact."
+  },
+  "six_face": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "faces": [
+      {
+        "face": "+X",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "x",
+        "leakage_ratio": 0.05,
+        "dominant_axis_sign": "positive",
+        "axis_coverage": 0.9
+      }
+    ],
+    "gravity_norm_residual_p95_m_s2": 0.12,
+    "cross_axis_leakage_max": 0.05,
+    "scale_drift_max": null,
+    "fit_rank": 3,
+    "condition_number": 1.1
+  },
+  "known_rate": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "trials": [
+      {
+        "axis": "z",
+        "direction": "positive",
+        "inliers": 80,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      }
+    ],
+    "scale_error_max": 0.04,
+    "cross_axis_leakage_max": 0.06,
+    "condition_number": null
+  },
+  "tick_rollover": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "raw_samples": [
+      {
+        "raw_tick": 16777210,
+        "host_time_s": 0,
+        "read_duration_s": 0.001
+      },
+      {
+        "raw_tick": 16777214,
+        "host_time_s": 4e-06,
+        "read_duration_s": 0.001
+      },
+      {
+        "raw_tick": 2,
+        "host_time_s": 8e-06,
+        "read_duration_s": 0.001
+      },
+      {
+        "raw_tick": 6,
+        "host_time_s": 1.2e-05,
+        "read_duration_s": 0.001
+      }
+    ],
+    "rollover_count": 1,
+    "duplicate_count": 0,
+    "regression_count": 0,
+    "fit_residual_p95_s": 1e-06,
+    "read_duration_p95_s": 0.001
+  },
+  "video_imu_sync_oracle": {
+    "status": "PARTIAL",
+    "source": "synthetic_fixture",
+    "events": [
+      {
+        "event_id": "event-01",
+        "video_time_s": 1,
+        "imu_time_s": 1.001,
+        "fit_residual_s": 0.0001,
+        "read_uncertainty_s": 5e-05,
+        "frame_interval_s": 0.03333333333333333
+      },
+      {
+        "event_id": "event-02",
+        "video_time_s": 2,
+        "imu_time_s": 2.002,
+        "fit_residual_s": 0.0002,
+        "read_uncertainty_s": 0.0001,
+        "frame_interval_s": 0.03333333333333333
+      },
+      {
+        "event_id": "event-03",
+        "video_time_s": 3,
+        "imu_time_s": 3.003,
+        "fit_residual_s": 0.0003,
+        "read_uncertainty_s": 0.00015,
+        "frame_interval_s": 0.03333333333333333
+      },
+      {
+        "event_id": "event-04",
+        "video_time_s": 4,
+        "imu_time_s": 4.004,
+        "fit_residual_s": 0.0004,
+        "read_uncertainty_s": 0.0002,
+        "frame_interval_s": 0.03333333333333333
+      },
+      {
+        "event_id": "event-05",
+        "video_time_s": 5,
+        "imu_time_s": 5.005,
+        "fit_residual_s": 0.0005,
+        "read_uncertainty_s": 0.00025,
+        "frame_interval_s": 0.03333333333333333
+      }
+    ],
+    "offset_median_s": 0.003,
+    "offset_p95_s": 0.005,
+    "fit_residual_p95_s": 0.0005,
+    "read_uncertainty_p95_s": 0.00025
+  },
+  "stability_01": {
+    "status": "PARTIAL",
+    "duration_s": 1800,
+    "preview_imu_duration_s": 1800,
+    "start_stop_cycles": 0,
+    "network_recovery": false,
+    "session_transfer": false,
+    "resource_sample_period_s": 60,
+    "physical_media": false,
+    "source_issues": [
+      "pi-dev#154"
+    ]
+  },
+  "safety": {
+    "authorized_actions": [],
+    "forbidden_actions_observed": [],
+    "rollback_status": "not_applicable",
+    "rollback_reason": "no mutation was performed"
+  },
+  "noncoverage": [
+    "synthetic fixture only",
+    "device_tick_hz is test data, not a frozen hardware fact",
+    "no physical hardware claim",
+    "no CAP-PHY or STABILITY PASS verdict"
+  ],
+  "verdicts": {
+    "CAP-PHY-03": {
+      "result": "PARTIAL",
+      "reason": "Synthetic events exercise analyzer math but are not a video/IMU physical oracle."
+    },
+    "CAP-PHY-04": {
+      "result": "PARTIAL",
+      "reason": "Synthetic six-face and rate summaries are not hardware evidence."
+    },
+    "STABILITY-01": {
+      "result": "PARTIAL",
+      "reason": "Only IMU-related synthetic input is present; composite stability remains pending."
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"authority_id":"fixture-planning-v2-m3-measurement-holdout-execution-authority","authorization_class":"may_qualify","authorized_action":"collect-evidence","data_selection_side":"HOLDOUT","measurement_id":"M0-MEAS-01","milestone_gate":"M3","notice":"SYNTHETIC EXAMPLE ONLY; NOT EVIDENCE; NOT A PASS VERDICT","revision":1,"schema":"ylx.execution-authority.v1"}

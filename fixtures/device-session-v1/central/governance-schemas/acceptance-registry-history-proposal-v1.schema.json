@@ -1,0 +1,440 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/acceptance-registry-history-proposal-v1.schema.json",
+  "title": "YLX prospective acceptance registry revision proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "revision",
+    "proposal_status",
+    "approval_status",
+    "authority_effect",
+    "direct_predecessor",
+    "reviewed_authorities",
+    "registry_artifact",
+    "acceptance_artifact",
+    "canonical_id_set",
+    "change_control",
+    "approval",
+    "historical_limitations",
+    "publication_semantics"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.acceptance-registry-history-proposal.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^acceptance-registry-revision-[1-9][0-9]*-proposal$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Append-only history sequence; independent of registry_artifact.scope_revision."
+    },
+    "proposal_status": {
+      "const": "DRAFT"
+    },
+    "approval_status": {
+      "const": "NOT_APPROVED"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "direct_predecessor": {
+      "$ref": "#/$defs/directPredecessor"
+    },
+    "reviewed_authorities": {
+      "$ref": "#/$defs/reviewedAuthorities"
+    },
+    "registry_artifact": {
+      "$ref": "#/$defs/registryArtifact"
+    },
+    "acceptance_artifact": {
+      "$ref": "#/$defs/acceptanceArtifact"
+    },
+    "canonical_id_set": {
+      "$ref": "#/$defs/canonicalIdSet"
+    },
+    "change_control": {
+      "$ref": "#/$defs/changeControl"
+    },
+    "approval": {
+      "$ref": "#/$defs/approvalState"
+    },
+    "historical_limitations": {
+      "$ref": "#/$defs/historicalLimitations"
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/(anchors|proposals)/[A-Za-z0-9][A-Za-z0-9._/-]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "directPredecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "revision",
+        "record"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "OBSERVED_MIGRATION_ANCHOR",
+            "REVISION_PROPOSAL"
+          ]
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ]
+        },
+        "record": {
+          "$ref": "#/$defs/artifactRef"
+        }
+      }
+    },
+    "reviewedAuthorities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_history"
+      ],
+      "properties": {
+        "decision_history": {
+          "$ref": "#/$defs/decisionHistoryAuthority"
+        }
+      }
+    },
+    "decisionHistoryAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256",
+        "authority_effect",
+        "acceptance_approval_effect"
+      ],
+      "properties": {
+        "schema": {
+          "const": "ylx.decision-history-head.v1"
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^decision-history-head-v[1-9][0-9]*-[0-9a-f]{64}$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/decision-history/heads/decision-history-head-v[1-9][0-9]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "authority_effect": {
+          "const": "UNAPPROVED_PROPOSALS_ONLY"
+        },
+        "acceptance_approval_effect": {
+          "const": "NONE"
+        }
+      }
+    },
+    "registryArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "scope_revision",
+        "artifact_path",
+        "artifact_sha256",
+        "artifact_byte_length",
+        "archived_artifact_path",
+        "archived_artifact_sha256"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "pattern": "^ylx\\.acceptance-requirements\\.v[1-9][0-9]*$"
+        },
+        "scope_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "artifact_path": {
+          "const": "docs/acceptance-requirements.yaml"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "artifact_byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "archived_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/registry/[0-9a-f]{64}--acceptance-requirements\\.yaml$"
+        },
+        "archived_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "acceptanceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_path",
+        "artifact_sha256",
+        "artifact_byte_length",
+        "archived_artifact_path",
+        "archived_artifact_sha256"
+      ],
+      "properties": {
+        "artifact_path": {
+          "const": "docs/ACCEPTANCE.md"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "artifact_byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "archived_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/acceptance/[0-9a-f]{64}--ACCEPTANCE\\.md$"
+        },
+        "archived_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "canonicalIdSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "byte_rule",
+        "artifact_path",
+        "sha256",
+        "cardinality"
+      ],
+      "properties": {
+        "byte_rule": {
+          "const": "ASCII_SORTED_UNIQUE_IDS_ONE_PER_LF_WITH_FINAL_LF"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/canonical-id-set/[0-9a-f]{64}--requirement-ids\\.txt$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "cardinality": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "replacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "removed_id",
+        "replacement_id"
+      ],
+      "properties": {
+        "removed_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]+-[0-9]{2}$"
+        },
+        "replacement_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]+-[0-9]{2}$"
+        }
+      }
+    },
+    "changeControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_kind",
+        "predecessor_registry_sha256",
+        "added_ids",
+        "removed_ids",
+        "replacements",
+        "scope_change_approval"
+      ],
+      "properties": {
+        "change_kind": {
+          "enum": [
+            "INITIAL_BASELINE",
+            "SUCCESSOR"
+          ]
+        },
+        "predecessor_registry_sha256": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/sha256"
+            }
+          ]
+        },
+        "added_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]+-[0-9]{2}$"
+          }
+        },
+        "removed_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]+-[0-9]{2}$"
+          }
+        },
+        "replacements": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/replacement"
+          }
+        },
+        "scope_change_approval": {
+          "type": "null"
+        }
+      }
+    },
+    "approvalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_id",
+        "required_role_slots",
+        "canonical_locator",
+        "canonical_commit",
+        "approvals",
+        "evidence_ids"
+      ],
+      "properties": {
+        "requirement_id": {
+          "const": "M1-CONTRACT-01"
+        },
+        "required_role_slots": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": "release-owner"
+            },
+            {
+              "const": "contract-owner"
+            },
+            {
+              "const": "qa-evidence-owner"
+            }
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "canonical_locator": {
+          "type": "null"
+        },
+        "canonical_commit": {
+          "type": "null"
+        },
+        "approvals": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "evidence_ids": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "historicalLimitations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "legacy_referenced_registry_bytes_used_as_predecessor",
+        "legacy_referenced_acceptance_bytes_used_as_predecessor",
+        "retrospective_approval_claim"
+      ],
+      "properties": {
+        "legacy_referenced_registry_bytes_used_as_predecessor": {
+          "const": false
+        },
+        "legacy_referenced_acceptance_bytes_used_as_predecessor": {
+          "const": false
+        },
+        "retrospective_approval_claim": {
+          "const": "NOT_MADE"
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

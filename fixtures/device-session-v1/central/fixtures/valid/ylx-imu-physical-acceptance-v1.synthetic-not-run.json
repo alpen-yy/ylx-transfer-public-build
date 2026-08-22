@@ -1,0 +1,237 @@
+{
+  "schema": "ylx.imu-physical-acceptance.v1",
+  "evidence_id": "imu-physical-synthetic-not-run-20260821",
+  "created_at": "2026-08-21T19:25:50Z",
+  "test_only": true,
+  "physical_hardware_claim": false,
+  "device_identity": {
+    "device_label": "YLX-2UQ2",
+    "usb_vid_pid": "1bcf:0b15",
+    "bcd_device": null,
+    "video_node": null,
+    "uvc_extension": {
+      "guid": "00000000-0000-0000-0000-000000000000",
+      "unit": 0,
+      "selector": 1,
+      "get_len_bytes": 27
+    }
+  },
+  "build_identity": {
+    "pi_dev_commit": "9ba7ab95fac9fe64b54a602e4ec1068a60852dd3",
+    "rp_ylx_commit": "unknown",
+    "wheel": null,
+    "kernel": null
+  },
+  "session_identity": {
+    "session_id": null,
+    "capture_started_at": null,
+    "capture_ended_at": null,
+    "source_manifest_sha256": null
+  },
+  "vendor_docs": [],
+  "raw_artifacts": [],
+  "packet_facts": {
+    "packet_length_bytes": 27,
+    "timestamp_bits": 24,
+    "timestamp_byte_order": "big_endian",
+    "sample_groups_per_packet": 2,
+    "raw_sample_format": "big_endian_i16",
+    "fields": [
+      {
+        "offset": 0,
+        "width_bytes": 3,
+        "signed": false,
+        "endian": "big",
+        "group": "packet",
+        "semantic": "timestamp24"
+      },
+      {
+        "offset": 3,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 5,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 7,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 9,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 11,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 13,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_z"
+      },
+      {
+        "offset": 15,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 17,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 19,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 21,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 23,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 25,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_z"
+      }
+    ]
+  },
+  "chip_identity": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "chip_model": null
+  },
+  "accelerometer_range": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "lsb_per_g": null,
+    "full_scale_g": null
+  },
+  "gyroscope_range": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "lsb_per_dps": null,
+    "full_scale_dps": null
+  },
+  "axis_mapping": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "coordinate_frame": "raw_device_axes"
+  },
+  "tick_clock": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "device_tick_hz": null
+  },
+  "sample_phase": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "groups_per_packet": 2
+  },
+  "six_face": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "faces": []
+  },
+  "known_rate": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "trials": []
+  },
+  "tick_rollover": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "raw_samples": []
+  },
+  "video_imu_sync_oracle": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "events": []
+  },
+  "stability_01": {
+    "status": "PARTIAL",
+    "duration_s": 0,
+    "preview_imu_duration_s": 0,
+    "start_stop_cycles": 0,
+    "network_recovery": false,
+    "session_transfer": false,
+    "resource_sample_period_s": null,
+    "physical_media": false,
+    "source_issues": [
+      "pi-dev#154"
+    ]
+  },
+  "safety": {
+    "authorized_actions": [],
+    "forbidden_actions_observed": [],
+    "rollback_status": "not_applicable",
+    "rollback_reason": "no mutation was performed"
+  },
+  "noncoverage": [
+    "synthetic fixture only",
+    "no vendor primary document",
+    "no physical oracle",
+    "no hardware PASS claim"
+  ],
+  "verdicts": {
+    "CAP-PHY-03": {
+      "result": "NOT_RUN",
+      "reason": "No external video/IMU event oracle has been supplied."
+    },
+    "CAP-PHY-04": {
+      "result": "NOT_RUN",
+      "reason": "No six-face, known-rate, vendor range, or axis oracle has been supplied."
+    },
+    "STABILITY-01": {
+      "result": "PARTIAL",
+      "reason": "IMU evidence cannot close the composite stability requirement."
+    }
+  }
+}

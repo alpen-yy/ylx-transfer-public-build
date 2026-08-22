@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bundle-approval-v1.schema.json",
+  "title": "YLX signed planning bundle approval record v1",
+  "description": "One create-if-absent, content-addressed APPROVED record over the durable wrapperless planning subject S. The signed preimage is RFC 8785 canonical JSON UTF-8 over exactly the first thirty-three required fields, in policy order, and the Ed25519 signature message is UTF8(\"YLX-PLANNING-BUNDLE-APPROVAL-V1\") || 0x00 || that canonical payload. The approval evidence reference is generic immutable support with policy authority_effect NONE; it never supplies approval or execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "approval_id",
+    "role_id",
+    "principal_id",
+    "natural_person_id",
+    "decision",
+    "approved_at",
+    "identity_authority_ref",
+    "identity_authority_sha256",
+    "assignment_ref",
+    "assignment_sha256",
+    "owner_publication_receipt_ref",
+    "owner_publication_receipt_sha256",
+    "owner_readback_receipt_ref",
+    "owner_readback_receipt_sha256",
+    "g0_issue_reconciliation_ref",
+    "g0_issue_reconciliation_sha256",
+    "planning_approval_subject_ref",
+    "planning_approval_subject_sha256",
+    "bundle_revision",
+    "predecessor_sha256",
+    "artifact_sha256_by_kind",
+    "owner_assignment_revision",
+    "approval_evidence_ref",
+    "approval_evidence_sha256",
+    "key_assignment_ref",
+    "key_assignment_sha256",
+    "public_key_fingerprint",
+    "key_validity_revocation_head_ref",
+    "key_validity_revocation_head_sha256",
+    "signature_algorithm",
+    "signature_encoding",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bundle-approval.v1"
+    },
+    "approval_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "role_id": {
+      "enum": [
+        "release-owner",
+        "build-platform-owner",
+        "qa-evidence-owner"
+      ]
+    },
+    "principal_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "natural_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "decision": {
+      "const": "APPROVED"
+    },
+    "approved_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "identity_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "identity_authority_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "assignment_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "assignment_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_publication_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_publication_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_readback_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_readback_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "g0_issue_reconciliation_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "g0_issue_reconciliation_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planning_approval_subject_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "planning_approval_subject_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "bundle_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "artifact_sha256_by_kind": {
+      "$ref": "#/$defs/artifactDigestMap"
+    },
+    "owner_assignment_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "approval_evidence_ref": {
+      "description": "Generic exact immutable artifact reference to an opaque support record. No schema const is imposed. Its referenced payload has policy authority_effect NONE and cannot act as authority, approval, evidence verdict, execution authorization, milestone PASS, or receipt.",
+      "$ref": "#/$defs/exactArtifactRef"
+    },
+    "approval_evidence_sha256": {
+      "description": "Must equal approval_evidence_ref.artifact_sha256 and the raw SHA-256 of the exact support bytes; equality is checked procedurally.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "key_assignment_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "key_assignment_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "public_key_fingerprint": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "key_validity_revocation_head_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "key_validity_revocation_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signature_encoding": {
+      "const": "base64"
+    },
+    "signing_key_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 over exactly the first thirty-three required fields, from schema through signing_key_id.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "description": "Canonical padded RFC 4648 base64 encoding of exactly 64 Ed25519 signature bytes.",
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "artifactDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "resource_calendar": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "delivery_wbs": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "forecast_snapshot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "bundle_revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "bundle_revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "owner_assignment_revision": {
+            "const": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ]
+}

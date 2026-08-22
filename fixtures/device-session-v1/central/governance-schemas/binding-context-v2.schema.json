@@ -1,0 +1,1000 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/binding-context-v2.schema.json",
+  "title": "YLX binding context v2",
+  "description": "Immutable stage binding context with a stable context_id and an exact direct-predecessor revision chain. M2 contexts carry a closed contract-package plus exact seven-consumer dual-read scope and explicitly exclude release-control-plane implementation or deployment; that provenance begins in a separate M4 lane. A successor keeps context_id and stage unchanged, increments revision by one, and references the exact previous bytes. Those cross-document equality and adjacency rules are verified by the procedural validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "context_id",
+    "revision",
+    "predecessor_context_ref",
+    "stage",
+    "created_at",
+    "owner_role",
+    "reviewer_role",
+    "lineage",
+    "body",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.binding-context.v2"
+    },
+    "context_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every revision in this context chain."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_context_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/bindingContextRef"
+        }
+      ],
+      "description": "Exact direct predecessor. Its artifact_id equals context_id and its revision is exactly this revision minus one."
+    },
+    "stage": {
+      "enum": [
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ]
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "owner_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "reviewer_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "lineage": {
+      "$ref": "#/$defs/lineage"
+    },
+    "body": {},
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_context_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_context_ref": {
+            "$ref": "#/$defs/bindingContextRef"
+          }
+        }
+      }
+    }
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "stage": {
+          "const": "M2"
+        },
+        "body": {
+          "$ref": "#/$defs/m2Body"
+        }
+      },
+      "required": [
+        "stage",
+        "body"
+      ]
+    },
+    {
+      "properties": {
+        "stage": {
+          "const": "M3"
+        },
+        "body": {
+          "$ref": "#/$defs/m3Body"
+        }
+      },
+      "required": [
+        "stage",
+        "body"
+      ]
+    },
+    {
+      "properties": {
+        "stage": {
+          "const": "M4"
+        },
+        "body": {
+          "$ref": "#/$defs/m4Body"
+        }
+      },
+      "required": [
+        "stage",
+        "body"
+      ]
+    },
+    {
+      "properties": {
+        "stage": {
+          "const": "M5"
+        },
+        "body": {
+          "$ref": "#/$defs/m5Body"
+        }
+      },
+      "required": [
+        "stage",
+        "body"
+      ]
+    }
+  ],
+  "$defs": {
+    "lineageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_refs",
+        "decision_refs"
+      ],
+      "properties": {
+        "baseline_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/lineageRef"
+          }
+        },
+        "decision_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/lineageRef"
+          }
+        }
+      }
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageSourceScopeRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-source-scope.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "g0PolicyRatificationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.g0-policy-ratification.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "contractReleaseRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.contract-release.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "consumerDeploymentSetRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.consumer-deployment-set.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "implementationActionReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.implementation-action-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "targetDisabledDeploymentReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.target-disabled-deployment-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "implementationEvaluationRefByAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implement-contract",
+        "implement-product",
+        "build-target-disabled",
+        "run-integration-smoke"
+      ],
+      "properties": {
+        "implement-contract": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "implement-product": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "build-target-disabled": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "run-integration-smoke": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        }
+      }
+    },
+    "implementationReceiptRefByAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implement-contract",
+        "implement-product",
+        "build-target-disabled",
+        "run-integration-smoke"
+      ],
+      "properties": {
+        "implement-contract": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "implement-product": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "build-target-disabled": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "run-integration-smoke": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        }
+      }
+    },
+    "deploymentEvaluationRefByBoundaryId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "egoview-console",
+        "g3-egoview-v5-wrapper",
+        "rp-ylx-target-session-reader",
+        "rp-ylx-v1-projection-adapter",
+        "spectacular-calibration-reader",
+        "ylx-card-pipeline",
+        "ylx-transfer"
+      ],
+      "properties": {
+        "egoview-console": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "g3-egoview-v5-wrapper": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "rp-ylx-target-session-reader": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "rp-ylx-v1-projection-adapter": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "spectacular-calibration-reader": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "ylx-card-pipeline": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "ylx-transfer": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        }
+      }
+    },
+    "deploymentReceiptRefByBoundaryId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "egoview-console",
+        "g3-egoview-v5-wrapper",
+        "rp-ylx-target-session-reader",
+        "rp-ylx-v1-projection-adapter",
+        "spectacular-calibration-reader",
+        "ylx-card-pipeline",
+        "ylx-transfer"
+      ],
+      "properties": {
+        "egoview-console": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "g3-egoview-v5-wrapper": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "rp-ylx-target-session-reader": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "rp-ylx-v1-projection-adapter": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "spectacular-calibration-reader": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "ylx-card-pipeline": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        },
+        "ylx-transfer": {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        }
+      }
+    },
+    "deploymentEvaluationRefByActionAndBoundaryId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "install-target",
+        "configure-target",
+        "deploy-target-disabled"
+      ],
+      "properties": {
+        "install-target": {
+          "$ref": "#/$defs/deploymentEvaluationRefByBoundaryId"
+        },
+        "configure-target": {
+          "$ref": "#/$defs/deploymentEvaluationRefByBoundaryId"
+        },
+        "deploy-target-disabled": {
+          "$ref": "#/$defs/deploymentEvaluationRefByBoundaryId"
+        }
+      }
+    },
+    "deploymentReceiptRefByActionAndBoundaryId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "install-target",
+        "configure-target",
+        "deploy-target-disabled"
+      ],
+      "properties": {
+        "install-target": {
+          "$ref": "#/$defs/deploymentReceiptRefByBoundaryId"
+        },
+        "configure-target": {
+          "$ref": "#/$defs/deploymentReceiptRefByBoundaryId"
+        },
+        "deploy-target-disabled": {
+          "$ref": "#/$defs/deploymentReceiptRefByBoundaryId"
+        }
+      }
+    },
+    "governanceFixtureCorpusRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.governance-fixture-corpus.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "exactEvidenceRef": {
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      ]
+    },
+    "m2Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "contract_package_included",
+        "consumer_boundary_ids",
+        "release_control_plane_included"
+      ],
+      "properties": {
+        "scope_kind": {
+          "const": "M2_CONTRACT_PACKAGE_AND_DUAL_READ_CONSUMERS"
+        },
+        "contract_package_included": {
+          "const": true
+        },
+        "consumer_boundary_ids": {
+          "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+        },
+        "release_control_plane_included": {
+          "const": false
+        }
+      }
+    },
+    "m2BootstrapBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_kind",
+        "creation_evaluation_ref",
+        "m1_stage_source_scope_ref",
+        "scope",
+        "frozen_input_ref_by_id",
+        "implementation_environment_ref",
+        "deployment_state"
+      ],
+      "properties": {
+        "context_kind": {
+          "const": "M2_IMPLEMENTATION_BOOTSTRAP"
+        },
+        "creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "m1_stage_source_scope_ref": {
+          "$ref": "#/$defs/stageSourceScopeRef"
+        },
+        "scope": {
+          "$ref": "#/$defs/m2Scope"
+        },
+        "frozen_input_ref_by_id": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "acceptance_registry",
+            "decision_history_head",
+            "policy_authority",
+            "system_feature_mapping_ratification"
+          ],
+          "properties": {
+            "acceptance_registry": {
+              "$ref": "#/$defs/exactEvidenceRef"
+            },
+            "decision_history_head": {
+              "$ref": "#/$defs/exactEvidenceRef"
+            },
+            "policy_authority": {
+              "$ref": "#/$defs/g0PolicyRatificationRef"
+            },
+            "system_feature_mapping_ratification": {
+              "$ref": "#/$defs/exactEvidenceRef"
+            }
+          }
+        },
+        "implementation_environment_ref": {
+          "$ref": "#/$defs/exactEvidenceRef"
+        },
+        "deployment_state": {
+          "const": "target-disabled"
+        }
+      }
+    },
+    "m2QualificationBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_kind",
+        "bootstrap_context_ref",
+        "bootstrap_creation_evaluation_ref",
+        "creation_evaluation_ref",
+        "scope",
+        "implementation_evaluation_ref_by_action",
+        "implementation_action_receipt_ref_by_action",
+        "deployment_evaluation_ref_by_action_and_boundary_id",
+        "deployment_receipt_ref_by_action_and_boundary_id",
+        "consumer_deployment_set_ref",
+        "consumer_deployment_set_sha256",
+        "contract_release_ref",
+        "contract_release_id",
+        "contract_release_sha256",
+        "product_contract_sha256",
+        "qualification_governance_contract_sha256",
+        "fixture_corpus_ref",
+        "fixture_corpus_sha256",
+        "deployment_state"
+      ],
+      "properties": {
+        "context_kind": {
+          "const": "M2_QUALIFICATION"
+        },
+        "bootstrap_context_ref": {
+          "$ref": "#/$defs/bindingContextRef"
+        },
+        "bootstrap_creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+        },
+        "scope": {
+          "$ref": "#/$defs/m2Scope"
+        },
+        "implementation_evaluation_ref_by_action": {
+          "$ref": "#/$defs/implementationEvaluationRefByAction"
+        },
+        "implementation_action_receipt_ref_by_action": {
+          "$ref": "#/$defs/implementationReceiptRefByAction"
+        },
+        "deployment_evaluation_ref_by_action_and_boundary_id": {
+          "$ref": "#/$defs/deploymentEvaluationRefByActionAndBoundaryId"
+        },
+        "deployment_receipt_ref_by_action_and_boundary_id": {
+          "$ref": "#/$defs/deploymentReceiptRefByActionAndBoundaryId"
+        },
+        "consumer_deployment_set_ref": {
+          "$ref": "#/$defs/consumerDeploymentSetRef"
+        },
+        "consumer_deployment_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract_release_ref": {
+          "$ref": "#/$defs/contractReleaseRef"
+        },
+        "contract_release_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "contract_release_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_governance_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "fixture_corpus_ref": {
+          "$ref": "#/$defs/governanceFixtureCorpusRef"
+        },
+        "fixture_corpus_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "deployment_state": {
+          "const": "target-disabled"
+        }
+      }
+    },
+    "m2Body": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/m2BootstrapBody"
+        },
+        {
+          "$ref": "#/$defs/m2QualificationBody"
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m3Body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "creation_evaluation_ref",
+        "m2_binding_context_ref",
+        "candidate_id",
+        "base_bundle_sha256",
+        "rendered_core_config_sha256",
+        "contract_release_sha256",
+        "product_contract_sha256",
+        "qualification_governance_contract_sha256",
+        "qualification_revision",
+        "qualification_plan_sha256"
+      ],
+      "properties": {
+        "creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef",
+          "description": "Exact PASS evaluation that created this M3 context after the full M2 qualification context was durable."
+        },
+        "m2_binding_context_ref": {
+          "$ref": "#/$defs/bindingContextRef",
+          "description": "Exact current M2_QUALIFICATION context selected as the M3 creation input."
+        },
+        "candidate_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "base_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "rendered_core_config_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract_release_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_governance_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "qualification_plan_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "qualificationPlanRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.qualification-plan.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4Body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "creation_evaluation_ref",
+        "candidate_id",
+        "predecessor_candidate_id",
+        "product_assembly_sha256",
+        "qualification_lineage_id",
+        "predecessor_m4_context_ref",
+        "m3_binding_context_ref",
+        "base_core_input_projection_sha256",
+        "qualification_bundle_sha256",
+        "rendered_config_sha256",
+        "contract_release_sha256",
+        "product_contract_sha256",
+        "qualification_governance_contract_sha256",
+        "qualification_revision",
+        "qualification_plan_ref",
+        "qualification_input_sha256_by_id",
+        "component_impact_graph_sha256"
+      ],
+      "properties": {
+        "creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef",
+          "description": "Exact PASS evaluation that created this M4 context from the bound M3 context and compatible M4 barrier profile."
+        },
+        "candidate_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "predecessor_candidate_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "product_assembly_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_lineage_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+          "description": "Stable identity shared by every M4 qualification revision for this candidate lineage."
+        },
+        "predecessor_m4_context_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/bindingContextRef"
+            }
+          ],
+          "description": "Exact previous M4 binding-context revision in qualification_lineage_id; null only at qualification revision 1."
+        },
+        "m3_binding_context_ref": {
+          "$ref": "#/$defs/bindingContextRef",
+          "description": "Exact immutable M3 base context from which this M4 target candidate descends."
+        },
+        "base_core_input_projection_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "rendered_config_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract_release_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_governance_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Equals the top-level context revision for M4 and the revision key selected by the M4 lineage tip."
+        },
+        "qualification_plan_ref": {
+          "$ref": "#/$defs/qualificationPlanRef"
+        },
+        "qualification_input_sha256_by_id": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            }
+          }
+        },
+        "component_impact_graph_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "qualification_revision": {
+                "const": 1
+              }
+            },
+            "required": [
+              "qualification_revision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "predecessor_m4_context_ref": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "qualification_revision": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "predecessor_m4_context_ref": {
+                "$ref": "#/$defs/bindingContextRef"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "m5Body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "creation_evaluation_ref",
+        "candidate_id",
+        "release_bundle_sha256",
+        "production_binding_sha256",
+        "contract_release_sha256",
+        "product_contract_sha256",
+        "qualification_governance_contract_sha256",
+        "effective_m4_lineage_ref",
+        "effective_m4_binding_context_ref"
+      ],
+      "properties": {
+        "creation_evaluation_ref": {
+          "$ref": "#/$defs/executionAuthorizationEvaluationRef",
+          "description": "Exact PASS evaluation that created this M5 context from the effective M4 context and lineage."
+        },
+        "candidate_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "release_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "production_binding_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract_release_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "product_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qualification_governance_contract_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "effective_m4_lineage_ref": {
+          "$ref": "#/$defs/m4ContextLineageRef"
+        },
+        "effective_m4_binding_context_ref": {
+          "$ref": "#/$defs/bindingContextRef",
+          "description": "Exact M4 context ref equal to the resolved lineage artifact's tip_context_ref."
+        }
+      }
+    }
+  }
+}

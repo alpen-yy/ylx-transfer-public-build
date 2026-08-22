@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/contract-release-v1.schema.json",
+  "title": "YLX complete contract release v1",
+  "description": "Closed M2 release root binding the runtime-consumed product contract package separately from the qualification/governance package. The exact-byte contract_release_sha256 is carried by referring artifacts and is never embedded in this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_release_id",
+    "release_version",
+    "predecessor_contract_release_sha256",
+    "created_at",
+    "product_contract_sha256",
+    "qualification_governance_contract_sha256",
+    "inventory",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.contract-release.v1"
+    },
+    "contract_release_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "release_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_contract_release_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "product_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "Digest of the RFC 8785 canonical JSON encoding of inventory.product_contract. It covers only contracts consumed by shipped/runtime product behavior and is a product candidate identity input."
+    },
+    "qualification_governance_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "Digest of the RFC 8785 canonical JSON encoding of inventory.qualification_governance_contract. It covers qualification and governance schemas, validators, fixtures, canonical encoders/parsers, impact graph, rebase, contexts, dry-run, and release-closure contracts."
+    },
+    "inventory": {
+      "$ref": "#/$defs/releaseInventory"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "release_version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "release_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_contract_release_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_contract_release_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": [
+          "contract_release_sha256"
+        ]
+      },
+      {
+        "required": [
+          "contract_sha256"
+        ]
+      },
+      {
+        "required": [
+          "self_sha256"
+        ]
+      }
+    ]
+  },
+  "$defs": {
+    "releaseInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_contract",
+        "qualification_governance_contract"
+      ],
+      "properties": {
+        "product_contract": {
+          "$ref": "#/$defs/productContractInventory"
+        },
+        "qualification_governance_contract": {
+          "$ref": "#/$defs/qualificationGovernanceContractInventory"
+        }
+      },
+      "description": "The two child inventories are the complete, disjoint inputs whose canonical digests must equal the two direct child-root fields. Equality and disjointness are checked procedurally."
+    },
+    "productContractInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "artifacts"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "package_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/productContractArtifact"
+          }
+        }
+      }
+    },
+    "qualificationGovernanceContractInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "artifacts"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "package_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/qualificationGovernanceContractArtifact"
+          }
+        }
+      }
+    },
+    "productContractArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_kind",
+        "artifact_version",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_kind": {
+          "enum": [
+            "schema",
+            "api",
+            "adapter-contract",
+            "behavior-contract"
+          ]
+        },
+        "artifact_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "qualificationGovernanceContractArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_kind",
+        "artifact_version",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_kind": {
+          "enum": [
+            "schema",
+            "validator",
+            "fixture",
+            "canonical-encoder",
+            "canonical-parser",
+            "impact-graph",
+            "rebase",
+            "context",
+            "dry-run",
+            "release-closure"
+          ]
+        },
+        "artifact_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

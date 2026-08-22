@@ -1,0 +1,419 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/consumer-attestation-set-v1.schema.json",
+  "title": "YLX consumer attestation set v1",
+  "description": "Closed M4 set containing exactly one actor-scoped pinned-validator receipt for each of the seven applicable consumer boundaries. Equality between repeated binding/context/lineage projections is verified procedurally.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "attestation_set_id",
+    "consumer_boundary_registry_sha256",
+    "binding_context_ref",
+    "receipt_boundary_ids",
+    "common_source_lineage",
+    "receipts",
+    "receipt_sha256_by_boundary",
+    "created_at",
+    "overall_verdict"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.consumer-attestation-set.v1"
+    },
+    "attestation_set_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "consumer_boundary_registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "receipt_boundary_ids": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+    },
+    "common_source_lineage": {
+      "$ref": "#/$defs/commonSourceLineage"
+    },
+    "receipts": {
+      "$ref": "#/$defs/receiptMap"
+    },
+    "receipt_sha256_by_boundary": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryDigestMap"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "overall_verdict": {
+      "enum": [
+        "PASS",
+        "BLOCKED"
+      ]
+    }
+  },
+  "$defs": {
+    "bindingContextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Reference to exact ylx.binding-context.v1 bytes whose resolved stage must be M4."
+    },
+    "executionContextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Reference to exact ylx.execution-context.v1 bytes resolving the actual component deployment, including rendered config and deployment-record digests."
+    },
+    "attestingActorIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "actor_identity_sha256",
+        "identity_authority_ref"
+      ],
+      "properties": {
+        "actor_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "actor_identity_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "identity_authority_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "commonSourceLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_session_id",
+        "source_manifest_sha256",
+        "source_artifact_set_sha256",
+        "source_volume_id",
+        "source_generation_id",
+        "source_lineage_sha256"
+      ],
+      "properties": {
+        "source_session_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_manifest_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_artifact_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_volume_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_generation_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_lineage_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary_id",
+        "consumer_boundary_registry_sha256",
+        "binding_context_ref",
+        "execution_context_refs",
+        "rendered_config_sha256",
+        "component_artifact_owner",
+        "component_maintainer_subrole",
+        "attesting_actor_identity",
+        "role_assignment_artifact_sha256",
+        "role_assignment_revision",
+        "component_artifact_sha256",
+        "deployed_environment_identity",
+        "deployment_record_sha256",
+        "source_session_id",
+        "source_manifest_sha256",
+        "source_artifact_set_sha256",
+        "source_volume_id",
+        "source_generation_id",
+        "source_lineage_sha256",
+        "consumed_input_sha256",
+        "validator_artifact_sha256",
+        "validator_version",
+        "checked_at",
+        "verdict"
+      ],
+      "properties": {
+        "boundary_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryId"
+        },
+        "consumer_boundary_registry_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "binding_context_ref": {
+          "$ref": "#/$defs/bindingContextRef"
+        },
+        "execution_context_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/executionContextRef"
+          }
+        },
+        "rendered_config_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "component_artifact_owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "component_maintainer_subrole": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "attesting_actor_identity": {
+          "$ref": "#/$defs/attestingActorIdentity"
+        },
+        "role_assignment_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "role_assignment_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "component_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "deployed_environment_identity": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "deployment_record_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_session_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_manifest_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_artifact_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_volume_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_generation_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_lineage_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "consumed_input_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "validator_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "validator_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "checked_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "verdict": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        }
+      }
+    },
+    "receiptMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rp-ylx-target-session-reader",
+        "rp-ylx-v1-projection-adapter",
+        "spectacular-calibration-reader",
+        "ylx-card-pipeline",
+        "ylx-transfer",
+        "egoview-console",
+        "g3-egoview-v5-wrapper"
+      ],
+      "properties": {
+        "rp-ylx-target-session-reader": {
+          "$ref": "#/$defs/rpYlxTargetSessionReaderReceipt"
+        },
+        "rp-ylx-v1-projection-adapter": {
+          "$ref": "#/$defs/rpYlxV1ProjectionAdapterReceipt"
+        },
+        "spectacular-calibration-reader": {
+          "$ref": "#/$defs/spectacularCalibrationReaderReceipt"
+        },
+        "ylx-card-pipeline": {
+          "$ref": "#/$defs/ylxCardPipelineReceipt"
+        },
+        "ylx-transfer": {
+          "$ref": "#/$defs/ylxTransferReceipt"
+        },
+        "egoview-console": {
+          "$ref": "#/$defs/egoviewConsoleReceipt"
+        },
+        "g3-egoview-v5-wrapper": {
+          "$ref": "#/$defs/g3EgoviewV5WrapperReceipt"
+        }
+      }
+    },
+    "rpYlxTargetSessionReaderReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "rp-ylx-target-session-reader"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "rpYlxV1ProjectionAdapterReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "rp-ylx-v1-projection-adapter"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "spectacularCalibrationReaderReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "spectacular-calibration-reader"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "ylxCardPipelineReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "ylx-card-pipeline"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "ylxTransferReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "ylx-transfer"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "egoviewConsoleReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "egoview-console"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    },
+    "g3EgoviewV5WrapperReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/receipt"
+        },
+        {
+          "properties": {
+            "boundary_id": {
+              "const": "g3-egoview-v5-wrapper"
+            }
+          },
+          "required": [
+            "boundary_id"
+          ]
+        }
+      ]
+    }
+  }
+}

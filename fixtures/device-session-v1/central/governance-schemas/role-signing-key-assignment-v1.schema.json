@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/role-signing-key-assignment-v1.schema.json",
+  "title": "YLX role to natural-person signing key assignment v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assignment_id",
+    "revision",
+    "predecessor_assignment_sha256",
+    "role_slot",
+    "person_id",
+    "natural_person_identity_sha256",
+    "signing_key_fingerprint",
+    "effective_from",
+    "not_after",
+    "assignment_status",
+    "is_delegate",
+    "delegation_approval_ref",
+    "identity_authority_ref",
+    "published_at",
+    "approvals"
+  ],
+  "properties": {
+    "schema": { "const": "ylx.role-signing-key-assignment.v1" },
+    "assignment_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "predecessor_assignment_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "role_slot": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "natural_person_identity_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signing_key_fingerprint": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "effective_from": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "not_after": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "assignment_status": {
+      "enum": ["ACTIVE", "REVOKED", "SUPERSEDED"]
+    },
+    "is_delegate": { "type": "boolean" },
+    "delegation_approval_ref": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef" }
+      ]
+    },
+    "identity_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "revision": { "const": 1 } },
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": { "predecessor_assignment_sha256": { "type": "null" } }
+      },
+      "else": {
+        "properties": {
+          "predecessor_assignment_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "is_delegate": { "const": true } },
+        "required": ["is_delegate"]
+      },
+      "then": {
+        "properties": {
+          "delegation_approval_ref": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          }
+        }
+      },
+      "else": {
+        "properties": { "delegation_approval_ref": { "type": "null" } }
+      }
+    }
+  ]
+}

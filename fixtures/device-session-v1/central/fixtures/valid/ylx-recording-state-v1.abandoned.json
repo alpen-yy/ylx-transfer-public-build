@@ -1,0 +1,43 @@
+{
+  "schema": "ylx.recording-state.v1",
+  "state": "abandoned",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "state_revision": 12,
+  "updated_at": "2026-08-08T14:00:12+08:00",
+  "session_id": "0198a100-0007-7007-8000-000000000007",
+  "take_id": "0198a100-0107-7107-9000-000000000007",
+  "display_name": "2026-08-08_14-00-00_YLX-30D5872D",
+  "device": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "YLX-30D5872D"
+  },
+  "storage": {
+    "volume_id": "10000007-0000-4007-8000-000000000007",
+    "status": "mounted",
+    "writable": false,
+    "remaining_bytes": 494500000000
+  },
+  "progress": {
+    "elapsed_seconds": 12,
+    "captured_frames": 360,
+    "bytes_written": 29000000
+  },
+  "abandonment": {
+    "reason_code": "operator_requested",
+    "reason": "The operator explicitly chose to preserve diagnostics and abandon this incomplete capture.",
+    "authorized_at": "2026-08-08T14:00:12+08:00",
+    "authorization": {
+      "kind": "OPERATOR",
+      "operator_id": "fixture-capture-operator"
+    }
+  },
+  "diagnostics": [
+    {
+      "code": "operator_abandoned",
+      "severity": "error",
+      "message": "The operator explicitly abandoned the incomplete capture; no manifest may be produced for this session.",
+      "at": "2026-08-08T14:00:12+08:00",
+      "recoverable": false
+    }
+  ]
+}

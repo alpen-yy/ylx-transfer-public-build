@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-result-projection-readback-receipt-v1.schema.json",
+  "title": "YLX release result projection readback receipt v1",
+  "description": "Immutable exact-byte readback receipt for a published release-result-projection v2. It binds the exact publication receipt and repeats the same projection, execution-authorization, action-instance, planned-input, and actor tuple; procedural validation enforces field equality and publication-before-readback ordering.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "projection_ref",
+    "projection_sha256",
+    "projection_locator",
+    "publication_receipt_ref",
+    "observed_projection_sha256",
+    "digest_match",
+    "exact_bytes_match",
+    "execution_authorization_evaluation_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "actor_person_id",
+    "read_back_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-result-projection-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "projection_ref": {
+      "$ref": "#/$defs/releaseResultProjectionRef"
+    },
+    "projection_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "projection_locator": {
+      "description": "Same canonical content-addressed path bound by the publication receipt. Procedural validation requires exact equality with projection_ref.artifact_path and all expected and observed projection digests.",
+      "$ref": "#/$defs/projectionLocator"
+    },
+    "publication_receipt_ref": {
+      "$ref": "#/$defs/publicationReceiptRef"
+    },
+    "observed_projection_sha256": {
+      "description": "Digest computed from the exact bytes read back. Procedural validation requires equality with projection_sha256 and projection_ref.artifact_sha256.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "digest_match": {
+      "const": true
+    },
+    "exact_bytes_match": {
+      "const": true
+    },
+    "execution_authorization_evaluation_ref": {
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "actor_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "read_back_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_metadata": {
+            "properties": {
+              "classification": {
+                "const": "GOVERNANCE_ARTIFACT"
+              }
+            },
+            "required": [
+              "classification"
+            ]
+          }
+        },
+        "required": [
+          "artifact_metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "projection_locator": {
+            "$ref": "#/$defs/governanceProjectionLocator"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "projection_locator": {
+            "$ref": "#/$defs/syntheticProjectionLocator"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "releaseResultProjectionRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-result-projection.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "publicationReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-result-projection-publication-receipt.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "projectionLocator": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "governanceProjectionLocator": {
+      "pattern": "^docs/evidence/M5/signoff/M5-MATRIX-COMPLETE-01/release-result-projections/[0-9a-f]{64}--release-result-projection\\.json$"
+    },
+    "syntheticProjectionLocator": {
+      "pattern": "^contracts/fixtures/governance-models/valid/release-result-projections/[0-9a-f]{64}--release-result-projection\\.json$"
+    }
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/execution-context-v1.schema.json",
+  "title": "YLX execution context v1",
+  "description": "Immutable per-run, per-support-cell, and per-route execution identity. It carries only non-secret stable identities and exact immutable references; stimulus, observations, results, failures, actors, reviewers, credentials, and the context's own digest are intentionally excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "context_id",
+    "created_at",
+    "run_id",
+    "route_id",
+    "environment_refs",
+    "support_cell_refs",
+    "deployment_refs",
+    "data_partition_refs",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.execution-context.v1"
+    },
+    "context_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "run_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "route_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "environment_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/environmentRef"
+      }
+    },
+    "support_cell_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supportCellRef"
+      }
+    },
+    "deployment_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/deploymentRef"
+      }
+    },
+    "data_partition_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/dataPartitionRef"
+      },
+      "description": "Empty for deterministic plans and other runs that do not consume a fitted-data partition."
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "nullableIdentifier": {
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "environmentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "environment_id",
+        "environment_kind",
+        "hardware_id",
+        "camera_id",
+        "media_id",
+        "firmware_id",
+        "os_id",
+        "runtime_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "environment_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "environment_kind": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "hardware_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "camera_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "media_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "firmware_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "os_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "runtime_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Credential-free identity of an immutable environment profile. Null dimension IDs mean not applicable, never unknown secret material."
+    },
+    "supportCellRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_cell_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "support_cell_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "deploymentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deployment_id",
+        "component_id",
+        "deployment_state",
+        "artifact_path",
+        "deployment_record_sha256",
+        "rendered_config_sha256"
+      ],
+      "properties": {
+        "deployment_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "component_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "deployment_state": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier",
+          "description": "Immutable observed deployment state; an environment name or contract freeze cannot stand in for this value."
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "deployment_record_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "rendered_config_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "dataPartitionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partition_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "partition_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-issue-register-transition-readback-receipt-v1.schema.json",
+  "title": "YLX G0 issue-register transition exact readback receipt v1",
+  "description": "Signed terminal receipt for one separately authorized exact read and byte comparison of the replacement issue-register source, its immutable archive, and the governed successor head. Cross-record equality, byte comparison, head recomputation, and chronology are procedural. The Ed25519 signature message is UTF8(\"YLX-G0-ISSUE-REGISTER-TRANSITION-READBACK-RECEIPT-V1\") || 0x00 || RFC8785(receipt fields excluding signed_payload_sha256 and signature).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "source_ref",
+    "source_sha256",
+    "source_byte_length",
+    "archive_ref",
+    "archive_sha256",
+    "archive_byte_length",
+    "successor_head_ref",
+    "successor_head_sha256",
+    "successor_head_byte_length",
+    "reader_id",
+    "readback_authority_ref",
+    "readback_authority_sha256",
+    "read_back_at",
+    "result",
+    "terminal_sink_id",
+    "receipt_issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.g0-issue-register-transition-readback-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "source_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "source_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "source_byte_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "archive_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "archive_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "archive_byte_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "successor_head_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "successor_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "successor_head_byte_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reader_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "readback_authority_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "readback_authority_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "read_back_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "result": {
+      "const": "MATCH"
+    },
+    "terminal_sink_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "receipt_issuer_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  }
+}

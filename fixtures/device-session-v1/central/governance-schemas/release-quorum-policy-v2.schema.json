@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-quorum-policy-v2.schema.json",
+  "title": "YLX release quorum policy v2",
+  "description": "Four-distinct-natural-person quorum policy for an all-v2 M5 attempt and the exact eight action-precondition freshness checkpoints.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "revision",
+    "predecessor_policy_ref",
+    "mandatory_role_slots",
+    "distinct_natural_person_count",
+    "signature_domain_template",
+    "signed_payload_schema",
+    "signed_artifact_schema",
+    "signing_policy_ref",
+    "qa_independence",
+    "delegation_rule",
+    "freshness_checkpoint_schema",
+    "freshness_checkpoints",
+    "freshness_checkpoint_rule",
+    "terminal_drift_rule",
+    "published_at",
+    "approvals",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-quorum-policy.v2"
+    },
+    "policy_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_policy_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/quorumPolicyRef"
+        }
+      ]
+    },
+    "mandatory_role_slots": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "release-owner",
+          "contract-owner",
+          "security-owner",
+          "qa-evidence-owner"
+        ]
+      }
+    },
+    "distinct_natural_person_count": {
+      "const": 4
+    },
+    "signature_domain_template": {
+      "const": "ylx.release-closure.quorum.v2/<role_slot>"
+    },
+    "signed_payload_schema": {
+      "const": "ylx.release-quorum-signature.signed-payload.v2"
+    },
+    "signed_artifact_schema": {
+      "const": "ylx.pre-release-closure.v2"
+    },
+    "signing_policy_ref": {
+      "$ref": "#/$defs/signingPolicyRef"
+    },
+    "qa_independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "not_result_map_producer",
+        "not_promotion_operator"
+      ],
+      "properties": {
+        "not_result_map_producer": {
+          "const": true
+        },
+        "not_promotion_operator": {
+          "const": true
+        }
+      }
+    },
+    "delegation_rule": {
+      "const": "PREAPPROVED_DIRECT_PREDECESSOR_ASSIGNMENT_ONLY"
+    },
+    "freshness_checkpoint_schema": {
+      "const": "ylx.release-freshness-checkpoint.v1"
+    },
+    "freshness_checkpoints": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "prefixItems": [
+        {
+          "const": "quorum_signature_collection"
+        },
+        {
+          "const": "publication_fence_acquisition"
+        },
+        {
+          "const": "pre_promotion"
+        },
+        {
+          "const": "promotion_readback"
+        },
+        {
+          "const": "final_manifest_publish"
+        },
+        {
+          "const": "final_manifest_readback"
+        },
+        {
+          "const": "finalized_terminal_reference_cas"
+        },
+        {
+          "const": "finalized_terminal_reference_readback"
+        }
+      ],
+      "items": false
+    },
+    "freshness_checkpoint_rule": {
+      "const": "each checkpoint is an action-precondition authority snapshot over the exact v2 attempt family and every already-created artifact; checkpoint 5 authorizes manifest publication/readback, checkpoint 7 is the immediate pre-CAS snapshot, and checkpoint 8 validates exact terminal readback before distribution"
+    },
+    "terminal_drift_rule": {
+      "const": "any mismatch before checkpoint 7 prevents FINALIZED and uses the ABORTED quarantine path; mismatch after FINALIZED CAS but before valid checkpoint 8 cannot derive M5-SIGNOFF PASS or RELEASE_COMPLETE and cannot overwrite or reuse the slot"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      }
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_policy_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_policy_ref": {
+            "$ref": "#/$defs/quorumPolicyRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "quorumPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-quorum-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "signingPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m5-signing-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    }
+  }
+}

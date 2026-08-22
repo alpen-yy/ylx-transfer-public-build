@@ -1,0 +1,57 @@
+{
+  "schema": "ylx.api-v4-fixture-results.v1",
+  "valid": {
+    "valid/camera-focus-set-request.json": "CameraFocusSetRequest",
+    "valid/camera-focus-status.json": "CameraFocusStatus",
+    "valid/capture-progress-event.json": "CaptureEvent",
+    "valid/capture-status-raw-live-imu.json": "CaptureStatusSnapshot",
+    "valid/device-null-live-imu.json": "DeviceDescriptor",
+    "valid/device-raw-live-imu.json": "DeviceDescriptor"
+  },
+  "invalid": {
+    "invalid/camera-focus-set-empty.json": {
+      "component": "CameraFocusSetRequest",
+      "expected_error_keywords": ["anyOf", "valid"]
+    },
+    "invalid/capture-status-live-imu-session-mismatch.json": {
+      "component": "CaptureStatusSnapshot",
+      "expected_error_keywords": ["live_imu", "session_id", "active"]
+    },
+    "invalid/capture-status-wrapper-state-mismatch.json": {
+      "component": "CaptureStatusSnapshot",
+      "expected_error_keywords": ["Recording State", "authority_epoch", "state_revision"]
+    },
+    "invalid/device-camera-focus-missing.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["camera_focus", "required"]
+    },
+    "invalid/device-legacy-epoch-id.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["additionalProperties", "epoch_id"]
+    },
+    "invalid/device-live-imu-missing-raw.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["raw", "required"]
+    },
+    "invalid/device-live-imu-missing-sync-quality.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["quality", "required"]
+    },
+    "invalid/device-live-imu-si-units.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["raw_int16", "const"]
+    },
+    "invalid/device-live-imu-wrong-time-base.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["host_monotonic", "const"]
+    },
+    "invalid/device-live-imu-raw-out-of-range.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["32767", "maximum"]
+    },
+    "invalid/device-unknown-major.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["ylx.device.v4", "const"]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "ylx.synthetic-publication-prefix-authority.v1",
+  "scope": "fixture-only-non-production",
+  "deployment_ref": "synthetic-fixture:publication-prefixes-v1",
+  "rendered_prefixes": {
+    "first_publication_prefixes": {
+      "ylx_transfer": "synthetic/qualification/ylx-transfer/",
+      "ylx_card_pipeline": "synthetic/qualification/ylx-card-pipeline/"
+    },
+    "production_canary_raw_prefix": "synthetic/production-canary/"
+  }
+}

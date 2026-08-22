@@ -1,0 +1,68 @@
+{
+  "schema": "ylx.artifact-response-conformance-corpus.v1",
+  "fixture_scope": "synthetic-non-production",
+  "manifest_fixture": "valid/ylx-device-session-v1.json",
+  "artifact_id": "1111111111111111111111111111111111111111111111111111111111111111",
+  "cases": [
+    {
+      "id": "get-200",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Accept-Ranges": "bytes",
+        "Content-Length": "30123456",
+        "Content-Type": "video/mp4",
+        "ETag": "\"1111111111111111111111111111111111111111111111111111111111111111\""
+      },
+      "body": {
+        "present": true,
+        "bytes": 30123456
+      }
+    },
+    {
+      "id": "get-206",
+      "method": "GET",
+      "status": 206,
+      "headers": {
+        "Accept-Ranges": "bytes",
+        "Content-Length": "1024",
+        "Content-Range": "bytes 1024-2047/30123456",
+        "Content-Type": "video/mp4",
+        "ETag": "\"1111111111111111111111111111111111111111111111111111111111111111\""
+      },
+      "body": {
+        "present": true,
+        "bytes": 1024
+      }
+    },
+    {
+      "id": "head-200",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "Accept-Ranges": "bytes",
+        "Content-Length": "30123456",
+        "Content-Type": "video/mp4",
+        "ETag": "\"1111111111111111111111111111111111111111111111111111111111111111\""
+      },
+      "body": {
+        "present": false,
+        "bytes": 0
+      }
+    }
+  ],
+  "negative_mutations": [
+    {
+      "id": "get-206-content-type-drift",
+      "case_id": "get-206",
+      "operation": "replace-header",
+      "header": "Content-Type",
+      "value": "application/octet-stream",
+      "expected_error_keywords": [
+        "Content-Type",
+        "descriptor",
+        "media_type"
+      ]
+    }
+  ]
+}

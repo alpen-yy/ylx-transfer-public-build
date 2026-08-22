@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-legacy-migration-anchor-v1.schema.json",
+  "title": "YLX planning legacy migration anchor v1",
+  "description": "Records observed bytes and digest-only observations for an equivocated legacy planning revision without selecting a canonical predecessor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "anchor_id",
+    "recorded_at",
+    "legacy_lineage_status",
+    "canonical_publication_status",
+    "canonical_approval_status",
+    "predecessor_eligibility",
+    "migration_disposition",
+    "observation_groups",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-legacy-migration-anchor.v1"
+    },
+    "anchor_id": {
+      "const": "M0-GOV-01-planning-legacy-migration-anchor"
+    },
+    "recorded_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "legacy_lineage_status": {
+      "const": "EQUIVOCATED"
+    },
+    "canonical_publication_status": {
+      "const": "UNKNOWN"
+    },
+    "canonical_approval_status": {
+      "const": "UNKNOWN"
+    },
+    "predecessor_eligibility": {
+      "const": "NONE"
+    },
+    "migration_disposition": {
+      "const": "START_FRESH_V2_LINEAGE"
+    },
+    "observation_groups": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/observationGroup"
+      }
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "nullableArchivePath": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^docs/evidence/M0/governance/M0-GOV-01/legacy/archive/[0-9a-f]{64}--[a-z0-9-]+\\.json$"
+        }
+      ]
+    },
+    "artifactObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "artifact_id",
+        "revision",
+        "original_path",
+        "sha256",
+        "byte_availability",
+        "archive_path"
+      ],
+      "properties": {
+        "schema": {
+          "enum": [
+            "ylx.owner-assignment.v1",
+            "ylx.resource-calendar.v1",
+            "ylx.delivery-wbs.v1",
+            "ylx.forecast-snapshot.v1",
+            "ylx.delivery-planning-bundle.v1"
+          ]
+        },
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "revision": {
+          "const": 1
+        },
+        "original_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/M0/governance/M0-GOV-01/[a-z0-9-]+\\.json$"
+        },
+        "sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "byte_availability": {
+          "enum": [
+            "EXACT_ARCHIVED",
+            "DIGEST_ONLY"
+          ]
+        },
+        "archive_path": {
+          "$ref": "#/$defs/nullableArchivePath"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "byte_availability": {
+                "const": "EXACT_ARCHIVED"
+              }
+            },
+            "required": [
+              "byte_availability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "archive_path": {
+                "type": "string"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "archive_path": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "artifactObservationMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot",
+        "delivery_planning_bundle"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "$ref": "#/$defs/artifactObservation"
+        },
+        "resource_calendar": {
+          "$ref": "#/$defs/artifactObservation"
+        },
+        "delivery_wbs": {
+          "$ref": "#/$defs/artifactObservation"
+        },
+        "forecast_snapshot": {
+          "$ref": "#/$defs/artifactObservation"
+        },
+        "delivery_planning_bundle": {
+          "$ref": "#/$defs/artifactObservation"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_kind",
+        "session_log_basename",
+        "event_ordinals",
+        "commands",
+        "workspace_root"
+      ],
+      "properties": {
+        "evidence_kind": {
+          "enum": [
+            "SESSION_COMMAND_STDOUT",
+            "DIGEST_OUTPUT",
+            "WORKSPACE_RECOVERY_INPUT"
+          ]
+        },
+        "session_log_basename": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9._-]+\\.jsonl$"
+        },
+        "event_ordinals": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uniqueItems": true
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "uniqueItems": true
+        },
+        "workspace_root": {
+          "const": "/home/alpen/pi-dev"
+        }
+      }
+    },
+    "observationGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "observed_at",
+        "observation_status",
+        "canonical_authority_status",
+        "approval_status",
+        "eligible_as_predecessor",
+        "provenance",
+        "artifacts"
+      ],
+      "properties": {
+        "observation_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "observed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "observation_status": {
+          "const": "HISTORICAL_OBSERVATION_ONLY"
+        },
+        "canonical_authority_status": {
+          "const": "UNKNOWN"
+        },
+        "approval_status": {
+          "const": "NO_KNOWN_APPROVAL"
+        },
+        "eligible_as_predecessor": {
+          "const": false
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "artifacts": {
+          "$ref": "#/$defs/artifactObservationMap"
+        }
+      }
+    }
+  }
+}

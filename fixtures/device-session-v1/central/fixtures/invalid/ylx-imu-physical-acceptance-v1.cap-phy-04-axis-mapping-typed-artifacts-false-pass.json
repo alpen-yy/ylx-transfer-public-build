@@ -1,0 +1,420 @@
+{
+  "schema": "ylx.imu-physical-acceptance.v1",
+  "evidence_id": "imu-physical-invalid-axis-mapping-typed-artifacts",
+  "created_at": "2026-08-21T00:00:00Z",
+  "test_only": false,
+  "physical_hardware_claim": true,
+  "device_identity": {
+    "device_label": "YLX-2UQ2",
+    "usb_vid_pid": "1bcf:0b15",
+    "bcd_device": "0100",
+    "video_node": "/dev/video0",
+    "uvc_extension": {
+      "guid": "11111111-2222-3333-8444-555555555555",
+      "unit": 3,
+      "selector": 1,
+      "get_len_bytes": 27
+    }
+  },
+  "build_identity": {
+    "pi_dev_commit": "0123456789abcdef0123456789abcdef01234567",
+    "rp_ylx_commit": "0123456789abcdef0123456789abcdef01234567",
+    "wheel": "rp_ylx-0.5.0-py3-none-any.whl",
+    "kernel": "6.1.0-rdk-x5"
+  },
+  "session_identity": {
+    "session_id": "01a0259e-ee30-7e42-aeeb-2bc9458c9af0",
+    "capture_started_at": "2026-08-21T18:39:27Z",
+    "capture_ended_at": "2026-08-21T20:39:27Z",
+    "source_manifest_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "vendor_docs": [
+    {
+      "kind": "vendor_primary",
+      "status": "PRESENT",
+      "title": "YLX 2UQ2 IMU primary register reference",
+      "uri": "vendor://ylx/2uq2/imu-registers.pdf",
+      "local_ref": "vendor/YLX-2UQ2-IMU-registers-rev-a.pdf",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "version": "rev-a",
+      "proves": [
+        "chip_identity",
+        "accelerometer_range",
+        "gyroscope_range",
+        "axis_mapping",
+        "sample_phase",
+        "packet_layout"
+      ]
+    }
+  ],
+  "raw_artifacts": [
+    {
+      "kind": "raw_capture",
+      "path": "evidence/imu/raw.ndjson",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "bytes": 4096
+    },
+    {
+      "kind": "photo",
+      "path": "evidence/photos/six-face.jpg",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "bytes": 2048
+    },
+    {
+      "kind": "video",
+      "path": "evidence/video/external-sync.mp4",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "bytes": 8192
+    },
+    {
+      "kind": "analysis_report",
+      "path": "evidence/analysis/imu-physical.json",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "bytes": 1024
+    },
+    {
+      "kind": "operator_log",
+      "path": "evidence/logs/operator.txt",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "bytes": 512
+    }
+  ],
+  "packet_facts": {
+    "packet_length_bytes": 27,
+    "timestamp_bits": 24,
+    "timestamp_byte_order": "big_endian",
+    "sample_groups_per_packet": 2,
+    "raw_sample_format": "big_endian_i16",
+    "fields": [
+      {
+        "offset": 0,
+        "width_bytes": 3,
+        "signed": false,
+        "endian": "big",
+        "group": "packet",
+        "semantic": "timestamp24"
+      },
+      {
+        "offset": 3,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 5,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 7,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 9,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 11,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 13,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample0",
+        "semantic": "gyro_z"
+      },
+      {
+        "offset": 15,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_x"
+      },
+      {
+        "offset": 17,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_y"
+      },
+      {
+        "offset": 19,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "accel_z"
+      },
+      {
+        "offset": 21,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_x"
+      },
+      {
+        "offset": 23,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_y"
+      },
+      {
+        "offset": 25,
+        "width_bytes": 2,
+        "signed": true,
+        "endian": "big",
+        "group": "sample1",
+        "semantic": "gyro_z"
+      }
+    ]
+  },
+  "chip_identity": {
+    "status": "VERIFIED",
+    "source": "vendor_primary",
+    "chip_model": "VendorIMU-123"
+  },
+  "accelerometer_range": {
+    "status": "VERIFIED",
+    "source": "physical_oracle",
+    "lsb_per_g": 4096.0,
+    "full_scale_g": 8.0,
+    "full_scale_source": "physical_oracle",
+    "evidence_refs": [
+      "evidence/imu/raw.ndjson",
+      "evidence/analysis/imu-physical.json"
+    ]
+  },
+  "gyroscope_range": {
+    "status": "VERIFIED",
+    "source": "physical_oracle",
+    "lsb_per_dps": 16.4,
+    "full_scale_dps": 2000.0,
+    "full_scale_source": "physical_oracle",
+    "evidence_refs": [
+      "evidence/imu/raw.ndjson",
+      "evidence/analysis/imu-physical.json"
+    ]
+  },
+  "axis_mapping": {
+    "status": "VERIFIED",
+    "source": "physical_oracle",
+    "coordinate_frame": "raw_device_axes",
+    "raw_to_camera_axes": [],
+    "evidence_refs": [
+      "evidence/logs/operator.txt"
+    ]
+  },
+  "tick_clock": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "device_tick_hz": null
+  },
+  "sample_phase": {
+    "status": "UNKNOWN",
+    "source": "none",
+    "groups_per_packet": 2
+  },
+  "six_face": {
+    "status": "VERIFIED",
+    "source": "six_face_physical_oracle",
+    "faces": [
+      {
+        "face": "+X",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "x",
+        "dominant_axis_sign": "positive",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      },
+      {
+        "face": "-X",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "x",
+        "dominant_axis_sign": "negative",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      },
+      {
+        "face": "+Y",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "y",
+        "dominant_axis_sign": "positive",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      },
+      {
+        "face": "-Y",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "y",
+        "dominant_axis_sign": "negative",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      },
+      {
+        "face": "+Z",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "z",
+        "dominant_axis_sign": "positive",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      },
+      {
+        "face": "-Z",
+        "sample_count": 120,
+        "gravity_norm_residual_p95_m_s2": 0.12,
+        "dominant_axis": "z",
+        "dominant_axis_sign": "negative",
+        "axis_coverage": 0.9,
+        "leakage_ratio": 0.05
+      }
+    ],
+    "gravity_norm_residual_p95_m_s2": 0.12,
+    "cross_axis_leakage_max": 0.05,
+    "scale_drift_max": 0.02,
+    "fit_rank": 3,
+    "condition_number": 1.1,
+    "evidence_refs": [
+      "evidence/imu/raw.ndjson",
+      "evidence/photos/six-face.jpg",
+      "evidence/analysis/imu-physical.json"
+    ]
+  },
+  "known_rate": {
+    "status": "VERIFIED",
+    "source": "known_rate_physical_oracle",
+    "trials": [
+      {
+        "axis": "x",
+        "direction": "positive",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      },
+      {
+        "axis": "x",
+        "direction": "negative",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      },
+      {
+        "axis": "y",
+        "direction": "positive",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      },
+      {
+        "axis": "y",
+        "direction": "negative",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      },
+      {
+        "axis": "z",
+        "direction": "positive",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      },
+      {
+        "axis": "z",
+        "direction": "negative",
+        "inliers": 90,
+        "scale_error": 0.04,
+        "cross_axis_leakage": 0.06
+      }
+    ],
+    "scale_error_max": 0.04,
+    "cross_axis_leakage_max": 0.06,
+    "condition_number": 1.1,
+    "evidence_refs": [
+      "evidence/imu/raw.ndjson",
+      "evidence/video/external-sync.mp4",
+      "evidence/analysis/imu-physical.json"
+    ]
+  },
+  "tick_rollover": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "raw_samples": []
+  },
+  "video_imu_sync_oracle": {
+    "status": "NOT_RUN",
+    "source": "none",
+    "events": []
+  },
+  "stability_01": {
+    "status": "PARTIAL",
+    "duration_s": 0,
+    "preview_imu_duration_s": 0,
+    "start_stop_cycles": 0,
+    "network_recovery": false,
+    "session_transfer": false,
+    "resource_sample_period_s": null,
+    "physical_media": false,
+    "source_issues": [
+      "pi-dev#154"
+    ]
+  },
+  "safety": {
+    "authorized_actions": [
+      "offline analysis only"
+    ],
+    "forbidden_actions_observed": [],
+    "rollback_status": "not_applicable",
+    "rollback_reason": "read-only analysis did not mutate hardware or network state"
+  },
+  "noncoverage": [
+    "synthetic fixture only",
+    "no physical hardware claim"
+  ],
+  "verdicts": {
+    "CAP-PHY-03": {
+      "result": "NOT_RUN",
+      "reason": "no external event oracle"
+    },
+    "CAP-PHY-04": {
+      "result": "PASS",
+      "reason": "candidate under test",
+      "evidence_refs": [
+        "evidence/imu/raw.ndjson",
+        "vendor://ylx/2uq2/imu-registers.pdf"
+      ]
+    },
+    "STABILITY-01": {
+      "result": "PARTIAL",
+      "reason": "IMU evidence cannot close composite stability"
+    }
+  }
+}

@@ -1,0 +1,1320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/delivery-wbs-v2.schema.json",
+  "title": "YLX rolling-wave delivery WBS v2",
+  "description": "A closed rolling-wave WBS. The current 173-row registry scope is always covered exactly. Nodes inside the declared detail horizon are executable leaves; nodes beyond it are bounded summaries or scenarios with explicit decomposition controls.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_id",
+    "revision",
+    "predecessor_sha256",
+    "generated_at",
+    "source_refs",
+    "artifact_metadata",
+    "overall_status",
+    "planning_gate",
+    "detail_horizon",
+    "registry_binding",
+    "requirement_ids",
+    "requirement_coverage",
+    "active_blocker_ids",
+    "active_blocker_coverage",
+    "nodes",
+    "blockers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.delivery-wbs.v2"
+    },
+    "artifact_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "generated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+      },
+      "uniqueItems": true
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "overall_status": {
+      "enum": [
+        "ACCEPTED",
+        "INPUT_BLOCKED"
+      ]
+    },
+    "planning_gate": {
+      "$ref": "#/$defs/gate"
+    },
+    "detail_horizon": {
+      "$ref": "#/$defs/detailHorizon"
+    },
+    "registry_binding": {
+      "$ref": "#/$defs/registryBinding"
+    },
+    "requirement_ids": {
+      "type": "array",
+      "minItems": 173,
+      "maxItems": 173,
+      "items": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "uniqueItems": true
+    },
+    "requirement_coverage": {
+      "$ref": "#/$defs/requirementCoverageMap"
+    },
+    "active_blocker_ids": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stringSet"
+    },
+    "active_blocker_coverage": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/nonEmptyNodeIdSet"
+        }
+      },
+      "additionalProperties": false
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "nullableTimestamp": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      ]
+    },
+    "nullableIdentifier": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      ]
+    },
+    "gate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ]
+    },
+    "futureGate": {
+      "enum": [
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ]
+    },
+    "requirementId": {
+      "enum": [
+        "M0-MEAS-01", "M0-MEAS-02", "M0-MEAS-03", "M0-MEAS-04", "M0-MEAS-05", "M0-MEAS-06",
+        "M0-MEAS-07", "M0-MEAS-08", "M0-MEAS-09", "M0-MEAS-10", "M0-MEAS-11", "M0-INV-01",
+        "M0-CORPUS-01", "M0-TRUTH-01", "M0-BASE-01", "M0-DECINPUT-01", "M0-GOV-01", "M1-DEC-01",
+        "M1-CONTRACT-01", "M1-THRESH-01", "M1-SUPPORT-01", "M1-REMOTE-01", "M1-TRACE-01", "M1-MIGRATION-01",
+        "M2-SCHEMA-01", "M2-DUALREAD-01", "M2-MAP-01", "M2-WORKER-01", "M2-WRAPPER-01", "M2-OLD-01",
+        "CAP-PHY-01", "CAP-PHY-02", "CAP-PHY-03", "CAP-PHY-04", "CAP-SOURCE-01", "CAP-STATE-01",
+        "DEVICE-IDENTITY-01", "DATA-SCHEMA-01", "DATA-INVENTORY-01", "DATA-VERIFY-01", "DATA-SEAL-01", "DATA-DROP-01",
+        "DATA-DROP-02", "DATA-FATAL-01", "DATA-FATAL-02", "REC-CRASH-01", "REC-ENOSPC-01", "REC-SPACE-01",
+        "REC-MEDIA-01", "VOLUME-SELECTION-01", "REC-HOTPLUG-01", "SALVAGE-ISOLATION-01", "SAFE-SWAP-01", "REC-TAKE-01",
+        "ENC-DECISION-01", "ENC-RECOVER-01", "ENC-CONCUR-01", "ENC-OUTPUT-01", "ENC-FAIL-01", "M3-INV-COMPLETE-01",
+        "M4-CANDIDATE-ASSEMBLY-01", "SAFE-SWAP-INTEGRATED-01", "RUNTIME-SERVICE-01", "CONSUMER-ATTESTATION-01", "PREVIEW-CONTENT-01", "PREVIEW-RATE-01",
+        "PREVIEW-RES-01", "PREVIEW-LAT-01", "PREVIEW-DROP-01", "PREVIEW-DROP-02", "PREVIEW-ISOLATE-01", "PREVIEW-FALLBACK-01",
+        "WEB-JOURNEY-01", "WEB-IDEMP-01", "WEB-AUTHORITY-01", "WEB-VERDICT-01", "WEB-SAFE-SWAP-01", "WEB-MULTI-01",
+        "WEB-SSE-01", "WEB-BROWSER-01", "NET-AP-01", "NET-CLIENT-01", "NET-WIRED-01", "NET-DUALWIFI-01",
+        "NET-MDNS-01", "NET-PROVISION-01", "NET-PROVISION-02", "NET-PROVISION-03", "NET-RESCUE-01", "CAL-SCHEMA-01",
+        "CAL-UNKNOWN-01", "CAL-ORACLE-01", "CAL-INTEGRITY-01", "CAL-STATE-01", "CAL-E2E-01", "CAL-OLD-01",
+        "XFER-MUTEX-01", "XFER-LAN-01", "XFER-LAN-02", "XFER-PROTO-01", "XFER-MEDIA-01", "XFER-MEDIA-SAFETY-01",
+        "XFER-SCRIPT-01", "XFER-EQUIV-01", "XFER-ENC-RECOVER-01", "XFER-OUTPUT-01", "XFER-RESOURCE-01", "XFER-LOCAL-01",
+        "STORE-MINIO-01", "STORE-PROD-01", "STORE-AMBIG-01", "STORE-IAM-01", "STORE-CORS-01", "STORE-LIFECYCLE-01",
+        "STORE-FIRST-PUBLISH-01", "STORE-DELETE-01", "CONSOLE-CORE-01", "CONSOLE-STORE-01", "WORKER-CONTRACT-01", "WORKER-INPUT-01",
+        "WORKER-LIMIT-01", "WORKER-RECOVER-01", "E2E-V5-01", "E2E-V5-OUTPUT-01", "E2E-V5-CORRECT-01", "E2E-ROUTE-LAN-01",
+        "E2E-ROUTE-MEDIA-GUI-01", "E2E-ROUTE-MEDIA-SCRIPT-01", "E2E-LEGACY-01", "E2E-V5-02", "E2E-FAKE-01", "SEC-PROFILE-01",
+        "SEC-LAB-01", "SEC-CUSTOMER-01", "SEC-PATH-01", "SEC-TLS-01", "SEC-SECRET-01", "SEC-UNSIGNED-01",
+        "UPGRADE-COLD-01", "UPGRADE-N1-01", "UPGRADE-POWER-01", "ROLLBACK-01", "ROLLBACK-DATA-01", "ROLLBACK-INFLIGHT-01",
+        "ROLLBACK-NET-01", "ROLLBACK-WEB-01", "ROLLBACK-PREVIEW-01", "ROLLBACK-TRANSFER-01", "OLD-DATA-01", "BUILD-PROV-01",
+        "BUILD-PROV-02", "BUILD-RELEASE-01", "BUILD-DEPLOY-01", "BUILD-SAME-01", "SUPPORT-01", "SUPPORT-MIN-01",
+        "M5-CANARY-ENTRY-01", "M5-CANARY-FIRST-PUBLICATION-01", "ROLLOUT-CANARY-01", "LEGACY-RETIRE-01", "STABILITY-01", "M0-ISSUES-01",
+        "M1-ISSUES-01", "M2-ISSUES-01", "M3-ISSUES-01", "M4A-ISSUES-01", "M4B-ISSUES-01", "M4C-ISSUES-01",
+        "M4D-ISSUES-01", "M4-ISSUES-01", "M5-ISSUES-01", "M5-MATRIX-COMPLETE-01", "M5-SIGNOFF-01"
+      ]
+    },
+    "registryBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_revision",
+        "registry_artifact_path",
+        "registry_artifact_sha256",
+        "registry_id_set_sha256",
+        "registry_cardinality"
+      ],
+      "properties": {
+        "registry_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "registry_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "registry_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_cardinality": {
+          "const": 173
+        }
+      }
+    },
+    "detailHorizon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planning_gate",
+        "executable_through_gate",
+        "next_expansion_gate",
+        "registry_id_set_sha256",
+        "requirement_cardinality"
+      ],
+      "properties": {
+        "planning_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "executable_through_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "next_expansion_gate": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/futureGate"
+            }
+          ]
+        },
+        "registry_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "requirement_cardinality": {
+          "const": 173
+        }
+      }
+    },
+    "nonEmptyNodeIdSet": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "requirementCoverageMap": {
+      "type": "object",
+      "minProperties": 173,
+      "maxProperties": 173,
+      "propertyNames": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/nonEmptyNodeIdSet"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "accountableOwnerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "owner_assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "owner_assignment_ref": {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        }
+      }
+    },
+    "nullableAccountableOwnerRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/accountableOwnerRef"
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "in_scope",
+        "out_of_scope"
+      ],
+      "properties": {
+        "in_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "uniqueItems": true
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "nodeBase": {
+      "required": [
+        "node_id",
+        "parent_node_id",
+        "milestone_gate",
+        "horizon_class",
+        "node_kind",
+        "affected_requirement_ids",
+        "affected_blocker_ids",
+        "scope",
+        "planning_status",
+        "absolute_start",
+        "absolute_finish",
+        "blockers"
+      ],
+      "properties": {
+        "node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "parent_node_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "milestone_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "horizon_class": {
+          "enum": [
+            "WITHIN_DETAIL_HORIZON",
+            "BEYOND_DETAIL_HORIZON"
+          ]
+        },
+        "node_kind": {
+          "enum": [
+            "EXECUTABLE_LEAF",
+            "BOUNDED_SUMMARY",
+            "BOUNDED_SCENARIO"
+          ]
+        },
+        "affected_requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/requirementId"
+          },
+          "uniqueItems": true
+        },
+        "affected_blocker_ids": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stringSet"
+        },
+        "accountable_owner_ref": {
+          "$ref": "#/$defs/nullableAccountableOwnerRef"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "planning_status": {
+          "enum": [
+            "READY",
+            "CONDITIONAL",
+            "INPUT_BLOCKED",
+            "COMPLETE"
+          ]
+        },
+        "absolute_start": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "absolute_finish": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "pointEstimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "basis"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "durationRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lower",
+        "upper",
+        "unit",
+        "basis",
+        "confidence"
+      ],
+      "properties": {
+        "lower": {
+          "type": "number",
+          "minimum": 0
+        },
+        "upper": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "confidence": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "estimateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effort",
+        "fixed_elapsed"
+      ],
+      "properties": {
+        "effort": {
+          "$ref": "#/$defs/durationRange"
+        },
+        "fixed_elapsed": {
+          "$ref": "#/$defs/durationRange"
+        }
+      }
+    },
+    "lag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      }
+    },
+    "typedPredecessorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_node_id",
+        "relation_type",
+        "lag"
+      ],
+      "properties": {
+        "predecessor_node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "relation_type": {
+          "enum": [
+            "FINISH_TO_START",
+            "START_TO_START",
+            "FINISH_TO_FINISH",
+            "START_TO_FINISH"
+          ]
+        },
+        "lag": {
+          "$ref": "#/$defs/lag"
+        }
+      }
+    },
+    "decisionPredecessorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_node_id",
+        "decision_status",
+        "relation_type",
+        "decision_artifact_ref"
+      ],
+      "properties": {
+        "decision_node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision_status": {
+          "enum": [
+            "PENDING",
+            "RESOLVED"
+          ]
+        },
+        "relation_type": {
+          "const": "DECISION_BEFORE_DECOMPOSITION"
+        },
+        "decision_artifact_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/exactArtifactRef"
+            }
+          ]
+        }
+      }
+    },
+    "resourceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_requirement_id",
+        "resource_kind",
+        "resource_id",
+        "quantity",
+        "capacity_unit",
+        "window_ids",
+        "authority_ref"
+      ],
+      "properties": {
+        "resource_requirement_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "resource_kind": {
+          "enum": [
+            "CAPACITY",
+            "TARGET_HARDWARE",
+            "CAMERA",
+            "MEDIA",
+            "CREDENTIAL",
+            "REMOTE",
+            "CI_RUNNER",
+            "PRODUCTION_ACCESS"
+          ]
+        },
+        "resource_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "capacity_unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "window_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "authority_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      }
+    },
+    "executionAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorization_class",
+        "authorization_action",
+        "authority_refs",
+        "stop_rules"
+      ],
+      "properties": {
+        "authorization_class": {
+          "enum": [
+            "may_prepare",
+            "may_implement",
+            "may_qualify",
+            "may_deploy",
+            "may_enable_writer",
+            "may_finalize_release",
+            "may_control_distribution"
+          ]
+        },
+        "authorization_action": {
+          "enum": [
+            "preserve",
+            "observe",
+            "measure",
+            "produce-governance-input",
+            "run-disposable-prototype",
+            "publish-planning-record",
+            "implement-contract",
+            "implement-product",
+            "build-target-disabled",
+            "assemble-m4-target",
+            "run-integration-smoke",
+            "install-target",
+            "configure-target",
+            "deploy-target-disabled",
+            "publish-prerelease-rc",
+            "deploy-writer-disabled-production",
+            "execute-qualification",
+            "collect-evidence",
+            "issue-verdict",
+            "publish-qualified-adapter-output",
+            "rehearse-distribution-control",
+            "enable-rp-ylx-production-target-writer",
+            "assemble-release-projection",
+            "collect-domain-attestations",
+            "publish-pre-release-closure",
+            "collect-release-quorum",
+            "acquire-publication-fence",
+            "promote-exact-rc",
+            "publish-promotion-receipt",
+            "publish-final-manifest",
+            "cas-terminal-reference",
+            "publish-aborted-termination",
+            "publish-initial-active",
+            "publish-withdrawn",
+            "publish-redirected",
+            "publish-reactivated-active"
+          ]
+        },
+        "authority_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        },
+        "stop_rules": {
+          "$ref": "#/$defs/stopRules"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_prepare" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["preserve", "observe", "measure", "produce-governance-input", "run-disposable-prototype", "publish-planning-record"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_implement" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["implement-contract", "implement-product", "build-target-disabled", "assemble-m4-target", "run-integration-smoke"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_deploy" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["install-target", "configure-target", "deploy-target-disabled", "publish-prerelease-rc", "deploy-writer-disabled-production"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_qualify" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["execute-qualification", "collect-evidence", "issue-verdict", "publish-qualified-adapter-output", "rehearse-distribution-control"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_enable_writer" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "const": "enable-rp-ylx-production-target-writer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_finalize_release" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["assemble-release-projection", "collect-domain-attestations", "publish-pre-release-closure", "collect-release-quorum", "acquire-publication-fence", "promote-exact-rc", "publish-promotion-receipt", "publish-final-manifest", "cas-terminal-reference", "publish-aborted-termination"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorization_class": { "const": "may_control_distribution" }
+            },
+            "required": ["authorization_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization_action": {
+                "enum": ["publish-initial-active", "publish-withdrawn", "publish-redirected", "publish-reactivated-active"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stopRules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 800
+      },
+      "uniqueItems": true
+    },
+    "definitionOfDone": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      },
+      "uniqueItems": true
+    },
+    "executableReadyLeaf": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/nodeBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accountable_owner_ref",
+            "executor_ref",
+            "reviewer_ref",
+            "execution_authorization",
+            "effort_estimate",
+            "fixed_elapsed_estimate",
+            "predecessor_refs",
+            "resource_requirements",
+            "definition_of_done",
+            "evidence_locator"
+          ],
+          "properties": {
+            "node_id": {},
+            "parent_node_id": {},
+            "milestone_gate": {},
+            "horizon_class": { "const": "WITHIN_DETAIL_HORIZON" },
+            "node_kind": { "const": "EXECUTABLE_LEAF" },
+            "affected_requirement_ids": {},
+            "affected_blocker_ids": {},
+            "scope": {},
+            "planning_status": {
+              "enum": ["READY", "COMPLETE"]
+            },
+            "accountable_owner_ref": { "$ref": "#/$defs/accountableOwnerRef" },
+            "absolute_start": {},
+            "absolute_finish": {},
+            "executor_ref": { "$ref": "#/$defs/accountableOwnerRef" },
+            "reviewer_ref": { "$ref": "#/$defs/accountableOwnerRef" },
+            "execution_authorization": { "$ref": "#/$defs/executionAuthorization" },
+            "effort_estimate": { "$ref": "#/$defs/pointEstimate" },
+            "fixed_elapsed_estimate": { "$ref": "#/$defs/pointEstimate" },
+            "predecessor_refs": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/typedPredecessorRef" },
+              "uniqueItems": true
+            },
+            "resource_requirements": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/resourceRequirement" },
+              "uniqueItems": true
+            },
+            "definition_of_done": { "$ref": "#/$defs/definitionOfDone" },
+            "evidence_locator": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator" },
+            "blockers": { "maxItems": 0 }
+          }
+        }
+      ]
+    },
+    "boundedConditionalNode": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/nodeBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accountable_owner_ref",
+            "estimate_range",
+            "decision_predecessor_refs",
+            "decomposition_gate",
+            "decomposition_deadline",
+            "stop_rules"
+          ],
+          "properties": {
+            "node_id": {},
+            "parent_node_id": {},
+            "milestone_gate": {},
+            "horizon_class": {
+              "const": "BEYOND_DETAIL_HORIZON"
+            },
+            "node_kind": {
+              "enum": [
+                "BOUNDED_SUMMARY",
+                "BOUNDED_SCENARIO"
+              ]
+            },
+            "affected_requirement_ids": {},
+            "affected_blocker_ids": {},
+            "scope": {},
+            "planning_status": {
+              "const": "CONDITIONAL"
+            },
+            "accountable_owner_ref": {
+              "$ref": "#/$defs/accountableOwnerRef"
+            },
+            "absolute_start": {
+              "type": "null"
+            },
+            "absolute_finish": {
+              "type": "null"
+            },
+            "estimate_range": {
+              "$ref": "#/$defs/estimateRange"
+            },
+            "decision_predecessor_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/decisionPredecessorRef"
+              },
+              "uniqueItems": true
+            },
+            "decomposition_gate": {
+              "$ref": "#/$defs/futureGate"
+            },
+            "decomposition_deadline": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+            },
+            "stop_rules": {
+              "$ref": "#/$defs/stopRules"
+            },
+            "blockers": {
+              "maxItems": 0
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "unknownInputSet": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "ACCOUNTABLE_OWNER",
+          "EXECUTOR",
+          "REVIEWER",
+          "EXECUTION_AUTHORIZATION",
+          "EFFORT_ESTIMATE",
+          "FIXED_ELAPSED_ESTIMATE",
+          "PREDECESSOR",
+          "RESOURCE",
+          "RESOURCE_WINDOW",
+          "DEFINITION_OF_DONE",
+          "EVIDENCE_LOCATOR",
+          "DECISION_PREDECESSOR",
+          "DECOMPOSITION_GATE",
+          "DECOMPOSITION_DEADLINE",
+          "STOP_RULE"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "executableBlockedLeaf": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/nodeBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unknown_inputs"
+          ],
+          "properties": {
+            "node_id": {},
+            "parent_node_id": {},
+            "milestone_gate": {},
+            "horizon_class": {
+              "const": "WITHIN_DETAIL_HORIZON"
+            },
+            "node_kind": {
+              "const": "EXECUTABLE_LEAF"
+            },
+            "affected_requirement_ids": {},
+            "affected_blocker_ids": {},
+            "accountable_owner_ref": {},
+            "scope": {},
+            "planning_status": {
+              "const": "INPUT_BLOCKED"
+            },
+            "absolute_start": {
+              "type": "null"
+            },
+            "absolute_finish": {
+              "type": "null"
+            },
+            "blockers": {
+              "minItems": 1
+            },
+            "unknown_inputs": {
+              "$ref": "#/$defs/unknownInputSet"
+            },
+            "executor_ref": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/accountableOwnerRef" }
+              ]
+            },
+            "reviewer_ref": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/accountableOwnerRef" }
+              ]
+            },
+            "execution_authorization": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/executionAuthorization" }
+              ]
+            },
+            "effort_estimate": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/pointEstimate" }
+              ]
+            },
+            "fixed_elapsed_estimate": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/pointEstimate" }
+              ]
+            },
+            "predecessor_refs": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/typedPredecessorRef" },
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "resource_requirements": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/resourceRequirement" },
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "definition_of_done": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/definitionOfDone" }
+              ]
+            },
+            "evidence_locator": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator" }
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "boundedBlockedNode": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/nodeBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unknown_inputs"
+          ],
+          "properties": {
+            "node_id": {},
+            "parent_node_id": {},
+            "milestone_gate": {},
+            "horizon_class": {
+              "const": "BEYOND_DETAIL_HORIZON"
+            },
+            "node_kind": {
+              "enum": [
+                "BOUNDED_SUMMARY",
+                "BOUNDED_SCENARIO"
+              ]
+            },
+            "affected_requirement_ids": {},
+            "affected_blocker_ids": {},
+            "accountable_owner_ref": {},
+            "scope": {},
+            "planning_status": {
+              "const": "INPUT_BLOCKED"
+            },
+            "absolute_start": {
+              "type": "null"
+            },
+            "absolute_finish": {
+              "type": "null"
+            },
+            "blockers": {
+              "minItems": 1
+            },
+            "unknown_inputs": {
+              "$ref": "#/$defs/unknownInputSet"
+            },
+            "estimate_range": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/estimateRange" }
+              ]
+            },
+            "decision_predecessor_refs": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/decisionPredecessorRef" },
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "decomposition_gate": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/futureGate" }
+              ]
+            },
+            "decomposition_deadline": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp" }
+              ]
+            },
+            "stop_rules": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/stopRules" }
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "node": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/executableReadyLeaf"
+        },
+        {
+          "$ref": "#/$defs/executableBlockedLeaf"
+        },
+        {
+          "$ref": "#/$defs/boundedConditionalNode"
+        },
+        {
+          "$ref": "#/$defs/boundedBlockedNode"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": { "const": 1 }
+        },
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_sha256": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_status": { "const": "ACCEPTED" }
+        },
+        "required": ["overall_status"]
+      },
+      "then": {
+        "properties": {
+          "approvals": { "minItems": 1 },
+          "active_blocker_ids": { "maxItems": 0 },
+          "active_blocker_coverage": { "maxProperties": 0 },
+          "nodes": {
+            "items": {
+              "oneOf": [
+                { "$ref": "#/$defs/executableReadyLeaf" },
+                { "$ref": "#/$defs/boundedConditionalNode" }
+              ]
+            }
+          },
+          "blockers": { "maxItems": 0 }
+        }
+      },
+      "else": {
+        "properties": {
+          "blockers": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M0" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M0" }, "executable_through_gate": { "const": "M1" }, "next_expansion_gate": { "const": "M1" } } } } }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M1" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M1" }, "executable_through_gate": { "const": "M2" }, "next_expansion_gate": { "const": "M2" } } } } }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M2" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M2" }, "executable_through_gate": { "const": "M3" }, "next_expansion_gate": { "const": "M3" } } } } }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M3" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M3" }, "executable_through_gate": { "const": "M4" }, "next_expansion_gate": { "const": "M4" } } } } }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M4" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M4" }, "executable_through_gate": { "const": "M5" }, "next_expansion_gate": { "const": "M5" } } } } }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M5" } }, "required": ["planning_gate"] },
+      "then": { "properties": { "detail_horizon": { "properties": { "planning_gate": { "const": "M5" }, "executable_through_gate": { "const": "M5" }, "next_expansion_gate": { "type": "null" } } } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_id": {
+            "const": "M0-GOV-01-governed-delivery-wbs"
+          },
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "artifact_id",
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "source_refs": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/governedPhaseBPlanningRootSourceRefs"
+          },
+          "approvals": false
+        }
+      },
+      "else": {
+        "required": [
+          "approvals"
+        ]
+      }
+    }
+  ]
+}

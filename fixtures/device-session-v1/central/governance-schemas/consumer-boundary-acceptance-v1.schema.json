@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/consumer-boundary-acceptance-v1.schema.json",
+  "title": "YLX consumer boundary acceptance v1",
+  "description": "One immutable M5 acceptance record for one applicable consumer boundary. Product, release, and contract identity is inherited only through the exact M5 binding context; per-consumer execution and deployment identity remains explicit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "boundary_id",
+    "consumer_boundary_registry_sha256",
+    "binding_context_ref",
+    "execution_context_refs",
+    "component_artifact_owner",
+    "component_maintainer_subrole",
+    "component_maintainer_attestation_sha256",
+    "component_artifact_identity",
+    "component_artifact_sha256",
+    "deployed_environment_identity",
+    "deployment_record_sha256",
+    "legacy_accept_evidence_ids",
+    "target_accept_evidence_ids",
+    "unknown_major_reject_evidence_ids",
+    "requirement_verdict_refs",
+    "owner_slot",
+    "reviewer_slot"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.consumer-boundary-acceptance.v1"
+    },
+    "boundary_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryId"
+    },
+    "consumer_boundary_registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "execution_context_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/executionContextRef"
+      }
+    },
+    "component_artifact_owner": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "component_maintainer_subrole": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "component_maintainer_attestation_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "component_artifact_identity": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "component_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "deployed_environment_identity": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "deployment_record_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "legacy_accept_evidence_ids": {
+      "$ref": "#/$defs/evidenceIdSet"
+    },
+    "target_accept_evidence_ids": {
+      "$ref": "#/$defs/evidenceIdSet"
+    },
+    "unknown_major_reject_evidence_ids": {
+      "$ref": "#/$defs/evidenceIdSet"
+    },
+    "requirement_verdict_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      }
+    },
+    "owner_slot": {
+      "const": "consumer-owner"
+    },
+    "reviewer_slot": {
+      "const": "contract-owner"
+    }
+  },
+  "$defs": {
+    "bindingContextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Reference to exact ylx.binding-context.v1 bytes whose resolved stage must be M5."
+    },
+    "executionContextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Reference to exact ylx.execution-context.v1 bytes resolving the actual component deployment, including rendered config and deployment-record digests."
+    },
+    "evidenceIdSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+      }
+    }
+  }
+}

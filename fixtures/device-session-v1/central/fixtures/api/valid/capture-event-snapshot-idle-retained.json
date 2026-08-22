@@ -1,0 +1,81 @@
+{
+  "schema": "ylx.capture-event.v3",
+  "sse_delivery_id": "1046",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_revision": 43,
+  "type": "snapshot",
+  "occurred_at": "2026-08-08T13:01:02+08:00",
+  "session_id": "0198a100-0001-7001-8000-000000000001",
+  "data": {
+    "schema": "ylx.capture-snapshot-event.v2",
+    "device_state": "idle",
+    "active_recording": null,
+    "retained_unsuccessful": {
+      "generation_id": "20000001-0000-4001-8000-000000000001",
+      "recording_state": {
+        "schema": "ylx.recording-state.v1",
+        "state": "recoverable",
+        "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "state_revision": 43,
+        "updated_at": "2026-08-08T13:01:02+08:00",
+        "session_id": "0198a100-0001-7001-8000-000000000001",
+        "take_id": "0198a100-0101-7101-9000-000000000001",
+        "display_name": "2026-08-08_13-00-00_YLX-30D5872D",
+        "device": {
+          "device_id": "550e8400-e29b-41d4-a716-446655440000",
+          "device_label": "YLX-30D5872D"
+        },
+        "storage": {
+          "volume_id": "10000001-0000-4001-8000-000000000001",
+          "status": "media_lost",
+          "writable": false,
+          "remaining_bytes": null
+        },
+        "progress": {
+          "elapsed_seconds": 62.4,
+          "captured_frames": 1872,
+          "bytes_written": 780140544
+        },
+        "diagnostics": [
+          {
+            "code": "media_lost",
+            "severity": "error",
+            "message": "The selected recording volume disappeared before finalization.",
+            "at": "2026-08-08T13:01:02+08:00",
+            "recoverable": true,
+            "details": {
+              "action": "reinsert_same_volume"
+            }
+          }
+        ]
+      }
+    },
+    "runtime": {
+      "observed_at": "2026-08-08T13:01:02+08:00",
+      "connection_method": "wifi_ap",
+      "temperature_celsius": 50.5,
+      "network": {
+        "ap": {
+          "state": "active",
+          "interface": "wlan0",
+          "addresses": ["10.42.0.1/24"],
+          "peer_or_ssid": "YLX-30D5872D"
+        },
+        "wifi_client": {
+          "state": "disabled",
+          "interface": null,
+          "addresses": [],
+          "peer_or_ssid": null
+        },
+        "wired": {
+          "state": "disconnected",
+          "interface": "eth0",
+          "addresses": [],
+          "peer_or_ssid": null
+        },
+        "default_route": "none"
+      },
+      "live_imu": null
+    }
+  }
+}

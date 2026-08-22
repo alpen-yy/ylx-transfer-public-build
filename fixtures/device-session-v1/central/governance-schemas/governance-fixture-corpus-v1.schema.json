@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/governance-fixture-corpus-v1.schema.json",
+  "title": "YLX nonrecursive governance fixture input corpus v1",
+  "description": "Closed exact inventory of the digest-independent source bytes used to generate the synthetic governance corpus. The inventory excludes its own bytes and both release-bound M2 context instances so the M2 qualification context can bind this artifact without a direct or transitive digest cycle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "corpus_id",
+    "revision",
+    "corpus_kind",
+    "created_at",
+    "included_artifact_sha256_by_path",
+    "included_path_set_sha256",
+    "exclusion_rule",
+    "excluded_release_bound_artifact_paths",
+    "self_artifact_path",
+    "contract_root_relation",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.governance-fixture-corpus.v1"
+    },
+    "corpus_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "const": 1
+    },
+    "corpus_kind": {
+      "const": "DIGEST_INDEPENDENT_GENERATOR_INPUTS"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "included_artifact_sha256_by_path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contracts/governance-schemas/binding-context-v2.schema.json",
+        "contracts/governance-schemas/governance-common.schema.json",
+        "contracts/fixtures/governance-models/generate_fixtures.py",
+        "scripts/validate_governance_models.py"
+      ],
+      "properties": {
+        "contracts/governance-schemas/binding-context-v2.schema.json": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contracts/governance-schemas/governance-common.schema.json": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contracts/fixtures/governance-models/generate_fixtures.py": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "scripts/validate_governance_models.py": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "included_path_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "exclusion_rule": {
+      "const": "EXCLUDE_RELEASE_BOUND_M2_CONTEXTS_AND_SELF"
+    },
+    "excluded_release_bound_artifact_paths": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "contracts/fixtures/governance-models/valid/binding-context-v2-m2-bootstrap.json"
+        },
+        {
+          "const": "contracts/fixtures/governance-models/valid/binding-context-v2-m2.json"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "self_artifact_path": {
+      "const": "contracts/fixtures/governance-models/valid/governance-fixture-input-corpus.json"
+    },
+    "contract_root_relation": {
+      "const": "INPUTS_ONLY_NO_RELEASE_BOUND_OUTPUTS"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "not": {
+    "anyOf": [
+      {
+        "required": ["artifact_sha256"]
+      },
+      {
+        "required": ["corpus_sha256"]
+      },
+      {
+        "required": ["self_sha256"]
+      },
+      {
+        "properties": {
+          "included_artifact_sha256_by_path": {
+            "required": [
+              "contracts/governance-schemas/governance-fixture-corpus-v1.schema.json"
+            ]
+          }
+        },
+        "required": ["included_artifact_sha256_by_path"]
+      }
+    ]
+  }
+}

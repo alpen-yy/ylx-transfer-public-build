@@ -1,0 +1,84 @@
+{
+  "schema": "ylx.bucket-publication.v2",
+  "publication_id": "01989f88-0000-7d4e-bf50-61728394a5b6",
+  "sealed": true,
+  "published_at": "2026-08-08T12:20:00+08:00",
+  "device": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "YLX-30D5872D"
+  },
+  "source_manifest": {
+    "manifest_id": "01989f80-0001-7b2c-9d3e-4f5061728394",
+    "schema": "ylx.device-session.v1",
+    "session_id": "01989f80-0000-7a1b-8c2d-3e4f50617283",
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "object_key": "synthetic/production-canary/550e8400-e29b-41d4-a716-446655440000/01989f80-0000-7a1b-8c2d-3e4f50617283/f-d67ed9d7d03d1b538029d25389a699ad4fcd39f86d28398bc325632e03db6403",
+    "bytes": 3225,
+    "sha256": "d67ed9d7d03d1b538029d25389a699ad4fcd39f86d28398bc325632e03db6403"
+  },
+  "take": {
+    "take_id": "01989f80-0000-7c3d-ae4f-5061728394a5",
+    "sequence": 1,
+    "continuation_of": null
+  },
+  "publication_object_key": "synthetic/production-canary/550e8400-e29b-41d4-a716-446655440000/01989f80-0000-7a1b-8c2d-3e4f50617283/__ylx_evidence__/publication.json",
+  "artifacts": [
+    {
+      "artifact_id": "9999999999999999999999999999999999999999999999999999999999999999",
+      "role": "video.left",
+      "object_key": "synthetic/production-canary/550e8400-e29b-41d4-a716-446655440000/01989f80-0000-7a1b-8c2d-3e4f50617283/f-9999999999999999999999999999999999999999999999999999999999999999",
+      "media_type": "video/mp4",
+      "bytes": 25123456,
+      "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "provenance": {
+        "kind": "normalized-output",
+        "source_artifact_ids": [
+          "6666666666666666666666666666666666666666666666666666666666666666"
+        ],
+        "transform": {
+          "name": "ylx-stereo-delivery",
+          "version": "1.0.0",
+          "parameters": {}
+        }
+      }
+    },
+    {
+      "artifact_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "role": "video.right",
+      "object_key": "synthetic/production-canary/550e8400-e29b-41d4-a716-446655440000/01989f80-0000-7a1b-8c2d-3e4f50617283/f-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "media_type": "video/mp4",
+      "bytes": 25123456,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "provenance": {
+        "kind": "normalized-output",
+        "source_artifact_ids": [
+          "6666666666666666666666666666666666666666666666666666666666666666"
+        ],
+        "transform": {
+          "name": "ylx-stereo-delivery",
+          "version": "1.0.0",
+          "parameters": {}
+        }
+      }
+    },
+    {
+      "artifact_id": "9999999999999999999999999999999999999999999999999999999999999999",
+      "role": "publication.transform-log",
+      "object_key": "synthetic/production-canary/550e8400-e29b-41d4-a716-446655440000/01989f80-0000-7a1b-8c2d-3e4f50617283/f-9999999999999999999999999999999999999999999999999999999999999999",
+      "media_type": "video/mp4",
+      "bytes": 25123456,
+      "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "provenance": {
+        "kind": "normalized-output",
+        "source_artifact_ids": [
+          "6666666666666666666666666666666666666666666666666666666666666666"
+        ],
+        "transform": {
+          "name": "ylx-stereo-delivery",
+          "version": "1.0.0",
+          "parameters": {}
+        }
+      }
+    }
+  ]
+}

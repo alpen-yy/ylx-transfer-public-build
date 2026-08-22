@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-policy-ratification-subject-v1.schema.json",
+  "title": "YLX closed four-key G0 policy ratification subject v1",
+  "description": "The wrapperless RFC 8785 approval preimage. It contains exactly the three decision proposal refs, the selected draft acceptance-history tuple, the already durable canonical governance repository/clean-commit binding, and the explicit D-028 extension reconciliation decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_proposal_ref_by_id",
+    "acceptance_history_subject",
+    "canonical_governance_subject",
+    "proposal_extension_reconciliation_decision"
+  ],
+  "properties": {
+    "decision_proposal_ref_by_id": {
+      "$ref": "#/$defs/decisionProposalRefMap"
+    },
+    "acceptance_history_subject": {
+      "$ref": "#/$defs/acceptanceHistorySubject"
+    },
+    "canonical_governance_subject": {
+      "$ref": "#/$defs/canonicalGovernanceSubject"
+    },
+    "proposal_extension_reconciliation_decision": {
+      "$ref": "#/$defs/proposalExtensionReconciliationDecision"
+    }
+  },
+  "$defs": {
+    "pathDigestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_path", "artifact_sha256"],
+      "properties": {
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "decisionProposalRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["D-028", "D-029", "D-030"],
+      "properties": {
+        "D-028": {"$ref": "#/$defs/pathDigestRef"},
+        "D-029": {"$ref": "#/$defs/pathDigestRef"},
+        "D-030": {"$ref": "#/$defs/pathDigestRef"}
+      }
+    },
+    "acceptanceHistorySubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposal_record_id",
+        "proposal_artifact_path",
+        "proposal_artifact_sha256",
+        "history_head_record_id",
+        "history_head_artifact_path",
+        "history_head_artifact_sha256",
+        "registry_archive_artifact_path",
+        "registry_archive_artifact_sha256",
+        "acceptance_archive_artifact_path",
+        "acceptance_archive_artifact_sha256",
+        "canonical_id_set_artifact_path",
+        "canonical_id_set_sha256"
+      ],
+      "properties": {
+        "proposal_record_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "proposal_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "proposal_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "history_head_record_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "history_head_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "history_head_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_archive_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "registry_archive_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "acceptance_archive_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "acceptance_archive_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "canonical_id_set_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "canonical_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "canonicalGovernanceSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_locator",
+        "subject_commit_id",
+        "subject_commit_tree_sha256",
+        "exact_five_path_sha256_by_path",
+        "locator_readback_ref",
+        "locator_readback_sha256"
+      ],
+      "properties": {
+        "repository_locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "subject_commit_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "subject_commit_tree_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "exact_five_path_sha256_by_path": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "propertyNames": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+          },
+          "patternProperties": {
+            "^.+$": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            }
+          }
+        },
+        "locator_readback_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "locator_readback_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "proposalExtensionReconciliationDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposal_id",
+        "decision",
+        "exact_proposal_terminal_reference_fields",
+        "candidate_extension_field",
+        "ratified_terminal_reference_fields",
+        "payload_ref_binding",
+        "d028_proposal_mutation",
+        "implicit_union"
+      ],
+      "properties": {
+        "proposal_id": {"const": "D-028"},
+        "decision": {"const": "RATIFY_INTEGRATED_FOUR_FIELD_TERMINAL_REFERENCE"},
+        "exact_proposal_terminal_reference_fields": {
+          "const": ["kind", "payload_locator", "payload_sha256"]
+        },
+        "candidate_extension_field": {"const": "payload_ref"},
+        "ratified_terminal_reference_fields": {
+          "const": ["kind", "payload_ref", "payload_locator", "payload_sha256"]
+        },
+        "payload_ref_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_path_equals", "artifact_sha256_equals"],
+          "properties": {
+            "artifact_path_equals": {"const": "payload_locator"},
+            "artifact_sha256_equals": {"const": "payload_sha256"}
+          }
+        },
+        "d028_proposal_mutation": {"const": "FORBIDDEN"},
+        "implicit_union": {"const": "FORBIDDEN"}
+      }
+    }
+  }
+}

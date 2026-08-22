@@ -1,0 +1,586 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bootstrap-input-closure-v1.schema.json",
+  "title": "YLX planning bootstrap exact input closure v1",
+  "description": "Immutable, authority-NONE M0-I fact closure C with an exact 26-step operation constraint map, including the terminal issue-reconciliation sink step. Its raw bytes are RFC 8785 canonical JSON UTF-8 over exactly the fields closed by this schema; exact-byte digest, source freshness, fork freedom, interval ordering, symlink rejection, and the requirement that every fact be RESOLVED are procedural validation rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "closure_id",
+    "bootstrap_attempt_id",
+    "created_at",
+    "fact_entry_by_id",
+    "intended_g0_issue_transition",
+    "candidate_derivation_contract_ref",
+    "candidate_derivation_contract_sha256",
+    "operation_constraint_by_step",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bootstrap-input-closure.v1"
+    },
+    "closure_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "bootstrap_attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "fact_entry_by_id": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$": {
+          "$ref": "#/$defs/factEntry"
+        }
+      },
+      "additionalProperties": false
+    },
+    "intended_g0_issue_transition": {
+      "$ref": "#/$defs/intendedG0IssueTransition"
+    },
+    "candidate_derivation_contract_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "candidate_derivation_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "operation_constraint_by_step": {
+      "$ref": "#/$defs/operationConstraintByStep"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    }
+  },
+  "$defs": {
+    "nullableTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableSchemaName": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/schemaName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableIdentifier": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "jsonValue": {
+      "description": "A recursively representable JSON value. JSON parsing rejects duplicate object keys and non-finite or otherwise non-JSON numbers before schema validation.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "patternProperties": {
+        "^[\\s\\S]*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "factEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_kind",
+        "source_ref",
+        "source_sha256",
+        "canonical_value",
+        "observed_at_or_attested_at",
+        "actor_or_attestor_id",
+        "validity_not_before",
+        "validity_not_after",
+        "resolution_state"
+      ],
+      "properties": {
+        "fact_kind": {
+          "enum": [
+            "immutable-observation",
+            "owner-assignment-bootstrap-authority",
+            "accountable-principal",
+            "capacity",
+            "resource-window",
+            "estimate",
+            "dependency",
+            "schedule-anchor",
+            "calculator-input",
+            "approval-role-identity",
+            "approval-role-eligibility",
+            "issue-register-predecessor"
+          ]
+        },
+        "source_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "source_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "canonical_value": {
+          "$ref": "#/$defs/jsonValue"
+        },
+        "observed_at_or_attested_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "actor_or_attestor_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "validity_not_before": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "validity_not_after": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "resolution_state": {
+          "enum": [
+            "RESOLVED",
+            "UNKNOWN",
+            "CONFLICT"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "validity_not_before": {
+              "type": "null"
+            },
+            "validity_not_after": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "validity_not_before": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+            },
+            "validity_not_after": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+            }
+          }
+        }
+      ]
+    },
+    "intendedG0IssueTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_head_ref",
+        "predecessor_head_sha256",
+        "predecessor_source_ref",
+        "predecessor_source_sha256",
+        "replacement_source_ref",
+        "replacement_source_sha256",
+        "selector_version",
+        "publication_mode",
+        "authority_effect",
+        "expected_g0_selector_cardinality"
+      ],
+      "properties": {
+        "predecessor_head_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "predecessor_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "predecessor_source_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "predecessor_source_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "replacement_source_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "replacement_source_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "selector_version": {
+          "const": "issue-register-gate-selector.v2"
+        },
+        "publication_mode": {
+          "const": "AUTHORIZED_GOVERNANCE_PUBLICATION"
+        },
+        "authority_effect": {
+          "const": "GOVERNED_ISSUE_SELECTION"
+        },
+        "expected_g0_selector_cardinality": {
+          "const": 0
+        }
+      }
+    },
+    "operationConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "constraint_kind",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "artifact_schema",
+        "artifact_id"
+      ],
+      "properties": {
+        "constraint_kind": {
+          "enum": [
+            "repository-write",
+            "readback",
+            "issue-write",
+            "issue-readback",
+            "approval-import",
+            "terminal-sink"
+          ]
+        },
+        "repository_locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "operation": {
+          "enum": [
+            "CREATE_IF_ABSENT",
+            "READ_EXACT",
+            "REPLACE_LIVE_SOURCE_EXACT",
+            "CREATE_IMMUTABLE_ARCHIVE",
+            "PUBLISH_DIRECT_SUCCESSOR_HEAD",
+            "READ_EXACT_TRANSITION_TUPLE",
+            "IMPORT_EXACT",
+            "EMIT_RECONCILIATION"
+          ]
+        },
+        "target_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_schema": {
+          "$ref": "#/$defs/nullableSchemaName"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "artifact_schema": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "artifact_schema"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repositoryWriteConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "repository-write"
+            },
+            "operation": {
+              "const": "CREATE_IF_ABSENT"
+            }
+          }
+        }
+      ]
+    },
+    "readbackConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "readback"
+            },
+            "operation": {
+              "const": "READ_EXACT"
+            }
+          }
+        }
+      ]
+    },
+    "issueSourceWriteConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "issue-write"
+            },
+            "operation": {
+              "const": "REPLACE_LIVE_SOURCE_EXACT"
+            }
+          }
+        }
+      ]
+    },
+    "issueArchiveWriteConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "issue-write"
+            },
+            "operation": {
+              "const": "CREATE_IMMUTABLE_ARCHIVE"
+            }
+          }
+        }
+      ]
+    },
+    "issueHeadWriteConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "issue-write"
+            },
+            "operation": {
+              "const": "PUBLISH_DIRECT_SUCCESSOR_HEAD"
+            }
+          }
+        }
+      ]
+    },
+    "issueReadbackConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "issue-readback"
+            },
+            "operation": {
+              "const": "READ_EXACT_TRANSITION_TUPLE"
+            }
+          }
+        }
+      ]
+    },
+    "issueReconciliationConstraint": {
+      "description": "Closed constraint for emitting the terminal G0 issue reconciliation receipt. artifact_id remains nullable because the receipt ID is resolved downstream.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "terminal-sink"
+            },
+            "operation": {
+              "const": "EMIT_RECONCILIATION"
+            },
+            "artifact_schema": {
+              "const": "ylx.g0-issue-register-reconciliation-receipt.v1"
+            }
+          }
+        }
+      ]
+    },
+    "approvalImportConstraint": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/operationConstraint"
+        },
+        {
+          "properties": {
+            "constraint_kind": {
+              "const": "approval-import"
+            },
+            "operation": {
+              "const": "IMPORT_EXACT"
+            }
+          }
+        }
+      ]
+    },
+    "operationConstraintByStep": {
+      "description": "Exact closed map of all 26 bootstrap operation steps declared by C.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input-closure-readback",
+        "phase-a-derivation-record-write",
+        "owner-root-write",
+        "owner-root-readback",
+        "issue-source-replacement-write",
+        "issue-archive-write",
+        "issue-head-write",
+        "issue-transition-readback",
+        "issue-reconciliation",
+        "phase-b-derivation-record-write",
+        "approval-subject-write",
+        "approval-subject-readback",
+        "approval-release-owner-import",
+        "approval-release-owner-readback",
+        "approval-build-platform-owner-import",
+        "approval-build-platform-owner-readback",
+        "approval-qa-evidence-owner-import",
+        "approval-qa-evidence-owner-readback",
+        "resource-calendar-write",
+        "resource-calendar-readback",
+        "delivery-wbs-write",
+        "delivery-wbs-readback",
+        "forecast-snapshot-write",
+        "forecast-snapshot-readback",
+        "containing-bundle-write",
+        "containing-bundle-readback"
+      ],
+      "properties": {
+        "input-closure-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "phase-a-derivation-record-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "owner-root-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "owner-root-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "issue-source-replacement-write": {
+          "$ref": "#/$defs/issueSourceWriteConstraint"
+        },
+        "issue-archive-write": {
+          "$ref": "#/$defs/issueArchiveWriteConstraint"
+        },
+        "issue-head-write": {
+          "$ref": "#/$defs/issueHeadWriteConstraint"
+        },
+        "issue-transition-readback": {
+          "$ref": "#/$defs/issueReadbackConstraint"
+        },
+        "issue-reconciliation": {
+          "$ref": "#/$defs/issueReconciliationConstraint"
+        },
+        "phase-b-derivation-record-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "approval-subject-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "approval-subject-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "approval-release-owner-import": {
+          "$ref": "#/$defs/approvalImportConstraint"
+        },
+        "approval-release-owner-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "approval-build-platform-owner-import": {
+          "$ref": "#/$defs/approvalImportConstraint"
+        },
+        "approval-build-platform-owner-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "approval-qa-evidence-owner-import": {
+          "$ref": "#/$defs/approvalImportConstraint"
+        },
+        "approval-qa-evidence-owner-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "resource-calendar-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "resource-calendar-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "delivery-wbs-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "delivery-wbs-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "forecast-snapshot-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "forecast-snapshot-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        },
+        "containing-bundle-write": {
+          "$ref": "#/$defs/repositoryWriteConstraint"
+        },
+        "containing-bundle-readback": {
+          "$ref": "#/$defs/readbackConstraint"
+        }
+      }
+    }
+  }
+}

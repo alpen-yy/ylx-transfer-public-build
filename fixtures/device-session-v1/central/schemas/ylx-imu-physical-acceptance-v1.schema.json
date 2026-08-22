@@ -1,0 +1,821 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ylx:schema:imu-physical-acceptance:v1",
+  "title": "YLX IMU Physical Acceptance Evidence v1",
+  "description": "Offline evidence envelope for IMU physical acceptance. This schema records evidence shape only; procedural gates decide whether any acceptance ID may pass.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "evidence_id",
+    "created_at",
+    "test_only",
+    "physical_hardware_claim",
+    "device_identity",
+    "build_identity",
+    "session_identity",
+    "vendor_docs",
+    "raw_artifacts",
+    "packet_facts",
+    "chip_identity",
+    "accelerometer_range",
+    "gyroscope_range",
+    "axis_mapping",
+    "tick_clock",
+    "sample_phase",
+    "six_face",
+    "known_rate",
+    "tick_rollover",
+    "video_imu_sync_oracle",
+    "stability_01",
+    "safety",
+    "noncoverage",
+    "verdicts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.imu-physical-acceptance.v1"
+    },
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "test_only": {
+      "type": "boolean",
+      "description": "Synthetic fixtures and analyzer examples must set this true."
+    },
+    "physical_hardware_claim": {
+      "type": "boolean",
+      "description": "True only when the artifact claims real YLX hardware evidence."
+    },
+    "device_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_label", "usb_vid_pid", "bcd_device", "video_node", "uvc_extension"],
+      "properties": {
+        "device_label": {"type": "string", "minLength": 1, "maxLength": 128},
+        "usb_vid_pid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{4}:[0-9a-f]{4}$"
+        },
+        "bcd_device": {"type": ["string", "null"], "maxLength": 32},
+        "video_node": {"type": ["string", "null"], "pattern": "^/dev/video[0-9]+$"},
+        "uvc_extension": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["guid", "unit", "selector", "get_len_bytes"],
+          "properties": {
+            "guid": {"type": "string", "format": "uuid"},
+            "unit": {"type": "integer", "minimum": 0, "maximum": 255},
+            "selector": {"type": "integer", "minimum": 0, "maximum": 255},
+            "get_len_bytes": {"type": "integer", "minimum": 0, "maximum": 1024}
+          }
+        }
+      }
+    },
+    "build_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pi_dev_commit", "rp_ylx_commit", "wheel", "kernel"],
+      "properties": {
+        "pi_dev_commit": {"$ref": "#/$defs/nonemptyString"},
+        "rp_ylx_commit": {"$ref": "#/$defs/nonemptyString"},
+        "wheel": {"type": ["string", "null"], "maxLength": 256},
+        "kernel": {"type": ["string", "null"], "maxLength": 256}
+      }
+    },
+    "session_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "capture_started_at",
+        "capture_ended_at",
+        "source_manifest_sha256"
+      ],
+      "properties": {
+        "session_id": {
+          "type": ["string", "null"],
+          "format": "uuid"
+        },
+        "capture_started_at": {"type": ["string", "null"], "format": "date-time"},
+        "capture_ended_at": {"type": ["string", "null"], "format": "date-time"},
+        "source_manifest_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "vendor_docs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/vendorDoc"},
+      "description": "Primary vendor artifacts, if present. Empty means no vendor primary evidence."
+    },
+    "raw_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/rawArtifact"}
+    },
+    "packet_facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packet_length_bytes",
+        "timestamp_bits",
+        "timestamp_byte_order",
+        "sample_groups_per_packet",
+        "raw_sample_format",
+        "fields"
+      ],
+      "properties": {
+        "packet_length_bytes": {"type": "integer", "const": 27},
+        "timestamp_bits": {"type": "integer", "const": 24},
+        "timestamp_byte_order": {"const": "big_endian"},
+        "sample_groups_per_packet": {"type": "integer", "const": 2},
+        "raw_sample_format": {"const": "big_endian_i16"},
+        "fields": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "prefixItems": [
+            {"$ref": "#/$defs/packetTimestamp24Field"},
+            {"$ref": "#/$defs/packetSample0AccelXField"},
+            {"$ref": "#/$defs/packetSample0AccelYField"},
+            {"$ref": "#/$defs/packetSample0AccelZField"},
+            {"$ref": "#/$defs/packetSample0GyroXField"},
+            {"$ref": "#/$defs/packetSample0GyroYField"},
+            {"$ref": "#/$defs/packetSample0GyroZField"},
+            {"$ref": "#/$defs/packetSample1AccelXField"},
+            {"$ref": "#/$defs/packetSample1AccelYField"},
+            {"$ref": "#/$defs/packetSample1AccelZField"},
+            {"$ref": "#/$defs/packetSample1GyroXField"},
+            {"$ref": "#/$defs/packetSample1GyroYField"},
+            {"$ref": "#/$defs/packetSample1GyroZField"}
+          ],
+          "items": false
+        }
+      }
+    },
+    "chip_identity": {"$ref": "#/$defs/statusSection"},
+    "accelerometer_range": {"$ref": "#/$defs/rangeSectionAccel"},
+    "gyroscope_range": {"$ref": "#/$defs/rangeSectionGyro"},
+    "axis_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "coordinate_frame"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "coordinate_frame": {
+          "enum": ["raw_device_axes", "opencv_optical", "unknown"]
+        },
+        "raw_to_camera_axes": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 3,
+          "items": {"enum": ["+x", "-x", "+y", "-y", "+z", "-z"]}
+        },
+        "residual_note": {"type": ["string", "null"], "maxLength": 512},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "tick_clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "device_tick_hz"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "device_tick_hz": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "fit_residual_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "sample_phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "groups_per_packet"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "groups_per_packet": {"type": "integer", "const": 2},
+        "phase_description": {"type": ["string", "null"], "maxLength": 512},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "six_face": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "faces"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "faces": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/sixFaceObservation"}
+        },
+        "gravity_norm_residual_p95_m_s2": {"type": ["number", "null"], "minimum": 0},
+        "cross_axis_leakage_max": {"type": ["number", "null"], "minimum": 0},
+        "scale_drift_max": {"type": ["number", "null"], "minimum": 0},
+        "fit_rank": {"type": ["integer", "null"], "minimum": 0},
+        "condition_number": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "known_rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "trials"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "trials": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/knownRateTrial"}
+        },
+        "scale_error_max": {"type": ["number", "null"], "minimum": 0},
+        "cross_axis_leakage_max": {"type": ["number", "null"], "minimum": 0},
+        "condition_number": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "coverage_exception": {"$ref": "#/$defs/coverageException"},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "tick_rollover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "raw_samples"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "raw_samples": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/tickSample"}
+        },
+        "rollover_count": {"type": ["integer", "null"], "minimum": 0},
+        "duplicate_count": {"type": ["integer", "null"], "minimum": 0},
+        "regression_count": {"type": ["integer", "null"], "minimum": 0},
+        "fit_residual_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "read_duration_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "video_imu_sync_oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "events"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "events": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/syncEvent"}
+        },
+        "offset_median_s": {"type": ["number", "null"], "minimum": 0},
+        "offset_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "fit_residual_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "read_uncertainty_p95_s": {"type": ["number", "null"], "minimum": 0},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "stability_01": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "duration_s",
+        "preview_imu_duration_s",
+        "start_stop_cycles",
+        "network_recovery",
+        "session_transfer",
+        "resource_sample_period_s",
+        "physical_media",
+        "source_issues"
+      ],
+      "properties": {
+        "status": {"$ref": "#/$defs/stabilityStatus"},
+        "duration_s": {"type": "number", "minimum": 0},
+        "preview_imu_duration_s": {"type": "number", "minimum": 0},
+        "start_stop_cycles": {"type": "integer", "minimum": 0},
+        "network_recovery": {"type": "boolean"},
+        "session_transfer": {"type": "boolean"},
+        "resource_sample_period_s": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "physical_media": {"type": "boolean"},
+        "source_issues": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 64}
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorized_actions",
+        "forbidden_actions_observed",
+        "rollback_status",
+        "rollback_reason"
+      ],
+      "properties": {
+        "authorized_actions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 160}
+        },
+        "forbidden_actions_observed": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 160}
+        },
+        "rollback_status": {
+          "enum": ["not_applicable", "completed", "pending", "failed"]
+        },
+        "rollback_reason": {"type": ["string", "null"], "maxLength": 512}
+      }
+    },
+    "noncoverage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1, "maxLength": 256}
+    },
+    "verdicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["CAP-PHY-03", "CAP-PHY-04", "STABILITY-01"],
+      "properties": {
+        "CAP-PHY-03": {"$ref": "#/$defs/verdict"},
+        "CAP-PHY-04": {"$ref": "#/$defs/verdict"},
+        "STABILITY-01": {"$ref": "#/$defs/stabilityVerdict"}
+      }
+    }
+  },
+  "$defs": {
+    "nonemptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "safeRelativePosixLocator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*(?:^|/)\\.(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+    },
+    "vendorUri": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*(?:^|/)\\.(?:/|$))(?:vendor|https)://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*$"
+    },
+    "packetFieldBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["offset", "width_bytes", "signed", "endian", "group", "semantic"],
+      "properties": {
+        "offset": {"type": "integer", "minimum": 0, "maximum": 26},
+        "width_bytes": {"type": "integer", "minimum": 1, "maximum": 3},
+        "signed": {"type": "boolean"},
+        "endian": {"enum": ["big"]},
+        "group": {"enum": ["packet", "sample0", "sample1"]},
+        "semantic": {
+          "enum": [
+            "timestamp24",
+            "accel_x",
+            "accel_y",
+            "accel_z",
+            "gyro_x",
+            "gyro_y",
+            "gyro_z"
+          ]
+        }
+      }
+    },
+    "packetTimestamp24Field": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 0},
+            "width_bytes": {"const": 3},
+            "signed": {"const": false},
+            "endian": {"const": "big"},
+            "group": {"const": "packet"},
+            "semantic": {"const": "timestamp24"}
+          }
+        }
+      ]
+    },
+    "packetSample0AccelXField": {"$ref": "#/$defs/packetSample0Offset3AccelXField"},
+    "packetSample0Offset3AccelXField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 3},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "accel_x"}
+          }
+        }
+      ]
+    },
+    "packetSample0AccelYField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 5},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "accel_y"}
+          }
+        }
+      ]
+    },
+    "packetSample0AccelZField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 7},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "accel_z"}
+          }
+        }
+      ]
+    },
+    "packetSample0GyroXField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 9},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "gyro_x"}
+          }
+        }
+      ]
+    },
+    "packetSample0GyroYField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 11},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "gyro_y"}
+          }
+        }
+      ]
+    },
+    "packetSample0GyroZField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 13},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample0"},
+            "semantic": {"const": "gyro_z"}
+          }
+        }
+      ]
+    },
+    "packetSample1AccelXField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 15},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "accel_x"}
+          }
+        }
+      ]
+    },
+    "packetSample1AccelYField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 17},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "accel_y"}
+          }
+        }
+      ]
+    },
+    "packetSample1AccelZField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 19},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "accel_z"}
+          }
+        }
+      ]
+    },
+    "packetSample1GyroXField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 21},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "gyro_x"}
+          }
+        }
+      ]
+    },
+    "packetSample1GyroYField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 23},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "gyro_y"}
+          }
+        }
+      ]
+    },
+    "packetSample1GyroZField": {
+      "allOf": [
+        {"$ref": "#/$defs/packetFieldBase"},
+        {
+          "properties": {
+            "offset": {"const": 25},
+            "width_bytes": {"const": 2},
+            "signed": {"const": true},
+            "endian": {"const": "big"},
+            "group": {"const": "sample1"},
+            "semantic": {"const": "gyro_z"}
+          }
+        }
+      ]
+    },
+    "status": {
+      "enum": ["UNKNOWN", "NOT_RUN", "PARTIAL", "VERIFIED", "REJECTED", "BLOCKED"]
+    },
+    "source": {
+      "enum": [
+        "none",
+        "test_fixture",
+        "synthetic_fixture",
+        "vendor_primary",
+        "physical_oracle",
+        "six_face_physical_oracle",
+        "known_rate_physical_oracle",
+        "tick_rollover_capture",
+        "external_event_physical_oracle",
+        "operator_record",
+        "offline_analyzer"
+      ]
+    },
+    "vendorDoc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "status", "title", "uri", "local_ref", "sha256", "version", "proves"],
+      "properties": {
+        "kind": {"enum": ["vendor_primary", "vendor_secondary", "operator_note"]},
+        "status": {"enum": ["PRESENT", "ABSENT", "REQUESTED"]},
+        "title": {"type": "string", "minLength": 1, "maxLength": 256},
+        "uri": {
+          "anyOf": [
+            {"$ref": "#/$defs/vendorUri"},
+            {"type": "null"}
+          ]
+        },
+        "local_ref": {
+          "anyOf": [
+            {"$ref": "#/$defs/safeRelativePosixLocator"},
+            {"type": "null"}
+          ]
+        },
+        "sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "version": {"type": ["string", "null"], "maxLength": 128},
+        "proves": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "chip_identity",
+              "accelerometer_range",
+              "gyroscope_range",
+              "axis_mapping",
+              "sample_phase",
+              "packet_layout"
+            ]
+          }
+        }
+      }
+    },
+    "rawArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "sha256", "bytes"],
+      "properties": {
+        "kind": {
+          "enum": ["raw_capture", "photo", "video", "analysis_report", "operator_log"]
+        },
+        "path": {"$ref": "#/$defs/safeRelativePosixLocator"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "statusSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "chip_model"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "chip_model": {"type": ["string", "null"], "maxLength": 128},
+        "note": {"type": ["string", "null"], "maxLength": 512},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "rangeSectionAccel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "lsb_per_g", "full_scale_g"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "lsb_per_g": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "full_scale_g": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "full_scale_source": {"enum": ["vendor_primary", "physical_oracle", "operator_record"]},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "rangeSectionGyro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source", "lsb_per_dps", "full_scale_dps"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "source": {"$ref": "#/$defs/source"},
+        "lsb_per_dps": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "full_scale_dps": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "full_scale_source": {"enum": ["vendor_primary", "physical_oracle", "operator_record"]},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "sixFaceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "face",
+        "sample_count",
+        "gravity_norm_residual_p95_m_s2",
+        "dominant_axis",
+        "dominant_axis_sign",
+        "axis_coverage",
+        "leakage_ratio"
+      ],
+      "properties": {
+        "face": {"enum": ["+X", "-X", "+Y", "-Y", "+Z", "-Z"]},
+        "sample_count": {"type": "integer", "minimum": 0},
+        "gravity_norm_residual_p95_m_s2": {"type": "number", "minimum": 0},
+        "dominant_axis": {"enum": ["x", "y", "z", "unknown"]},
+        "dominant_axis_sign": {"enum": ["positive", "negative", "unknown"]},
+        "axis_coverage": {"type": "number", "minimum": 0},
+        "leakage_ratio": {"type": "number", "minimum": 0}
+      }
+    },
+    "knownRateTrial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "direction", "inliers", "scale_error", "cross_axis_leakage"],
+      "properties": {
+        "axis": {"enum": ["x", "y", "z"]},
+        "direction": {"enum": ["positive", "negative"]},
+        "inliers": {"type": "integer", "minimum": 0},
+        "scale_error": {"type": "number", "minimum": 0},
+        "cross_axis_leakage": {"type": "number", "minimum": 0},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      }
+    },
+    "coverageException": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "evidence_refs"],
+      "properties": {
+        "status": {"enum": ["JUSTIFIED"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        }
+      }
+    },
+    "tickSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_tick", "host_time_s", "read_duration_s"],
+      "properties": {
+        "raw_tick": {"type": "integer", "minimum": 0, "maximum": 16777215},
+        "host_time_s": {"type": "number", "minimum": 0},
+        "read_duration_s": {"type": "number", "minimum": 0}
+      }
+    },
+    "syncEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id",
+        "video_time_s",
+        "imu_time_s",
+        "fit_residual_s",
+        "read_uncertainty_s",
+        "frame_interval_s"
+      ],
+      "properties": {
+        "event_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "video_time_s": {"type": "number", "minimum": 0},
+        "imu_time_s": {"type": "number", "minimum": 0},
+        "offset_s": {"type": "number"},
+        "fit_residual_s": {"type": "number", "minimum": 0},
+        "read_uncertainty_s": {"type": "number", "minimum": 0},
+        "frame_interval_s": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "verdictResult": {
+      "enum": ["NOT_RUN", "PARTIAL", "PASS", "FAIL", "BLOCKED"]
+    },
+    "stabilityStatus": {
+      "enum": ["NOT_EVALUATED", "NOT_RUN", "PARTIAL", "BLOCKED"]
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "reason"],
+      "properties": {
+        "result": {"$ref": "#/$defs/verdictResult"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        }
+      }
+    },
+    "stabilityVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "reason"],
+      "properties": {
+        "result": {"enum": ["NOT_EVALUATED", "NOT_RUN", "PARTIAL", "BLOCKED"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        }
+      }
+    }
+  }
+}

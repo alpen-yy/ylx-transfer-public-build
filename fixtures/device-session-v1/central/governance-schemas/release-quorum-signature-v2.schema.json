@@ -1,0 +1,505 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-quorum-signature-v2.schema.json",
+  "title": "YLX distinct-person release quorum signature v2",
+  "description": "Revisioned Ed25519 signature over one exact pre-release-closure v2 signed payload. The role slot and v2 signature domain are bound together; four artifacts must resolve procedurally to four distinct natural persons.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "signature_id",
+    "revision",
+    "predecessor_signature_ref",
+    "signed_payload",
+    "signature_b64",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-quorum-signature.v2"
+    },
+    "signature_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_signature_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/quorumSignatureRef"
+        }
+      ]
+    },
+    "signed_payload": {
+      "$ref": "#/$defs/signedPayload"
+    },
+    "signature_b64": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{86}==$"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_signature_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_signature_ref": {
+            "$ref": "#/$defs/quorumSignatureRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "quorumSignatureRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-quorum-signature.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "preReleaseClosureRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.pre-release-closure.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "roleAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.role-signing-key-assignment.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "signingPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m5-signing-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "keyHeadRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.signing-key-validity-revocation-head.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "quorumPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-quorum-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "signedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload_schema",
+        "signature_domain",
+        "pre_release_closure_ref",
+        "pre_release_closure_sha256",
+        "role_slot",
+        "person_id",
+        "signer_identity",
+        "signing_key_fingerprint",
+        "key_validity_at_signature",
+        "role_assignment_ref",
+        "role_assignment_revision",
+        "signing_policy_ref",
+        "signing_policy_sha256",
+        "key_validity_revocation_head_ref",
+        "key_validity_revocation_head_sha256",
+        "quorum_policy_ref",
+        "quorum_policy_sha256",
+        "binding_context_ref",
+        "effective_m4_lineage_ref",
+        "fresh_issue_head",
+        "issue_reconciliation_set_sha256",
+        "domain_attestation_ref_by_role_slot",
+        "domain_attestation_sha256_by_role_slot",
+        "signed_at"
+      ],
+      "properties": {
+        "payload_schema": {
+          "const": "ylx.release-quorum-signature.signed-payload.v2"
+        },
+        "signature_domain": {
+          "type": "string",
+          "pattern": "^ylx\\.release-closure\\.quorum\\.v2/(release-owner|contract-owner|security-owner|qa-evidence-owner)$"
+        },
+        "pre_release_closure_ref": {
+          "$ref": "#/$defs/preReleaseClosureRef"
+        },
+        "pre_release_closure_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "role_slot": {
+          "enum": [
+            "release-owner",
+            "contract-owner",
+            "security-owner",
+            "qa-evidence-owner"
+          ]
+        },
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "signer_identity": {
+          "$ref": "#/$defs/signerIdentity"
+        },
+        "signing_key_fingerprint": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "key_validity_at_signature": {
+          "$ref": "#/$defs/keyValidityAtSignature"
+        },
+        "role_assignment_ref": {
+          "$ref": "#/$defs/roleAssignmentRef"
+        },
+        "role_assignment_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "signing_policy_ref": {
+          "$ref": "#/$defs/signingPolicyRef"
+        },
+        "signing_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "key_validity_revocation_head_ref": {
+          "$ref": "#/$defs/keyHeadRef"
+        },
+        "key_validity_revocation_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "quorum_policy_ref": {
+          "$ref": "#/$defs/quorumPolicyRef"
+        },
+        "quorum_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "binding_context_ref": {
+          "$ref": "#/$defs/bindingContextRef"
+        },
+        "effective_m4_lineage_ref": {
+          "$ref": "#/$defs/m4ContextLineageRef"
+        },
+        "fresh_issue_head": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+        },
+        "issue_reconciliation_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "domain_attestation_ref_by_role_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/pre-release-closure-v2.schema.json#/$defs/domainAttestationRefMap"
+        },
+        "domain_attestation_sha256_by_role_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/pre-release-closure-v2.schema.json#/$defs/domainAttestationDigestMap"
+        },
+        "signed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role_slot": {
+                "const": "release-owner"
+              }
+            },
+            "required": [
+              "role_slot"
+            ]
+          },
+          "then": {
+            "properties": {
+              "signature_domain": {
+                "const": "ylx.release-closure.quorum.v2/release-owner"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role_slot": {
+                "const": "contract-owner"
+              }
+            },
+            "required": [
+              "role_slot"
+            ]
+          },
+          "then": {
+            "properties": {
+              "signature_domain": {
+                "const": "ylx.release-closure.quorum.v2/contract-owner"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role_slot": {
+                "const": "security-owner"
+              }
+            },
+            "required": [
+              "role_slot"
+            ]
+          },
+          "then": {
+            "properties": {
+              "signature_domain": {
+                "const": "ylx.release-closure.quorum.v2/security-owner"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role_slot": {
+                "const": "qa-evidence-owner"
+              }
+            },
+            "required": [
+              "role_slot"
+            ]
+          },
+          "then": {
+            "properties": {
+              "signature_domain": {
+                "const": "ylx.release-closure.quorum.v2/qa-evidence-owner"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "signerIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "natural_person_identity_sha256",
+        "identity_authority_ref"
+      ],
+      "properties": {
+        "natural_person_identity_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "identity_authority_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "keyValidityAtSignature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "not_before",
+        "not_after",
+        "evaluated_revocation_head_sha256",
+        "status",
+        "required_remaining_validity_seconds",
+        "validity_horizon_satisfied",
+        "post_signature_expiry_rule",
+        "retroactive_compromise_rule"
+      ],
+      "properties": {
+        "not_before": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "not_after": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "evaluated_revocation_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "status": {
+          "const": "VALID_AT_SIGNED_AT"
+        },
+        "required_remaining_validity_seconds": {
+          "type": "integer",
+          "minimum": 60
+        },
+        "validity_horizon_satisfied": {
+          "const": true
+        },
+        "post_signature_expiry_rule": {
+          "const": "NORMAL_EXPIRY_DOES_NOT_INVALIDATE_A_SIGNATURE_VALID_AT_SIGNED_AT"
+        },
+        "retroactive_compromise_rule": {
+          "const": "ONLY_REVOCATION_OR_COMPROMISE_EFFECTIVE_AT_OR_BEFORE_SIGNED_AT_INVALIDATES"
+        }
+      }
+    }
+  }
+}

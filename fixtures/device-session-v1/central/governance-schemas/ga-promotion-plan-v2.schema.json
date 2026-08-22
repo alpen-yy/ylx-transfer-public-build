@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/ga-promotion-plan-v2.schema.json",
+  "title": "YLX exact-RC GA promotion plan v2",
+  "description": "Immutable exact-RC plan for an all-v2 M5 attempt. The planned operator is a closed natural-person actor identity; the later release-operation-assignment v2 binds this exact plan and the attempt-specific fence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "predecessor_plan_ref",
+    "binding_context_ref",
+    "effective_m4_lineage_ref",
+    "rc_version",
+    "rc_commit",
+    "rc_artifact_sha256",
+    "canonical_remote_id",
+    "ga_ref",
+    "ga_channel",
+    "canonical_ga_target",
+    "planned_promotion_operator",
+    "create_if_absent",
+    "existing_exact_target_is_idempotent",
+    "rebuild_allowed",
+    "overwrite_allowed",
+    "force_push_allowed",
+    "created_at",
+    "approvals",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.ga-promotion-plan.v2"
+    },
+    "plan_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_plan_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/promotionPlanRef"
+        }
+      ]
+    },
+    "binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "effective_m4_lineage_ref": {
+      "$ref": "#/$defs/m4ContextLineageRef"
+    },
+    "rc_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9A-Za-z.-]+$"
+    },
+    "rc_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+    },
+    "rc_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_remote_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "ga_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "ga_channel": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "canonical_ga_target": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "planned_promotion_operator": {
+      "$ref": "#/$defs/plannedOperator"
+    },
+    "create_if_absent": {
+      "const": true
+    },
+    "existing_exact_target_is_idempotent": {
+      "const": true
+    },
+    "rebuild_allowed": {
+      "const": false
+    },
+    "overwrite_allowed": {
+      "const": false
+    },
+    "force_push_allowed": {
+      "const": false
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      }
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_plan_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_plan_ref": {
+            "$ref": "#/$defs/promotionPlanRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "plannedOperator": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json#/$defs/actorIdentity"
+    },
+    "promotionPlanRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.ga-promotion-plan.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    }
+  }
+}

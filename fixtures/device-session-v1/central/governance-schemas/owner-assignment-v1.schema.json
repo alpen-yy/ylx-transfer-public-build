@@ -1,0 +1,440 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/owner-assignment-v1.schema.json",
+  "title": "YLX owner assignment v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_id",
+    "revision",
+    "predecessor_sha256",
+    "generated_at",
+    "source_refs",
+    "artifact_metadata",
+    "overall_status",
+    "assignments",
+    "blockers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.owner-assignment.v1"
+    },
+    "artifact_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+      },
+      "uniqueItems": true
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "overall_status": {
+      "enum": [
+        "ACCEPTED",
+        "INPUT_BLOCKED"
+      ]
+    },
+    "assignments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assignment"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "nullableIdentifier": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableBlocker": {
+      "anyOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "conflictPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predicate_id",
+        "statement",
+        "outcome",
+        "evaluated_at",
+        "authority_ref"
+      ],
+      "properties": {
+        "predicate_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "outcome": {
+          "enum": [
+            "NO_CONFLICT",
+            "CONFLICT",
+            "UNKNOWN"
+          ]
+        },
+        "evaluated_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "authority_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      }
+    },
+    "compensatingControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "control_id",
+        "description",
+        "authority_ref"
+      ],
+      "properties": {
+        "control_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "authority_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      }
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "assignment_status",
+        "accountable_party_id",
+        "party_type",
+        "authorization_scope",
+        "effective_at",
+        "expires_at",
+        "executor_id",
+        "reviewer_id",
+        "conflict_predicates",
+        "compensating_controls",
+        "required_approval_roles",
+        "last_verified_at",
+        "blocker"
+      ],
+      "properties": {
+        "role_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+        },
+        "assignment_status": {
+          "enum": [
+            "RESOLVED",
+            "UNRESOLVED"
+          ]
+        },
+        "accountable_party_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "party_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "person",
+                "team"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          },
+          "uniqueItems": true
+        },
+        "effective_at": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/nullableTimestamp"
+        },
+        "executor_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "reviewer_id": {
+          "$ref": "#/$defs/nullableIdentifier"
+        },
+        "conflict_predicates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/conflictPredicate"
+          },
+          "uniqueItems": true
+        },
+        "compensating_controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/compensatingControl"
+          },
+          "uniqueItems": true
+        },
+        "required_approval_roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+          },
+          "uniqueItems": true
+        },
+        "last_verified_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "blocker": {
+          "$ref": "#/$defs/nullableBlocker"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "assignment_status": {
+                "const": "RESOLVED"
+              }
+            },
+            "required": [
+              "assignment_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "accountable_party_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "party_type": {
+                "enum": [
+                  "person",
+                  "team"
+                ]
+              },
+              "effective_at": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+              },
+              "executor_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "reviewer_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "blocker": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocker": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_status": {
+            "const": "ACCEPTED"
+          }
+        },
+        "required": [
+          "overall_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "approvals": {
+            "minItems": 1
+          },
+          "assignments": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "assignment_status": {
+                  "const": "RESOLVED"
+                }
+              }
+            }
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "blockers": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "assignments": {
+            "contains": {
+              "properties": {
+                "assignment_status": {
+                  "const": "UNRESOLVED"
+                }
+              },
+              "required": [
+                "assignment_status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "assignments"
+        ]
+      },
+      "then": {
+        "properties": {
+          "overall_status": {
+            "const": "INPUT_BLOCKED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_id": {
+            "const": "M0-GOV-01-governed-owner-assignment"
+          },
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "artifact_id",
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "source_refs": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/governedOwnerPlanningRootSourceRefs"
+          },
+          "approvals": false
+        }
+      },
+      "else": {
+        "required": [
+          "approvals"
+        ]
+      }
+    }
+  ]
+}

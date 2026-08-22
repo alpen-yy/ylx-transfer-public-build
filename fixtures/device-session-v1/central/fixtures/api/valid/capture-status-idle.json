@@ -1,0 +1,38 @@
+{
+  "schema": "ylx.capture-status.v2",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_revision": 45,
+  "snapshot": {
+    "schema": "ylx.capture-snapshot-event.v2",
+    "device_state": "idle",
+    "active_recording": null,
+    "retained_unsuccessful": null,
+    "runtime": {
+      "observed_at": "2026-08-08T10:25:04+08:00",
+      "connection_method": "wifi_ap",
+      "temperature_celsius": 50.5,
+      "network": {
+        "ap": {
+          "state": "active",
+          "interface": "wlan0",
+          "addresses": ["10.42.0.1/24"],
+          "peer_or_ssid": "YLX-30D5872D"
+        },
+        "wifi_client": {
+          "state": "disabled",
+          "interface": null,
+          "addresses": [],
+          "peer_or_ssid": null
+        },
+        "wired": {
+          "state": "disconnected",
+          "interface": "eth0",
+          "addresses": [],
+          "peer_or_ssid": null
+        },
+        "default_route": "none"
+      },
+      "live_imu": null
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/g0-issue-register-reconciliation-receipt-v1.schema.json",
+  "title": "YLX G0 issue-register reconciliation receipt v1",
+  "description": "Signed terminal reconciliation receipt Q over one exact M0/G0 issue-register transition. Artifact resolution, byte and digest equality, approval-map recomputation, selector evaluation, cross-record joins, and chronology are procedural. The Ed25519 signature message is UTF8(\"YLX-G0-ISSUE-REGISTER-RECONCILIATION-RECEIPT-V1\") || 0x00 || RFC8785(receipt fields excluding signed_payload_sha256 and signature).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "reconciliation_id",
+    "bootstrap_attempt_id",
+    "g0_event_ref",
+    "g0_event_sha256",
+    "owner_payload_ref",
+    "owner_payload_sha256",
+    "owner_publication_receipt_ref",
+    "owner_publication_receipt_sha256",
+    "owner_readback_receipt_ref",
+    "owner_readback_receipt_sha256",
+    "predecessor_head_ref",
+    "predecessor_head_sha256",
+    "predecessor_source_ref",
+    "predecessor_source_sha256",
+    "replacement_source_ref",
+    "replacement_source_sha256",
+    "source_operation_receipt_ref",
+    "source_operation_receipt_sha256",
+    "archive_ref",
+    "archive_sha256",
+    "archive_operation_receipt_ref",
+    "archive_operation_receipt_sha256",
+    "successor_head_ref",
+    "successor_head_sha256",
+    "head_operation_receipt_ref",
+    "head_operation_receipt_sha256",
+    "transition_readback_receipt_ref",
+    "transition_readback_receipt_sha256",
+    "publisher_assignment_ref",
+    "publisher_assignment_sha256",
+    "issue_approval_sha256_by_role",
+    "g0_selector_cardinality",
+    "reconciled_at",
+    "result",
+    "terminal_sink_id",
+    "receipt_issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.g0-issue-register-reconciliation-receipt.v1"
+    },
+    "reconciliation_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "bootstrap_attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "g0_event_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "g0_event_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_payload_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_publication_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_publication_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_readback_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "owner_readback_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "predecessor_head_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "predecessor_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "predecessor_source_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "predecessor_source_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "replacement_source_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "replacement_source_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "source_operation_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "source_operation_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "archive_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "archive_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "archive_operation_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "archive_operation_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "successor_head_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "successor_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "head_operation_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "head_operation_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "transition_readback_receipt_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "transition_readback_receipt_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "publisher_assignment_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "publisher_assignment_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "issue_approval_sha256_by_role": {
+      "$ref": "#/$defs/issueApprovalDigestMap"
+    },
+    "g0_selector_cardinality": {
+      "type": "integer",
+      "const": 0
+    },
+    "reconciled_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "result": {
+      "const": "RECONCILED"
+    },
+    "terminal_sink_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "receipt_issuer_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  },
+  "$defs": {
+    "issueApprovalDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 11,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "ylx.session-list.v2",
+  "items": [],
+  "diagnostics": [
+    {
+      "quarantine_id": "c2c2506d-ca88-4276-aa53-8a355571de0c",
+      "code": "manifest_invalid",
+      "observed_at": "2026-08-08T10:26:00+08:00",
+      "message": "Candidate failed closed manifest validation.",
+      "filesystem_path": "/media/private/session/manifest.json"
+    }
+  ],
+  "next_cursor": null
+}

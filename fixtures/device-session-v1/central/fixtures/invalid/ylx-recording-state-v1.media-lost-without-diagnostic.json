@@ -1,0 +1,26 @@
+{
+  "schema": "ylx.recording-state.v1",
+  "state": "recording",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "state_revision": 43,
+  "updated_at": "2026-08-08T10:25:02+08:00",
+  "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+  "take_id": "01989f69-f000-7c3d-ae4f-5061728394a5",
+  "display_name": "2026-08-08_10-24-00_YLX-30D5872D",
+  "device": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "YLX-30D5872D"
+  },
+  "storage": {
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "status": "media_lost",
+    "writable": false,
+    "remaining_bytes": null
+  },
+  "progress": {
+    "elapsed_seconds": 62.4,
+    "captured_frames": 1872,
+    "bytes_written": 780140544
+  },
+  "diagnostics": []
+}

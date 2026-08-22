@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/ga-promotion-plan-v1.schema.json",
+  "title": "YLX exact-RC GA promotion plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "predecessor_plan_sha256",
+    "binding_context_ref",
+    "rc_version",
+    "rc_commit",
+    "rc_artifact_sha256",
+    "canonical_remote_id",
+    "ga_ref",
+    "ga_channel",
+    "planned_promotion_operator",
+    "create_if_absent",
+    "existing_exact_target_is_idempotent",
+    "rebuild_allowed",
+    "overwrite_allowed",
+    "force_push_allowed",
+    "created_at",
+    "approvals"
+  ],
+  "properties": {
+    "schema": { "const": "ylx.ga-promotion-plan.v1" },
+    "plan_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "predecessor_plan_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "rc_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9A-Za-z.-]+$"
+    },
+    "rc_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+    },
+    "rc_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_remote_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "ga_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "ga_channel": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "planned_promotion_operator": {
+      "$ref": "#/$defs/plannedOperator"
+    },
+    "create_if_absent": { "const": true },
+    "existing_exact_target_is_idempotent": { "const": true },
+    "rebuild_allowed": { "const": false },
+    "overwrite_allowed": { "const": false },
+    "force_push_allowed": { "const": false },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "revision": { "const": 1 } },
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": { "predecessor_plan_sha256": { "type": "null" } }
+      },
+      "else": {
+        "properties": {
+          "predecessor_plan_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "plannedOperator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person_id",
+        "role_assignment_artifact_sha256",
+        "role_assignment_revision"
+      ],
+      "properties": {
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "role_assignment_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "role_assignment_revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

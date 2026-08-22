@@ -1,0 +1,33 @@
+{
+  "schema": "ylx.frame-record.v1",
+  "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+  "clock": {
+    "domain": "session_monotonic",
+    "unit": "nanosecond",
+    "epoch_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283"
+  },
+  "timestamp": 1401250000,
+  "sequence": 42,
+  "source_frame_id": 84,
+  "output_frame_index": 42,
+  "video_associations": [
+    {
+      "role": "video.left",
+      "artifact_id": "1111111111111111111111111111111111111111111111111111111111111111",
+      "artifact_frame_index": 42,
+      "segment_index": 0
+    },
+    {
+      "role": "video.right",
+      "artifact_id": "2222222222222222222222222222222222222222222222222222222222222222",
+      "artifact_frame_index": 42,
+      "segment_index": 0
+    }
+  ],
+  "imu_association": {
+    "status": "associated",
+    "first_sequence": 281,
+    "last_sequence": 287,
+    "sample_count": 7
+  }
+}

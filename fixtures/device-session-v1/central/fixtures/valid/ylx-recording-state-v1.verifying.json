@@ -1,0 +1,30 @@
+{
+  "schema": "ylx.recording-state.v1",
+  "state": "verifying",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "state_revision": 37,
+  "updated_at": "2026-08-08T13:40:37+08:00",
+  "session_id": "0198a100-0005-7005-8000-000000000005",
+  "take_id": "0198a100-0105-7105-9000-000000000005",
+  "display_name": "2026-08-08_13-40-00_YLX-30D5872D",
+  "device": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "YLX-30D5872D"
+  },
+  "storage": {
+    "volume_id": "10000005-0000-4005-8000-000000000005",
+    "status": "sealing",
+    "writable": true,
+    "remaining_bytes": 496700000000
+  },
+  "progress": {
+    "elapsed_seconds": 30,
+    "captured_frames": 900,
+    "bytes_written": 77000000,
+    "verification": {
+      "completed": 4,
+      "total": 6
+    }
+  },
+  "diagnostics": []
+}

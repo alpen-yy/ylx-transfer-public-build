@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/authorization-stop-rule-observation-v1.schema.json",
+  "title": "YLX authorization stop-rule observation v1",
+  "description": "A content-addressed, checker-attributed observation of one declared stop rule against the exact available inputs of one execution authorization action instance. This artifact records observation only and does not itself grant execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "observation_id",
+    "revision",
+    "observed_at",
+    "task_id",
+    "authorization_class",
+    "authorization_action",
+    "action_instance_id",
+    "rule_id",
+    "rule_sha256",
+    "observed_input_ref_by_kind",
+    "observed_input_sha256_by_kind",
+    "checker_assignment_ref",
+    "checker_person_id",
+    "outcome",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.authorization-stop-rule-observation.v1"
+    },
+    "observation_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "observed_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "task_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "authorization_class": {
+      "$ref": "https://schemas.ylx.invalid/governance/execution-authorization-evaluation-v1.schema.json#/$defs/authorizationClass"
+    },
+    "authorization_action": {
+      "$ref": "https://schemas.ylx.invalid/governance/execution-authorization-evaluation-v1.schema.json#/$defs/authorizationAction"
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "rule_id": {
+      "description": "Exact non-empty stop-rule string copied from the selected WBS leaf declaration.",
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_sha256": {
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 for the exact rule_id JSON string.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "observed_input_ref_by_kind": {
+      "description": "Closed map of every available planning, prerequisite, authority, environment, context, assignment, predecessor, and barrier input observed for this rule. Procedural validation requires exact key and value equality with the parent evaluation's projected inputs.",
+      "$ref": "#/$defs/exactEvidenceRefMap"
+    },
+    "observed_input_sha256_by_kind": {
+      "description": "Closed digest map with exactly the same keys as observed_input_ref_by_kind. Procedural validation requires each digest to match both its ref and the current content-addressed input.",
+      "$ref": "#/$defs/digestMap"
+    },
+    "checker_assignment_ref": {
+      "description": "Exact active owner assignment used by the checker who made this observation.",
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "checker_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "outcome": {
+      "enum": [
+        "CLEAR",
+        "TRIGGERED"
+      ]
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "exactEvidenceRef": {
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        }
+      ]
+    },
+    "exactEvidenceRefMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 2,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/exactEvidenceRef"
+        }
+      }
+    },
+    "digestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 2,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m4-context-lineage-v1.schema.json",
+  "title": "YLX M4 context lineage v1",
+  "description": "Versioned authority selecting one explicit tip from one fork-free M4 binding-context chain. Every lineage revision keeps lineage_id stable and references the exact previous lineage revision. The tip context's own exact predecessor refs form the single context chain; forks, gaps, ID drift, candidate drift, and a tip not descended from the bound M3 context are procedurally invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "lineage_id",
+    "revision",
+    "predecessor_lineage_ref",
+    "candidate_id",
+    "predecessor_candidate_id",
+    "m3_binding_context_ref",
+    "context_ref_by_qualification_revision",
+    "tip_context_ref",
+    "context_set_sha256",
+    "lineage_mode",
+    "tip_selection_rule",
+    "fork_policy",
+    "created_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m4-context-lineage.v1"
+    },
+    "lineage_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every revision of this M4 lineage authority."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_lineage_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/m4ContextLineageRef"
+        }
+      ],
+      "description": "Exact direct predecessor. Its artifact_id equals lineage_id and its revision is exactly this revision minus one."
+    },
+    "candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "predecessor_candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "m3_binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef",
+      "description": "Exact effective M3 base-context ref from which every M4 context in this lineage descends."
+    },
+    "context_ref_by_qualification_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[1-9][0-9]*$": {
+          "$ref": "#/$defs/bindingContextRef"
+        }
+      },
+      "description": "Complete exact M4 context chain keyed by decimal qualification revision. Procedural validation requires keys 1 through revision with no gaps, one stable context_id and qualification_lineage_id, and each entry's direct predecessor equal to the preceding entry."
+    },
+    "tip_context_ref": {
+      "$ref": "#/$defs/bindingContextRef",
+      "description": "The unique effective M4 tip. It equals context_ref_by_qualification_revision[revision], resolves to stage M4, carries candidate_id, and reaches revision 1 through the complete map."
+    },
+    "context_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "SHA-256 of RFC 8785 canonical context_ref_by_qualification_revision bytes."
+    },
+    "lineage_mode": {
+      "const": "SINGLE_DIRECT_PREDECESSOR_CHAIN"
+    },
+    "tip_selection_rule": {
+      "const": "HIGHEST_CONTIGUOUS_REVISION"
+    },
+    "fork_policy": {
+      "const": "REJECT"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_lineage_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_lineage_ref": {
+            "$ref": "#/$defs/m4ContextLineageRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    }
+  }
+}

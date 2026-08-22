@@ -1,0 +1,1532 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/delivery-planning-bundle-v2.schema.json",
+  "title": "YLX rolling-wave delivery planning bundle v2",
+  "description": "Binds the exact rolling-wave planning inputs for one gate. An M5 FINAL_ACTUAL_VARIANCE bundle carries the approved content reconciliation for every executable leaf except the one external publisher leaf. That final publisher actual and variance are recorded later by the exact publication receipt, and durable closure exists only after the matching publication and readback receipts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_id",
+    "revision",
+    "predecessor_sha256",
+    "generated_at",
+    "source_refs",
+    "artifact_metadata",
+    "planning_approval_subject_sha256",
+    "planning_bundle_approval_by_role",
+    "planning_gate",
+    "detail_horizon",
+    "registry_binding",
+    "artifacts",
+    "bundle_kind",
+    "final_actual_variance_reconciliation",
+    "overall_status"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.delivery-planning-bundle.v2"
+    },
+    "artifact_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "generated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp",
+      "description": "Assembly time of the exact approval-bearing bundle. For the governed revision-1 bootstrap it is after every referenced approval has durable P/R; legacy-compatible bundles retain their embedded-approval chronology. It is deliberately excluded from the pre-approval semantic subject, and procedural validation still enforces revision chronology, assignment validity, and publication ordering."
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+      },
+      "uniqueItems": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "planning_approval_subject_ref": {
+      "description": "Content-addressed stable locator of the separately published wrapperless planning approval subject S.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "planning_approval_subject_sha256": {
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 over exactly schema, artifact_id, revision, predecessor_sha256, source_refs, artifact_metadata, planning_gate, detail_horizon, registry_binding, artifacts, bundle_kind, and final_actual_variance_reconciliation. generated_at is excluded because it records assembly of the approval-bearing exact bundle after the approvals; planning_approval_subject_ref, the approval map, this subject digest, overall_status, the bundle's final raw digest and locator, and every downstream receipt or verdict are also excluded.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planning_bundle_approval_by_role": {
+      "$ref": "#/$defs/planningApprovalByRole"
+    },
+    "planning_gate": {
+      "$ref": "#/$defs/gate"
+    },
+    "detail_horizon": {
+      "$ref": "#/$defs/detailHorizon"
+    },
+    "registry_binding": {
+      "$ref": "#/$defs/registryBinding"
+    },
+    "artifacts": {
+      "$ref": "#/$defs/artifactMap"
+    },
+    "bundle_kind": {
+      "enum": [
+        "ROLLING_WAVE",
+        "FINAL_ACTUAL_VARIANCE"
+      ]
+    },
+    "final_actual_variance_reconciliation": {
+      "$ref": "#/$defs/nullableFinalReconciliation"
+    },
+    "overall_status": {
+      "enum": [
+        "ACCEPTED",
+        "INPUT_BLOCKED"
+      ]
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "nullableTimestamp": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      ]
+    },
+    "gate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ]
+    },
+    "futureGate": {
+      "enum": [
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ]
+    },
+    "detailHorizon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planning_gate",
+        "executable_through_gate",
+        "next_expansion_gate",
+        "registry_id_set_sha256",
+        "requirement_cardinality"
+      ],
+      "properties": {
+        "planning_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "executable_through_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "next_expansion_gate": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/futureGate"
+            }
+          ]
+        },
+        "registry_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "requirement_cardinality": {
+          "const": 173
+        }
+      }
+    },
+    "registryBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_revision",
+        "registry_artifact_path",
+        "registry_artifact_sha256",
+        "registry_id_set_sha256",
+        "registry_cardinality"
+      ],
+      "properties": {
+        "registry_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "registry_artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "registry_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_cardinality": {
+          "const": 173
+        }
+      }
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "typedArtifactRef": {
+      "required": [
+        "artifact_id",
+        "schema",
+        "revision",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/typedArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          }
+        }
+      ]
+    },
+    "resourceCalendarRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/typedArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.resource-calendar.v1"
+            }
+          }
+        }
+      ]
+    },
+    "deliveryWbsRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/typedArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-wbs.v2"
+            }
+          }
+        }
+      ]
+    },
+    "forecastSnapshotRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/typedArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.forecast-snapshot.v1"
+            }
+          }
+        }
+      ]
+    },
+    "artifactMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        },
+        "resource_calendar": {
+          "$ref": "#/$defs/resourceCalendarRef"
+        },
+        "delivery_wbs": {
+          "$ref": "#/$defs/deliveryWbsRef"
+        },
+        "forecast_snapshot": {
+          "$ref": "#/$defs/forecastSnapshotRef"
+        }
+      }
+    },
+    "artifactDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_assignment",
+        "resource_calendar",
+        "delivery_wbs",
+        "forecast_snapshot"
+      ],
+      "properties": {
+        "owner_assignment": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "resource_calendar": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "delivery_wbs": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "forecast_snapshot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "planningApprovalRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "natural_person_id",
+        "decision",
+        "approved_at",
+        "assignment_ref",
+        "planning_approval_subject_sha256",
+        "bundle_revision",
+        "predecessor_sha256",
+        "artifact_sha256_by_kind",
+        "owner_assignment_revision",
+        "approval_evidence_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "enum": [
+            "release-owner",
+            "build-platform-owner",
+            "qa-evidence-owner"
+          ]
+        },
+        "principal_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "natural_person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "decision": {
+          "const": "APPROVED"
+        },
+        "approved_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "#/$defs/ownerAssignmentRef"
+        },
+        "planning_approval_subject_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "bundle_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "artifact_sha256_by_kind": {
+          "$ref": "#/$defs/artifactDigestMap"
+        },
+        "owner_assignment_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approval_evidence_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        }
+      }
+    },
+    "completePlanningApprovalByRole": {
+      "description": "The three records must resolve through the effective owner assignment to three distinct natural persons and must bind the same subject, bundle revision, predecessor, and four child digests. Those cross-record equalities are checked procedurally after schema validation.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "build-platform-owner",
+        "qa-evidence-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/planningApprovalRecord"
+            },
+            {
+              "properties": {
+                "role_id": {
+                  "const": "release-owner"
+                }
+              }
+            }
+          ]
+        },
+        "build-platform-owner": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/planningApprovalRecord"
+            },
+            {
+              "properties": {
+                "role_id": {
+                  "const": "build-platform-owner"
+                }
+              }
+            }
+          ]
+        },
+        "qa-evidence-owner": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/planningApprovalRecord"
+            },
+            {
+              "properties": {
+                "role_id": {
+                  "const": "qa-evidence-owner"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "planningApprovalReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval_ref",
+        "approval_sha256",
+        "publication_receipt_ref",
+        "publication_receipt_sha256",
+        "readback_receipt_ref",
+        "readback_receipt_sha256"
+      ],
+      "properties": {
+        "approval_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "approval_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "publication_receipt_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "publication_receipt_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "readback_receipt_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "readback_receipt_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "completeBootstrapPlanningApprovalByRole": {
+      "description": "Exact governed-bootstrap map of the three separately published planning approvals and each approval's durable publication/readback receipts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "build-platform-owner",
+        "qa-evidence-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "$ref": "#/$defs/planningApprovalReference"
+        },
+        "build-platform-owner": {
+          "$ref": "#/$defs/planningApprovalReference"
+        },
+        "qa-evidence-owner": {
+          "$ref": "#/$defs/planningApprovalReference"
+        }
+      }
+    },
+    "emptyPlanningApprovalByRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "legacyPlanningApprovalByRole": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/emptyPlanningApprovalByRole"
+        },
+        {
+          "$ref": "#/$defs/completePlanningApprovalByRole"
+        }
+      ]
+    },
+    "acceptedPlanningApprovalByRole": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/completePlanningApprovalByRole"
+        },
+        {
+          "$ref": "#/$defs/completeBootstrapPlanningApprovalByRole"
+        }
+      ]
+    },
+    "planningApprovalByRole": {
+      "description": "INPUT_BLOCKED legacy-compatible bundles use the empty object. ACCEPTED legacy-compatible bundles use embedded approval records, while the governed revision-1 bootstrap uses external approval/P/R references.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/legacyPlanningApprovalByRole"
+        },
+        {
+          "$ref": "#/$defs/completeBootstrapPlanningApprovalByRole"
+        }
+      ]
+    },
+    "duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      }
+    },
+    "signedDuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      }
+    },
+    "capacityWindowUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_id",
+        "window_id",
+        "used_quantity",
+        "capacity_unit",
+        "started_at",
+        "finished_at"
+      ],
+      "properties": {
+        "resource_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "window_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "used_quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "capacity_unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "started_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "finished_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "hardwareWindowUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hardware_id",
+        "window_id",
+        "started_at",
+        "finished_at",
+        "evidence_ref"
+      ],
+      "properties": {
+        "hardware_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "window_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "started_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "finished_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        }
+      }
+    },
+    "credentialWindowUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "credential_id",
+        "window_id",
+        "started_at",
+        "finished_at",
+        "evidence_ref"
+      ],
+      "properties": {
+        "credential_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "window_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "started_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "finished_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        }
+      }
+    },
+    "executedTaskActual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "terminal_status",
+        "actual_started_at",
+        "actual_finished_at",
+        "actual_effort",
+        "actual_fixed_elapsed",
+        "actual_capacity_usage",
+        "actual_hardware_usage",
+        "actual_credential_window_usage",
+        "actual_blocked_elapsed",
+        "actual_wait_elapsed",
+        "terminal_evidence_refs"
+      ],
+      "properties": {
+        "terminal_status": {
+          "enum": [
+            "COMPLETED",
+            "FAILED"
+          ]
+        },
+        "actual_started_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "actual_finished_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "actual_effort": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_fixed_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_capacity_usage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/capacityWindowUse"
+          },
+          "uniqueItems": true
+        },
+        "actual_hardware_usage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hardwareWindowUse"
+          },
+          "uniqueItems": true
+        },
+        "actual_credential_window_usage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/credentialWindowUse"
+          },
+          "uniqueItems": true
+        },
+        "actual_blocked_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_wait_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "terminal_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "nonexecutedTaskActual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "terminal_status",
+        "reason",
+        "replacement_ref",
+        "terminal_evidence_refs"
+      ],
+      "properties": {
+        "terminal_status": {
+          "enum": [
+            "CANCELLED",
+            "SUPERSEDED"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "replacement_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/exactArtifactRef"
+            }
+          ]
+        },
+        "terminal_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "taskActual": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/executedTaskActual"
+        },
+        {
+          "$ref": "#/$defs/nonexecutedTaskActual"
+        }
+      ]
+    },
+    "taskActualMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/taskActual"
+        }
+      },
+      "additionalProperties": false
+    },
+    "milestoneVariance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "milestone_gate",
+        "planned_start",
+        "actual_start",
+        "start_variance",
+        "planned_finish",
+        "actual_finish",
+        "finish_variance",
+        "planned_effort",
+        "actual_effort",
+        "effort_variance",
+        "planned_fixed_elapsed",
+        "actual_fixed_elapsed",
+        "fixed_elapsed_variance"
+      ],
+      "properties": {
+        "milestone_gate": {
+          "$ref": "#/$defs/gate"
+        },
+        "planned_start": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "actual_start": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "start_variance": {
+          "$ref": "#/$defs/signedDuration"
+        },
+        "planned_finish": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "actual_finish": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "finish_variance": {
+          "$ref": "#/$defs/signedDuration"
+        },
+        "planned_effort": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_effort": {
+          "$ref": "#/$defs/duration"
+        },
+        "effort_variance": {
+          "$ref": "#/$defs/signedDuration"
+        },
+        "planned_fixed_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_fixed_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "fixed_elapsed_variance": {
+          "$ref": "#/$defs/signedDuration"
+        }
+      }
+    },
+    "forecastErrorMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "planned_value",
+        "actual_value",
+        "error_value",
+        "unit"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "planned_value": {
+          "type": "number"
+        },
+        "actual_value": {
+          "type": "number"
+        },
+        "error_value": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        }
+      }
+    },
+    "forecastError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calculation_method",
+        "calculator_ref",
+        "accepted_snapshot_errors"
+      ],
+      "properties": {
+        "calculation_method": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "calculator_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        "accepted_snapshot_errors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/forecastSnapshotError"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "forecastSnapshotError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forecast_snapshot_ref",
+        "metrics"
+      ],
+      "properties": {
+        "forecast_snapshot_ref": {
+          "$ref": "#/$defs/forecastSnapshotRef"
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/forecastErrorMetric"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "taskVariance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planned_effort",
+        "actual_effort",
+        "effort_variance",
+        "planned_fixed_elapsed",
+        "actual_fixed_elapsed",
+        "fixed_elapsed_variance"
+      ],
+      "properties": {
+        "planned_effort": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_effort": {
+          "$ref": "#/$defs/duration"
+        },
+        "effort_variance": {
+          "$ref": "#/$defs/signedDuration"
+        },
+        "planned_fixed_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "actual_fixed_elapsed": {
+          "$ref": "#/$defs/duration"
+        },
+        "fixed_elapsed_variance": {
+          "$ref": "#/$defs/signedDuration"
+        }
+      }
+    },
+    "taskVarianceMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/taskVariance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resourceWindowVariance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variance_id",
+        "resource_id",
+        "window_id",
+        "planned_quantity",
+        "actual_quantity",
+        "quantity_variance",
+        "unit",
+        "evidence_refs"
+      ],
+      "properties": {
+        "variance_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "resource_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "window_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "planned_quantity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "actual_quantity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "quantity_variance": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "varianceReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason_code",
+        "rationale",
+        "evidence_refs"
+      ],
+      "properties": {
+        "reason_code": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "varianceReasonMap": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/varianceReason"
+        }
+      },
+      "additionalProperties": false
+    },
+    "selectedScenarioDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bounded_node_id",
+        "disposition",
+        "child_leaf_node_ids",
+        "decision_ref",
+        "evidence_refs"
+      ],
+      "properties": {
+        "bounded_node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "disposition": {
+          "const": "SELECTED_AND_DECOMPOSED"
+        },
+        "child_leaf_node_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "decision_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "unmaterializedScenarioDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bounded_node_id",
+        "disposition",
+        "decision_ref",
+        "rationale",
+        "evidence_refs"
+      ],
+      "properties": {
+        "bounded_node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "disposition": {
+          "enum": [
+            "NOT_MATERIALIZED_NOT_SELECTED",
+            "NOT_MATERIALIZED_EXPIRED",
+            "NOT_MATERIALIZED_SUPERSEDED"
+          ]
+        },
+        "decision_ref": {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "scenarioDisposition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/selectedScenarioDisposition"
+        },
+        {
+          "$ref": "#/$defs/unmaterializedScenarioDisposition"
+        }
+      ]
+    },
+    "planningBundleRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/typedArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.delivery-planning-bundle.v2"
+            }
+          }
+        }
+      ]
+    },
+    "publisherClosure": {
+      "description": "Non-recursive declaration of the one still-unexecuted external publisher leaf for this approved content reconciliation. F contains no execution evaluation, action instance, actor, publisher actual, publication receipt, readback receipt, self digest, or locator. After exact approval-bearing F bytes exist, a pre-action PASS evaluation must bind F and its selected WBS; P records the publisher actual and variance and durable publication, and R exact-refers to P and proves F readback.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_node_id",
+        "protocol",
+        "publication_receipt_schema",
+        "readback_receipt_schema"
+      ],
+      "properties": {
+        "task_node_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "protocol": {
+          "const": "EXTERNAL_CONTENT_ADDRESSED_PUBLICATION_READBACK_V1"
+        },
+        "publication_receipt_schema": {
+          "const": "ylx.final-actual-variance-publication-receipt.v1"
+        },
+        "readback_receipt_schema": {
+          "const": "ylx.final-actual-variance-readback-receipt.v1"
+        }
+      }
+    },
+    "finalReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reconciliation_revision",
+        "predecessor_reconciliation_sha256",
+        "planned_bundle_ref",
+        "variance_baseline_bundle_sha256",
+        "accepted_forecast_history",
+        "task_node_count",
+        "terminal_task_actual_count",
+        "planned_task_node_id_set_sha256",
+        "actual_task_node_id_set_sha256",
+        "task_actual_by_node_id",
+        "task_variance_by_node_id",
+        "milestone_variances",
+        "resource_window_variances",
+        "dependency_critical_path",
+        "resource_levelled_driving_path",
+        "forecast_error",
+        "unmaterialized_scenario_dispositions",
+        "variance_reason_by_id",
+        "publisher_closure",
+        "reconciled_at",
+        "evidence_refs"
+      ],
+      "properties": {
+        "status": {
+          "const": "CONTENT_RECONCILED_PENDING_DURABILITY",
+          "description": "All non-publisher executable-leaf actuals and variances are reconciled and approved as F content. This is not durable publication, readback, release completion, or a terminal planning closure; the one publisher actual and variance exist only in P and durability additionally requires R."
+        },
+        "reconciliation_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor_reconciliation_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "planned_bundle_ref": {
+          "$ref": "#/$defs/planningBundleRef"
+        },
+        "variance_baseline_bundle_sha256": {
+          "description": "Exact digest of the accepted M4-to-M5 entry plan; post-hoc rebaselines are invalid.",
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "accepted_forecast_history": {
+          "description": "Complete, ordered accepted forecast-snapshot chain through the last M5 planning head. Chain completeness and direct-predecessor order are checked procedurally.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/forecastSnapshotRef"
+          },
+          "uniqueItems": true
+        },
+        "task_node_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "terminal_task_actual_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Count of terminal actuals embedded in F. Procedural validation requires exactly one fewer than the executable-leaf count because publisher_closure.task_node_id remains unexecuted until P."
+        },
+        "planned_task_node_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "actual_task_node_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "task_actual_by_node_id": {
+          "$ref": "#/$defs/taskActualMap",
+          "description": "Exact map for every planned executable leaf except publisher_closure.task_node_id. P supplies the sole missing publisher actual."
+        },
+        "task_variance_by_node_id": {
+          "$ref": "#/$defs/taskVarianceMap",
+          "description": "Exact map for every planned executable leaf except publisher_closure.task_node_id. P supplies the sole missing publisher variance."
+        },
+        "milestone_variances": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/milestoneVariance"
+          },
+          "uniqueItems": true
+        },
+        "resource_window_variances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/resourceWindowVariance"
+          },
+          "uniqueItems": true
+        },
+        "dependency_critical_path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "resource_levelled_driving_path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "forecast_error": {
+          "$ref": "#/$defs/forecastError"
+        },
+        "unmaterialized_scenario_dispositions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scenarioDisposition"
+          },
+          "uniqueItems": true
+        },
+        "variance_reason_by_id": {
+          "$ref": "#/$defs/varianceReasonMap"
+        },
+        "publisher_closure": {
+          "$ref": "#/$defs/publisherClosure"
+        },
+        "reconciled_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exactArtifactRef"
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reconciliation_revision": {
+                "const": 1
+              }
+            },
+            "required": [
+              "reconciliation_revision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "predecessor_reconciliation_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "predecessor_reconciliation_sha256": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nullableFinalReconciliation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/finalReconciliation"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "artifacts": {
+            "properties": {
+              "owner_assignment": {
+                "properties": { "revision": { "const": 1 } }
+              },
+              "resource_calendar": {
+                "properties": { "revision": { "const": 1 } }
+              },
+              "delivery_wbs": {
+                "properties": { "revision": { "const": 1 } }
+              },
+              "forecast_snapshot": {
+                "properties": { "revision": { "const": 1 } }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_status": {
+            "const": "ACCEPTED"
+          }
+        },
+        "required": [
+          "overall_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "planning_bundle_approval_by_role": {
+            "$ref": "#/$defs/acceptedPlanningApprovalByRole"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "planning_bundle_approval_by_role": {
+            "$ref": "#/$defs/emptyPlanningApprovalByRole"
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M0" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M0" }, "executable_through_gate": { "const": "M1" }, "next_expansion_gate": { "const": "M1" } } },
+          "bundle_kind": { "const": "ROLLING_WAVE" },
+          "final_actual_variance_reconciliation": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M1" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M1" }, "executable_through_gate": { "const": "M2" }, "next_expansion_gate": { "const": "M2" } } },
+          "bundle_kind": { "const": "ROLLING_WAVE" },
+          "final_actual_variance_reconciliation": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M2" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M2" }, "executable_through_gate": { "const": "M3" }, "next_expansion_gate": { "const": "M3" } } },
+          "bundle_kind": { "const": "ROLLING_WAVE" },
+          "final_actual_variance_reconciliation": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M3" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M3" }, "executable_through_gate": { "const": "M4" }, "next_expansion_gate": { "const": "M4" } } },
+          "bundle_kind": { "const": "ROLLING_WAVE" },
+          "final_actual_variance_reconciliation": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M4" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M4" }, "executable_through_gate": { "const": "M5" }, "next_expansion_gate": { "const": "M5" } } },
+          "bundle_kind": { "const": "ROLLING_WAVE" },
+          "final_actual_variance_reconciliation": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "planning_gate": { "const": "M5" } }, "required": ["planning_gate"] },
+      "then": {
+        "properties": {
+          "detail_horizon": { "properties": { "planning_gate": { "const": "M5" }, "executable_through_gate": { "const": "M5" }, "next_expansion_gate": { "type": "null" } } },
+          "revision": { "type": "integer", "minimum": 2 },
+          "bundle_kind": { "const": "FINAL_ACTUAL_VARIANCE" },
+          "final_actual_variance_reconciliation": { "$ref": "#/$defs/finalReconciliation" },
+          "overall_status": { "const": "ACCEPTED" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_id": {
+            "const": "M0-GOV-01-governed-delivery-planning-bundle"
+          },
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "artifact_id",
+          "revision"
+        ]
+      },
+      "then": {
+        "required": [
+          "planning_approval_subject_ref"
+        ],
+        "properties": {
+          "predecessor_sha256": {
+            "type": "null"
+          },
+          "source_refs": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/governedPhaseBPlanningRootSourceRefs"
+          },
+          "planning_bundle_approval_by_role": {
+            "$ref": "#/$defs/completeBootstrapPlanningApprovalByRole"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "planning_approval_subject_ref": false,
+          "planning_bundle_approval_by_role": {
+            "$ref": "#/$defs/legacyPlanningApprovalByRole"
+          }
+        }
+      }
+    }
+  ]
+}

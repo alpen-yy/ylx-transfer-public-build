@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/acceptance-registry-history-checkpoint-v1.schema.json",
+  "title": "YLX acceptance registry history monotonic checkpoint v1",
+  "description": "Immutable content-addressed commit marker for one complete acceptance-history publication prefix. With the validator's compiled bootstrap, checkpoints detect mutation, a missing bootstrap, fork, gap, orphan, and lower-tip fallback in the current validator/worktree and confer rollback detection only, never Acceptance approval. They cannot detect coordinated rollback of the validator plus all repository state; that stronger property requires an out-of-repository monotonic witness or protected canonical history, currently unavailable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "history_revision",
+    "artifact_class",
+    "checkpoint_kind",
+    "predecessor_checkpoint",
+    "current_head",
+    "current_proposal",
+    "publication_set",
+    "transition_semantics",
+    "publication_semantics",
+    "authority_effect",
+    "approvals",
+    "evidence_ids"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.acceptance-registry-history-checkpoint.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^acceptance-registry-history-checkpoint-v[1-9][0-9]*$"
+    },
+    "history_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "artifact_class": {
+      "const": "GOVERNANCE_ARTIFACT"
+    },
+    "checkpoint_kind": {
+      "enum": [
+        "BOOTSTRAP",
+        "SUCCESSOR"
+      ]
+    },
+    "predecessor_checkpoint": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/checkpointArtifactRef"
+        }
+      ]
+    },
+    "current_head": {
+      "$ref": "#/$defs/headArtifactRef"
+    },
+    "current_proposal": {
+      "$ref": "#/$defs/proposalArtifactRef"
+    },
+    "publication_set": {
+      "$ref": "#/$defs/publicationSet"
+    },
+    "transition_semantics": {
+      "$ref": "#/$defs/transitionSemantics"
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    },
+    "authority_effect": {
+      "const": "ROLLBACK_DETECTION_ONLY"
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "evidence_ids": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "checkpoint_kind": {
+            "const": "BOOTSTRAP"
+          }
+        },
+        "required": [
+          "checkpoint_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_checkpoint": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "checkpoint_kind": {
+            "const": "SUCCESSOR"
+          }
+        },
+        "required": [
+          "checkpoint_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_checkpoint": {
+            "$ref": "#/$defs/checkpointArtifactRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "checkpointArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "history_revision",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "history_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-history-checkpoint-v[1-9][0-9]*$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/checkpoints/acceptance-registry-history-checkpoint--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "headArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "history_revision",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "history_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-history-head-v[1-9][0-9]*$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/heads/acceptance-registry-history-head-v[1-9][0-9]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "proposalArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-revision-[1-9][0-9]*-proposal$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/proposals/acceptance-registry-revision-[1-9][0-9]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "publicationSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "manifest_byte_rule",
+        "file_count",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "COMPLETE_NON_CHECKPOINT_HISTORY_PREFIX_THROUGH_REVISION"
+        },
+        "manifest_byte_rule": {
+          "const": "ASCII_SHA256_TWO_SPACES_REPOSITORY_RELATIVE_POSIX_PATH_LF_SORTED_BY_PATH"
+        },
+        "file_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "transitionSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pre_checkpoint_readback",
+        "checkpoint_write",
+        "selector_commit",
+        "recovery"
+      ],
+      "properties": {
+        "pre_checkpoint_readback": {
+          "const": "PROSPECTIVE_COMPLETE_HISTORY_VALID"
+        },
+        "checkpoint_write": {
+          "const": "CREATE_IF_ABSENT_FSYNC_AND_EXACT_READBACK"
+        },
+        "selector_commit": {
+          "const": "ATOMIC_COMPARE_AND_REPLACE_AFTER_CHECKPOINT_READBACK"
+        },
+        "recovery": {
+          "const": "REPLAY_EXACT_BYTES_OR_FAIL_CLOSED"
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

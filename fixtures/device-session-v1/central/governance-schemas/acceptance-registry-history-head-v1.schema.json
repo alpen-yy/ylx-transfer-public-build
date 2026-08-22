@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/acceptance-registry-history-head-v1.schema.json",
+  "title": "YLX immutable acceptance registry history head v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "history_revision",
+    "predecessor_head",
+    "migration_anchor",
+    "current_proposal",
+    "proposal_chain_cardinality",
+    "history_status",
+    "selector_version",
+    "authority_effect",
+    "publication_semantics",
+    "approvals",
+    "evidence_ids"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.acceptance-registry-history-head.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^acceptance-registry-history-head-v[1-9][0-9]*$"
+    },
+    "history_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_head": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/headArtifactRef"
+        }
+      ]
+    },
+    "migration_anchor": {
+      "$ref": "#/$defs/anchorArtifactRef"
+    },
+    "current_proposal": {
+      "$ref": "#/$defs/proposalArtifactRef"
+    },
+    "proposal_chain_cardinality": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "history_status": {
+      "const": "DRAFT"
+    },
+    "selector_version": {
+      "const": "acceptance-registry-history-selector.v1"
+    },
+    "authority_effect": {
+      "const": "OBSERVED_MIGRATION_AND_UNAPPROVED_DRAFT_PROPOSALS_ONLY"
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "evidence_ids": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "anchorArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-history-anchor-[0-9a-f]{64}$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/anchors/acceptance-registry-history-anchor--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "proposalArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256",
+        "proposal_status",
+        "approval_status"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-revision-[1-9][0-9]*-proposal$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/proposals/acceptance-registry-revision-[1-9][0-9]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "proposal_status": {
+          "const": "DRAFT"
+        },
+        "approval_status": {
+          "const": "NOT_APPROVED"
+        }
+      }
+    },
+    "headArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "history_revision",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "history_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^acceptance-registry-history-head-v[1-9][0-9]*$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/heads/acceptance-registry-history-head-v[1-9][0-9]*--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

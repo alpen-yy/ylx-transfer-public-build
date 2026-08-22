@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-publication-fence-termination-v1.schema.json",
+  "title": "YLX immutable release publication fence termination v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "termination_id",
+    "attempt_id",
+    "attempt_terminal_slot",
+    "publication_fence_ref",
+    "publication_fence_sha256",
+    "pre_release_closure_ref",
+    "pre_release_closure_sha256",
+    "reason",
+    "authority_heads_at_termination",
+    "approved_by",
+    "terminated_at",
+    "ga_quarantine_proof",
+    "old_input_recovery",
+    "successor_attempt_policy",
+    "release_state"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-publication-fence-termination.v1"
+    },
+    "termination_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "attempt_terminal_slot": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "publication_fence_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "publication_fence_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "pre_release_closure_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "pre_release_closure_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "reason": {
+      "enum": [
+        "EMERGENCY_KEY_REVOCATION",
+        "AUTHORITY_DRIFT",
+        "PROMOTION_TARGET_MISMATCH",
+        "EXPLICIT_OPERATOR_ABORT"
+      ]
+    },
+    "authority_heads_at_termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_head",
+        "binding_context_ref",
+        "signing_policy_sha256",
+        "key_validity_revocation_head_sha256",
+        "quorum_policy_sha256"
+      ],
+      "properties": {
+        "issue_head": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+        },
+        "binding_context_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "signing_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "key_validity_revocation_head_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "quorum_policy_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "approved_by": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    },
+    "terminated_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "ga_quarantine_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promotion_state",
+        "ga_visibility",
+        "remote_observation_sha256"
+      ],
+      "properties": {
+        "promotion_state": {
+          "enum": [
+            "NOT_ATTEMPTED",
+            "QUARANTINED_EXACT",
+            "QUARANTINED_MISMATCH"
+          ]
+        },
+        "ga_visibility": {
+          "const": "NOT_CUSTOMER_VISIBLE"
+        },
+        "remote_observation_sha256": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+          ]
+        }
+      }
+    },
+    "old_input_recovery": {
+      "const": "FORBIDDEN"
+    },
+    "successor_attempt_policy": {
+      "const": "NEW_PRE_RELEASE_CLOSURE_AND_NEW_FOUR_PERSON_SIGNATURES_REQUIRED"
+    },
+    "release_state": {
+      "const": "RELEASE_NOT_COMPLETE"
+    }
+  }
+}

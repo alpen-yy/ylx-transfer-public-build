@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m5-signing-policy-v2.schema.json",
+  "title": "YLX release signing policy v2",
+  "description": "Signing policy for the all-v2 M5 closure quorum and post-finalization distribution-control signatures. The two profiles use distinct domains and signed artifacts. Role-key assignments and key-validity heads remain version-neutral v1 artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "revision",
+    "predecessor_policy_ref",
+    "canonicalization",
+    "digest_algorithm",
+    "signature_algorithm",
+    "public_key_encoding",
+    "signature_encoding",
+    "signature_domain_template",
+    "signed_payload_schema",
+    "signed_artifact_schema",
+    "distribution_signature_domain_template",
+    "distribution_signed_artifact_schema",
+    "distribution_role_slots",
+    "distribution_signed_payload_rule",
+    "signature_message_rule",
+    "minimum_key_validity_horizon_seconds",
+    "valid_at_signature_rule",
+    "normal_post_signature_expiry_rule",
+    "retroactive_revocation_rule",
+    "published_at",
+    "approvals",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m5-signing-policy.v2"
+    },
+    "policy_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_policy_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/signingPolicyRef"
+        }
+      ]
+    },
+    "canonicalization": {
+      "const": "RFC8785-JSON-UTF8"
+    },
+    "digest_algorithm": {
+      "const": "SHA-256"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "public_key_encoding": {
+      "const": "32-byte-raw-Ed25519"
+    },
+    "signature_encoding": {
+      "const": "base64"
+    },
+    "signature_domain_template": {
+      "const": "ylx.release-closure.quorum.v2/<role_slot>"
+    },
+    "signed_payload_schema": {
+      "const": "ylx.release-quorum-signature.signed-payload.v2"
+    },
+    "signed_artifact_schema": {
+      "const": "ylx.pre-release-closure.v2"
+    },
+    "distribution_signature_domain_template": {
+      "const": "ylx.release-distribution-control.v2/<role_slot>"
+    },
+    "distribution_signed_artifact_schema": {
+      "const": "ylx.release-distribution-control.v2"
+    },
+    "distribution_role_slots": {
+      "const": [
+        "release-owner",
+        "security-owner"
+      ]
+    },
+    "distribution_signed_payload_rule": {
+      "const": "OMIT_SIGNATURES_BY_ROLE_SLOT_THEN_RFC8785_JSON_UTF8"
+    },
+    "signature_message_rule": {
+      "const": "ASCII_DOMAIN || 0x00 || RFC8785_SIGNED_PAYLOAD_JSON_BYTES"
+    },
+    "minimum_key_validity_horizon_seconds": {
+      "type": "integer",
+      "minimum": 60
+    },
+    "valid_at_signature_rule": {
+      "const": "SIGNED_AT_WITHIN_NOT_BEFORE_AND_NOT_AFTER"
+    },
+    "normal_post_signature_expiry_rule": {
+      "const": "DOES_NOT_INVALIDATE_VALID_SIGNATURE"
+    },
+    "retroactive_revocation_rule": {
+      "const": "INVALID_ONLY_WHEN_EFFECTIVE_AT_OR_BEFORE_SIGNED_AT"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      }
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_policy_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_policy_ref": {
+            "$ref": "#/$defs/signingPolicyRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "signingPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m5-signing-policy.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    }
+  }
+}

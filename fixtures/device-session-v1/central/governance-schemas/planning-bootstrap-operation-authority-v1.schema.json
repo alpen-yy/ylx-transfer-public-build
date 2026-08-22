@@ -1,0 +1,445 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/planning-bootstrap-operation-authority-v1.schema.json",
+  "title": "YLX planning bootstrap operation authority v1",
+  "description": "One signed, time-bounded, one-use authority grant for one exact planning-bootstrap operation. The bootstrap attempt, operation instance, frozen payload, repository target, operation, and terminal sink bindings are verified procedurally together with validity ordering, grant consumption, RFC 8785 payload hashing, and Ed25519 signature verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "grant_id",
+    "grant_kind",
+    "bootstrap_attempt_id",
+    "grant",
+    "issued_at",
+    "valid_from",
+    "not_after",
+    "one_use",
+    "issuer_id",
+    "signature_algorithm",
+    "signing_key_id",
+    "signed_payload_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.planning-bootstrap-operation-authority.v1"
+    },
+    "grant_id": {
+      "$ref": "#/$defs/artifactId"
+    },
+    "grant_kind": {
+      "enum": [
+        "PUBLISHER",
+        "IMPORTER",
+        "REPOSITORY_WRITE",
+        "READBACK",
+        "ISSUE_WRITE",
+        "ISSUE_READBACK",
+        "TERMINAL_SINK"
+      ]
+    },
+    "bootstrap_attempt_id": {
+      "description": "Exact bootstrap attempt shared by the selected C operation constraint, the granted operation, and its terminal-sink grant.",
+      "$ref": "#/$defs/artifactId"
+    },
+    "grant": {
+      "$ref": "#/$defs/grant"
+    },
+    "issued_at": {
+      "description": "Issuance time; procedural validation requires valid_from <= issued_at <= not_after and containment within the pinned issuer interval.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "valid_from": {
+      "description": "Inclusive beginning of the grant validity interval.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "not_after": {
+      "description": "Inclusive end of the grant validity interval.",
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "one_use": {
+      "const": true
+    },
+    "issuer_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "signed_payload_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{85}[AQgw]==$"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "identifier": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "artifactId": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "schemaName": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/schemaName"
+    },
+    "locator": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "publisherGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "actor_id",
+        "artifact_schema",
+        "artifact_id",
+        "artifact_revision",
+        "payload_ref",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "artifact_schema": {"$ref": "#/$defs/schemaName"},
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "artifact_revision": {"type": "integer", "minimum": 1},
+        "payload_ref": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {"const": "CREATE_IF_ABSENT"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "importerGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "actor_id",
+        "artifact_schema",
+        "artifact_id",
+        "role_id",
+        "payload_ref",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "artifact_schema": {"$ref": "#/$defs/schemaName"},
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "role_id": {"$ref": "#/$defs/identifier"},
+        "payload_ref": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {"const": "IMPORT_EXACT"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "repositoryWriteGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "actor_id",
+        "payload_ref",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "payload_ref": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {
+          "enum": [
+            "CREATE_IF_ABSENT",
+            "IMPORT_EXACT",
+            "REPLACE_LIVE_SOURCE_EXACT",
+            "CREATE_IMMUTABLE_ARCHIVE",
+            "PUBLISH_DIRECT_SUCCESSOR_HEAD"
+          ]
+        },
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "readbackGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "reader_id",
+        "artifact_schema",
+        "artifact_id",
+        "payload_ref",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "reader_id": {"$ref": "#/$defs/identifier"},
+        "artifact_schema": {"$ref": "#/$defs/schemaName"},
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "payload_ref": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {"const": "READ_EXACT"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "issueWriteGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "actor_id",
+        "payload_ref",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "payload_ref": {"$ref": "#/$defs/locator"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {
+          "enum": [
+            "REPLACE_LIVE_SOURCE_EXACT",
+            "CREATE_IMMUTABLE_ARCHIVE",
+            "PUBLISH_DIRECT_SUCCESSOR_HEAD"
+          ]
+        },
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "issueReadbackGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "reader_id",
+        "source_ref",
+        "source_sha256",
+        "archive_ref",
+        "archive_sha256",
+        "successor_head_ref",
+        "successor_head_sha256",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "terminal_sink_grant_ref",
+        "terminal_sink_grant_sha256"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "reader_id": {"$ref": "#/$defs/identifier"},
+        "source_ref": {"$ref": "#/$defs/locator"},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "archive_ref": {"$ref": "#/$defs/locator"},
+        "archive_sha256": {"$ref": "#/$defs/sha256"},
+        "successor_head_ref": {"$ref": "#/$defs/locator"},
+        "successor_head_sha256": {"$ref": "#/$defs/sha256"},
+        "payload_sha256": {
+          "description": "RFC 8785 digest of the exact closed source/archive/successor-head reference and digest tuple.",
+          "$ref": "#/$defs/sha256"
+        },
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {"const": "READ_EXACT_TRANSITION_TUPLE"},
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_ref": {"$ref": "#/$defs/locator"},
+        "terminal_sink_grant_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "terminalSinkGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "operation_instance_id",
+        "payload_sha256",
+        "repository_locator",
+        "operation",
+        "target_scope",
+        "sink_id",
+        "sink_locator",
+        "receipt_schema",
+        "receipt_id",
+        "receipt_issuer_id",
+        "receipt_signing_key_id",
+        "receipt_signing_public_key_base64",
+        "operation_class"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "operation_instance_id": {"$ref": "#/$defs/artifactId"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "repository_locator": {"$ref": "#/$defs/locator"},
+        "operation": {
+          "enum": [
+            "CREATE_IF_ABSENT",
+            "IMPORT_EXACT",
+            "REPLACE_LIVE_SOURCE_EXACT",
+            "CREATE_IMMUTABLE_ARCHIVE",
+            "PUBLISH_DIRECT_SUCCESSOR_HEAD",
+            "READ_EXACT",
+            "READ_EXACT_TRANSITION_TUPLE",
+            "EMIT_RECONCILIATION"
+          ]
+        },
+        "target_scope": {"$ref": "#/$defs/locator"},
+        "sink_id": {"$ref": "#/$defs/identifier"},
+        "sink_locator": {"$ref": "#/$defs/locator"},
+        "receipt_schema": {
+          "enum": [
+            "ylx.planning-bootstrap-input-closure-readback-receipt.v1",
+            "ylx.planning-bootstrap-publication-receipt.v1",
+            "ylx.planning-bootstrap-readback-receipt.v1",
+            "ylx.planning-approval-publication-receipt.v1",
+            "ylx.planning-approval-readback-receipt.v1",
+            "ylx.repository-operation-receipt.v1",
+            "ylx.g0-issue-register-transition-readback-receipt.v1",
+            "ylx.g0-issue-register-reconciliation-receipt.v1"
+          ]
+        },
+        "receipt_id": {"$ref": "#/$defs/artifactId"},
+        "receipt_issuer_id": {"$ref": "#/$defs/identifier"},
+        "receipt_signing_key_id": {"$ref": "#/$defs/identifier"},
+        "receipt_signing_public_key_base64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$"
+        },
+        "operation_class": {
+          "enum": [
+            "PLANNING_PUBLICATION",
+            "APPROVAL_IMPORT",
+            "REPOSITORY_WRITE",
+            "PLANNING_READBACK",
+            "ISSUE_WRITE",
+            "ISSUE_TRANSITION_READBACK",
+            "ISSUE_RECONCILIATION"
+          ]
+        }
+      }
+    },
+    "grant": {
+      "description": "Closed grant body union. The enclosing grant_kind discriminator selects the applicable branch; anyOf is intentional because repository-write and issue-write bodies share a field shape and overlapping operation values.",
+      "anyOf": [
+        {"$ref": "#/$defs/publisherGrant"},
+        {"$ref": "#/$defs/importerGrant"},
+        {"$ref": "#/$defs/repositoryWriteGrant"},
+        {"$ref": "#/$defs/readbackGrant"},
+        {"$ref": "#/$defs/issueWriteGrant"},
+        {"$ref": "#/$defs/issueReadbackGrant"},
+        {"$ref": "#/$defs/terminalSinkGrant"}
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "grant_kind": {"const": "PUBLISHER"},
+        "grant": {"$ref": "#/$defs/publisherGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "IMPORTER"},
+        "grant": {"$ref": "#/$defs/importerGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "REPOSITORY_WRITE"},
+        "grant": {"$ref": "#/$defs/repositoryWriteGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "READBACK"},
+        "grant": {"$ref": "#/$defs/readbackGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "ISSUE_WRITE"},
+        "grant": {"$ref": "#/$defs/issueWriteGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "ISSUE_READBACK"},
+        "grant": {"$ref": "#/$defs/issueReadbackGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    },
+    {
+      "properties": {
+        "grant_kind": {"const": "TERMINAL_SINK"},
+        "grant": {"$ref": "#/$defs/terminalSinkGrant"}
+      },
+      "required": ["grant_kind", "grant"]
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/system-feature-mapping-approval-subject-v1.schema.json",
+  "title": "YLX system feature mapping approval subject v1",
+  "description": "The RFC 8785 canonical subject committed before approval records exist. It binds only upstream candidate inputs and excludes approvals, ratification self-addresses, M1 verdicts, and downstream results or evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "propertyNames": {
+    "not": {
+      "pattern": "^(approvals?$|approval_(record|records|digest|digests|sha256|locator|locators)(_|$)|ratification_(digest|locator)|own_(digest|locator)|m1_(trace|contract)_verdict|downstream_(result|evidence))"
+    }
+  },
+  "required": [
+    "schema",
+    "mapping_revision",
+    "predecessor_ratification_sha256",
+    "candidate_remote_id",
+    "candidate_commit",
+    "source_document_path",
+    "source_document_sha256",
+    "source_feature_set_sha256",
+    "mapping_artifact_path",
+    "mapping_artifact_sha256",
+    "mapping_semantic_sha256",
+    "registry_revision",
+    "registry_artifact_path",
+    "registry_artifact_sha256",
+    "registry_id_set_sha256",
+    "acceptance_artifact_path",
+    "acceptance_artifact_sha256",
+    "owner_assignment_ref",
+    "approval_policy_ref",
+    "prepared_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.system-feature-mapping-approval-subject.v1"
+    },
+    "mapping_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_ratification_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "candidate_remote_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "candidate_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_document_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "source_document_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "source_feature_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "mapping_artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "mapping_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "mapping_semantic_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "registry_artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "registry_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_id_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "acceptance_artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "acceptance_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "owner_assignment_ref": {
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "approval_policy_ref": {
+      "$ref": "#/$defs/mappingPolicyRef"
+    },
+    "prepared_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "mappingPolicyRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "ref_id": {
+              "const": "policy.system_feature_mapping"
+            },
+            "authority_kind": {
+              "enum": [
+                "accepted-decision",
+                "contract-package"
+              ]
+            }
+          },
+          "required": [
+            "ref_id",
+            "authority_kind"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mapping_revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "mapping_revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_ratification_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "predecessor_ratification_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ]
+}

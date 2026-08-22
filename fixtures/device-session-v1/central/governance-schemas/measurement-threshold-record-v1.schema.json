@@ -1,0 +1,808 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/measurement-threshold-record-v1.schema.json",
+  "title": "YLX measurement threshold record v1",
+  "description": "Immutable, revisioned threshold-policy input for one M0 measurement requirement. It carries frozen value semantics and exact external training/method/partition inputs, but is neither measurement evidence nor a requirement verdict and cannot self-declare authority. Threshold-policy effectiveness is derived only after procedural validation of the selected G0 policy, registry-derived per-ID freeze profile, durable pre-action PASS execution evaluation and assignments, direct-predecessor lineage, and unique external content-addressed publication/readback. Merely referencing this record from a measurement queue grants no authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "threshold_record_id",
+    "revision",
+    "predecessor_threshold_record_ref",
+    "measurement_id",
+    "threshold_kind",
+    "threshold_terms",
+    "scope",
+    "freeze_gate",
+    "authorization_class",
+    "authorization_action",
+    "task_id",
+    "execution_authorization_evaluation_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "actor_assignment_ref",
+    "actor_person_id",
+    "checker_assignment_ref",
+    "checker_person_id",
+    "owner_role_projection",
+    "checker_role_projection",
+    "freeze_evidence_refs",
+    "freeze_method_ref",
+    "statistical_method_ref",
+    "data_partition_ref",
+    "frozen_at",
+    "supersession_reason",
+    "publication_protocol",
+    "publication_readback_schema",
+    "authority_effect",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.measurement-threshold-record.v1"
+    },
+    "threshold_record_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every revision for one measurement and scope lineage."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_threshold_record_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/measurementThresholdRecordRef"
+        }
+      ],
+      "description": "Exact direct predecessor. Procedural validation requires the same threshold_record_id, revision exactly one lower, exact bytes, and no fork or gap."
+    },
+    "measurement_id": {
+      "$ref": "#/$defs/measurementId"
+    },
+    "threshold_kind": {
+      "enum": [
+        "PREDECLARED",
+        "DATA_FITTED",
+        "DETERMINISTIC_POLICY"
+      ]
+    },
+    "threshold_terms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/thresholdTerm"
+      },
+      "description": "Closed direction-specific per-metric threshold values. Procedural validation requires unique metric_id values and exact coverage by both referenced method records."
+    },
+    "scope": {
+      "$ref": "#/$defs/thresholdScope"
+    },
+    "freeze_gate": {
+      "$ref": "#/$defs/closingGate",
+      "description": "Exact per-measurement freeze gate derived from the selected registry; the record cannot choose its own gate."
+    },
+    "authorization_class": {
+      "const": "may_prepare"
+    },
+    "authorization_action": {
+      "const": "produce-governance-input"
+    },
+    "task_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "execution_authorization_evaluation_ref": {
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef",
+      "description": "Exact unrevisioned ref to the durable pre-action primary PASS E for this one may_prepare/produce-governance-input action."
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "actor_assignment_ref": {
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "actor_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "checker_assignment_ref": {
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "checker_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "owner_role_projection": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId",
+      "description": "Derived from the selected registry ownership pattern for measurement_id; it does not assign a person."
+    },
+    "checker_role_projection": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId",
+      "description": "Derived from registry reviewer_by_owner for owner_role_projection; it does not assign a person."
+    },
+    "freeze_evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/measurementEvidenceBinding"
+      },
+      "description": "Exact immutable pre-freeze evidence records plus their closed partition membership. DATA_FITTED records require the same exact data partition as data_partition_ref, TRAINING side, and nonempty source-group IDs. Each evidence record must resolve through one exact evidence-binding and PASS E whose measurement_data_selection prerequisite is an externally read-back ylx.measurement-data-selection.v1 with field-for-field equal measurement, partition, side, and group IDs plus recomputed source/sample sets. PREDECLARED and DETERMINISTIC_POLICY records require explicit null/null/empty partition semantics. Holdout evidence is later, remains external to this frozen payload, and is selected through the measurement queue/verdict chain."
+    },
+    "freeze_method_ref": {
+      "$ref": "#/$defs/measurementMethodRecordRef",
+      "description": "Exact measurement-method-record v1 with method_role FREEZE_EVALUATION, measurement coverage, and metric coverage matching this record."
+    },
+    "statistical_method_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/measurementMethodRecordRef"
+        }
+      ],
+      "description": "Exact measurement-method-record v1 with method_role STATISTICAL_FIT for a fitted threshold, or null when no statistical fitting is permitted."
+    },
+    "data_partition_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/dataPartitionRef"
+        }
+      ],
+      "description": "Exact source-group-disjoint training/holdout partition for DATA_FITTED thresholds."
+    },
+    "frozen_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp",
+      "description": "Freeze time after E and every training-side input, but strictly before external holdout evidence and the measurement's terminal verdict."
+    },
+    "supersession_reason": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      ]
+    },
+    "publication_protocol": {
+      "const": "EXTERNAL_CONTENT_ADDRESSED_LOCATOR_READBACK_V1"
+    },
+    "publication_readback_schema": {
+      "const": "ylx.content-addressed-locator-readback.v1",
+      "description": "This payload cannot embed a receipt that depends on its own digest. Procedural validation externally selects exactly one matching readback by artifact_schema=ylx.measurement-threshold-record.v1, artifact_id=threshold_record_id, and this record's raw-byte digest, and requires the digest-derived path and exact-byte readback."
+    },
+    "authority_effect": {
+      "const": "NONE",
+      "description": "The payload cannot self-declare authority. Threshold-policy effectiveness is derived only by procedural validation of the selected G0 policy, per-ID gate/action/owner/checker profile, durable pre-action PASS E, assignments, exact training/method/partition inputs, and unique external publication/readback. It is never evidence, PASS, N/A, a requirement verdict, planning approval, execution authorization, milestone authority, or release authority."
+    },
+    "artifact_metadata": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+        },
+        {
+          "properties": {
+            "classification": {
+              "const": "GOVERNANCE_ARTIFACT"
+            },
+            "evidence_claim": {
+              "const": "GOVERNANCE_INPUT"
+            }
+          },
+          "required": [
+            "classification",
+            "evidence_claim"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_threshold_record_ref": {
+            "type": "null"
+          },
+          "supersession_reason": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_threshold_record_ref": {
+            "$ref": "#/$defs/measurementThresholdRecordRef"
+          },
+          "supersession_reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "threshold_kind": {
+            "const": "DATA_FITTED"
+          }
+        },
+        "required": [
+          "threshold_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "freeze_evidence_refs": {
+            "items": {
+              "$ref": "#/$defs/partitionedTrainingEvidenceBinding"
+            }
+          },
+          "statistical_method_ref": {
+            "$ref": "#/$defs/measurementMethodRecordRef"
+          },
+          "data_partition_ref": {
+            "$ref": "#/$defs/dataPartitionRef"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "freeze_evidence_refs": {
+            "items": {
+              "$ref": "#/$defs/unpartitionedEvidenceBinding"
+            }
+          },
+          "statistical_method_ref": {
+            "type": "null"
+          },
+          "data_partition_ref": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "measurementThresholdRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.measurement-threshold-record.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "measurementMethodRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.measurement-method-record.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "schema",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "schema": {
+          "const": "ylx.execution-authorization-evaluation.v1"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Execution authorization evaluations are immutable unrevisioned payloads; revision is forbidden."
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageEvidenceRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-evidence-record.v1"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "The revision value is the implicit immutable v1 artifact revision; legacy stage-evidence payloads have no root revision field."
+    },
+    "measurementEvidenceBinding": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/unpartitionedEvidenceBinding"
+        },
+        {
+          "$ref": "#/$defs/partitionedTrainingEvidenceBinding"
+        }
+      ]
+    },
+    "unpartitionedEvidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_record_ref",
+        "data_partition_ref",
+        "partition_side",
+        "source_group_ids"
+      ],
+      "properties": {
+        "evidence_record_ref": {
+          "$ref": "#/$defs/stageEvidenceRecordRef"
+        },
+        "data_partition_ref": {
+          "type": "null"
+        },
+        "partition_side": {
+          "type": "null"
+        },
+        "source_group_ids": {
+          "type": "array",
+          "maxItems": 0
+        }
+      },
+      "description": "Explicit no-partition binding for PREDECLARED and DETERMINISTIC_POLICY threshold evidence."
+    },
+    "partitionedTrainingEvidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_record_ref",
+        "data_partition_ref",
+        "partition_side",
+        "source_group_ids"
+      ],
+      "properties": {
+        "evidence_record_ref": {
+          "$ref": "#/$defs/stageEvidenceRecordRef"
+        },
+        "data_partition_ref": {
+          "$ref": "#/$defs/dataPartitionRef"
+        },
+        "partition_side": {
+          "const": "TRAINING"
+        },
+        "source_group_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        }
+      },
+      "description": "Training-side membership for one DATA_FITTED threshold input. Procedural validation requires the partition ref to equal the root data_partition_ref, every group ID to resolve uniquely to a training source group in that partition, and the uniquely bound evidence/E measurement_data_selection prerequisite to equal this wrapper and carry the recomputed selected group/source/sample set digests."
+    },
+    "dataPartitionRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.data-partition.v1"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "The current data-partition v1 payload family is immutable and has an implicit artifact revision of 1."
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "thresholdScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "candidate_id",
+        "qualification_revision",
+        "binding_context_ref",
+        "support_cell_ids"
+      ],
+      "properties": {
+        "scope_kind": {
+          "enum": [
+            "CANDIDATE_INDEPENDENT",
+            "CANDIDATE_BOUND"
+          ]
+        },
+        "candidate_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+            }
+          ]
+        },
+        "qualification_revision": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ]
+        },
+        "binding_context_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/bindingContextRef"
+            }
+          ]
+        },
+        "support_cell_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scope_kind": {
+                "const": "CANDIDATE_INDEPENDENT"
+              }
+            },
+            "required": [
+              "scope_kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidate_id": {
+                "type": "null"
+              },
+              "qualification_revision": {
+                "type": "null"
+              },
+              "binding_context_ref": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "candidate_id": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+              },
+              "qualification_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "binding_context_ref": {
+                "$ref": "#/$defs/bindingContextRef"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "thresholdTerm": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/singleBoundThresholdTerm"
+        },
+        {
+          "$ref": "#/$defs/exactThresholdTerm"
+        },
+        {
+          "$ref": "#/$defs/twoSidedThresholdTerm"
+        },
+        {
+          "$ref": "#/$defs/setMembershipThresholdTerm"
+        }
+      ]
+    },
+    "singleBoundThresholdTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "value",
+        "unit",
+        "direction"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_./%*^+:-]*$"
+        },
+        "direction": {
+          "enum": [
+            "UPPER_BOUND",
+            "LOWER_BOUND"
+          ]
+        }
+      }
+    },
+    "exactThresholdTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "value",
+        "unit",
+        "direction"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "value": {
+          "$ref": "#/$defs/thresholdScalar"
+        },
+        "unit": {
+          "$ref": "#/$defs/thresholdUnit"
+        },
+        "direction": {
+          "const": "EXACT"
+        }
+      }
+    },
+    "twoSidedThresholdTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "lower_value",
+        "upper_value",
+        "lower_inclusive",
+        "upper_inclusive",
+        "unit",
+        "direction"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "lower_value": {
+          "type": "number"
+        },
+        "upper_value": {
+          "type": "number"
+        },
+        "lower_inclusive": {
+          "type": "boolean"
+        },
+        "upper_inclusive": {
+          "type": "boolean"
+        },
+        "unit": {
+          "$ref": "#/$defs/thresholdUnit"
+        },
+        "direction": {
+          "const": "TWO_SIDED"
+        }
+      },
+      "description": "Procedural validation requires lower_value to be strictly less than upper_value."
+    },
+    "setMembershipThresholdTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "allowed_values",
+        "unit",
+        "direction"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "allowed_values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/thresholdScalar"
+          }
+        },
+        "unit": {
+          "$ref": "#/$defs/thresholdUnit"
+        },
+        "direction": {
+          "const": "SET_MEMBERSHIP"
+        }
+      }
+    },
+    "thresholdScalar": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "thresholdUnit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_./%*^+:-]*$"
+    },
+    "measurementId": {
+      "enum": [
+        "M0-MEAS-01",
+        "M0-MEAS-02",
+        "M0-MEAS-03",
+        "M0-MEAS-04",
+        "M0-MEAS-05",
+        "M0-MEAS-06",
+        "M0-MEAS-07",
+        "M0-MEAS-08",
+        "M0-MEAS-09",
+        "M0-MEAS-10",
+        "M0-MEAS-11"
+      ]
+    },
+    "closingGate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4a",
+        "M4b",
+        "M4c",
+        "M4d",
+        "M4",
+        "M5"
+      ]
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ylx:schema:imu-sample:v1",
+  "title": "YLX IMU JSONL Sample v1",
+  "description": "Schema for one line of imu/imu.jsonl. Each line is independently valid JSON.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "session_id",
+    "clock",
+    "timestamp",
+    "sequence",
+    "raw_axes",
+    "frame_association"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.imu-sample.v1"
+    },
+    "session_id": {
+      "$ref": "#/$defs/uuidV7"
+    },
+    "clock": {
+      "$ref": "#/$defs/clock"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Timestamp ticks in the declared clock domain and unit."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Strictly increasing IMU sample sequence within the session."
+    },
+    "raw_axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["units", "accelerometer", "gyroscope"],
+      "properties": {
+        "units": {
+          "const": "raw_int16",
+          "description": "No physical scale is implied until a calibration is supplied."
+        },
+        "accelerometer": {
+          "$ref": "#/$defs/rawVector3"
+        },
+        "gyroscope": {
+          "$ref": "#/$defs/rawVector3"
+        }
+      }
+    },
+    "frame_association": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "frame_sequence", "method", "offset_nanoseconds"],
+          "properties": {
+            "status": {
+              "const": "associated"
+            },
+            "frame_sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "method": {
+              "enum": ["exact", "nearest", "interpolated"]
+            },
+            "offset_nanoseconds": {
+              "type": "integer",
+              "description": "IMU timestamp minus frame timestamp in session-monotonic nanoseconds."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": {
+              "const": "unassociated"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "uuidV7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Canonical lowercase UUIDv7."
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "unit", "epoch_id"],
+      "properties": {
+        "domain": {
+          "const": "session_monotonic"
+        },
+        "unit": {
+          "const": "nanosecond"
+        },
+        "epoch_id": {
+          "$ref": "#/$defs/uuidV7",
+          "description": "Clock epoch identity; MUST equal session_id."
+        }
+      }
+    },
+    "rawVector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": -32768,
+          "maximum": 32767
+        },
+        "y": {
+          "type": "integer",
+          "minimum": -32768,
+          "maximum": 32767
+        },
+        "z": {
+          "type": "integer",
+          "minimum": -32768,
+          "maximum": 32767
+        }
+      }
+    }
+  }
+}

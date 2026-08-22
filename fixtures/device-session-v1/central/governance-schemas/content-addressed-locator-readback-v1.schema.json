@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/content-addressed-locator-readback-v1.schema.json",
+  "title": "YLX external content-addressed locator and durable readback v1",
+  "description": "Carries an artifact's exact-byte digest outside that artifact and proves a digest-bearing create-if-absent path was durably reread.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "locator_id",
+    "artifact_schema",
+    "artifact_id",
+    "artifact_sha256",
+    "canonical_path",
+    "attempt_terminal_slot",
+    "terminal_slot_record",
+    "terminal_slot_create_if_absent",
+    "terminal_slot_recorded_at",
+    "terminal_slot_readback_record",
+    "terminal_slot_readback_at",
+    "terminal_slot_readback_result",
+    "freshness_validation",
+    "exact_byte_length",
+    "canonical_encoding",
+    "create_if_absent",
+    "existing_identical_is_idempotent",
+    "different_digest_is_equivocation",
+    "durability",
+    "published_at",
+    "readback_sha256",
+    "readback_byte_length",
+    "readback_at",
+    "readback_result"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.content-addressed-locator-readback.v1"
+    },
+    "locator_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "artifact_schema": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/schemaName"
+    },
+    "artifact_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_path": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_./:-]+/[0-9a-f]{64}--[a-z0-9-]+\\.json$"
+    },
+    "attempt_terminal_slot": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        }
+      ]
+    },
+    "terminal_slot_record": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/terminalSlotRecord"
+        }
+      ]
+    },
+    "terminal_slot_create_if_absent": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": true
+        }
+      ]
+    },
+    "terminal_slot_recorded_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      ]
+    },
+    "terminal_slot_readback_record": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/terminalSlotRecord"
+        }
+      ]
+    },
+    "terminal_slot_readback_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      ]
+    },
+    "terminal_slot_readback_result": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": "EXACT_TERMINAL_SLOT_RECORD_MATCH"
+        }
+      ]
+    },
+    "freshness_validation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/freshnessValidation"
+        }
+      ]
+    },
+    "exact_byte_length": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "canonical_encoding": {
+      "const": "RFC8785-JSON-UTF8"
+    },
+    "create_if_absent": { "const": true },
+    "existing_identical_is_idempotent": { "const": true },
+    "different_digest_is_equivocation": { "const": true },
+    "durability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temporary_exact_bytes_fsynced",
+        "parent_fsynced_before_create",
+        "atomic_unique_create",
+        "parent_fsynced_after_create"
+      ],
+      "properties": {
+        "temporary_exact_bytes_fsynced": { "const": true },
+        "parent_fsynced_before_create": { "const": true },
+        "atomic_unique_create": { "const": true },
+        "parent_fsynced_after_create": { "const": true }
+      }
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "readback_byte_length": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "readback_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_result": {
+      "const": "EXACT_PATH_DIGEST_AND_BYTES_MATCH"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_schema": {
+            "const": "ylx.release-closure-manifest.v1"
+          }
+        },
+        "required": [
+          "artifact_schema"
+        ]
+      },
+      "then": {
+        "properties": {
+          "attempt_terminal_slot": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+          },
+          "terminal_slot_record": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/terminalSlotRecord"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "FINALIZED"
+                  }
+                }
+              }
+            ]
+          },
+          "terminal_slot_create_if_absent": {
+            "const": true
+          },
+          "terminal_slot_recorded_at": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+          },
+          "terminal_slot_readback_record": {
+            "$ref": "#/$defs/terminalSlotRecord"
+          },
+          "terminal_slot_readback_at": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+          },
+          "terminal_slot_readback_result": {
+            "const": "EXACT_TERMINAL_SLOT_RECORD_MATCH"
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "artifact_schema": {
+              "const": "ylx.release-publication-fence-termination.v1"
+            }
+          },
+          "required": [
+            "artifact_schema"
+          ]
+        },
+        "then": {
+          "properties": {
+            "attempt_terminal_slot": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+            },
+            "terminal_slot_record": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/terminalSlotRecord"
+                },
+                {
+                  "properties": {
+                    "kind": {
+                      "const": "ABORTED"
+                    }
+                  }
+                }
+              ]
+            },
+            "terminal_slot_create_if_absent": {
+              "const": true
+            },
+            "terminal_slot_recorded_at": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+            },
+            "terminal_slot_readback_record": {
+              "$ref": "#/$defs/terminalSlotRecord"
+            },
+            "terminal_slot_readback_at": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+            },
+            "terminal_slot_readback_result": {
+              "const": "EXACT_TERMINAL_SLOT_RECORD_MATCH"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "attempt_terminal_slot": {
+              "type": "null"
+            },
+            "terminal_slot_record": {
+              "type": "null"
+            },
+            "terminal_slot_create_if_absent": {
+              "type": "null"
+            },
+            "terminal_slot_recorded_at": {
+              "type": "null"
+            },
+            "terminal_slot_readback_record": {
+              "type": "null"
+            },
+            "terminal_slot_readback_at": {
+              "type": "null"
+            },
+            "terminal_slot_readback_result": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_schema": {
+            "const": "ylx.release-closure-manifest.v1"
+          }
+        },
+        "required": [
+          "artifact_schema"
+        ]
+      },
+      "then": {
+        "properties": {
+          "freshness_validation": {
+            "$ref": "#/$defs/freshnessValidation"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "freshness_validation": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "freshnessCheckpointRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpoint",
+        "fence_bound_input_set_sha256",
+        "result",
+        "checked_at"
+      ],
+      "properties": {
+        "checkpoint": {
+          "enum": [
+            "quorum_signature_collection",
+            "publication_fence_acquisition",
+            "pre_promotion",
+            "promotion_readback",
+            "final_manifest_publish",
+            "final_manifest_readback",
+            "finalized_terminal_reference_cas",
+            "finalized_terminal_reference_readback"
+          ]
+        },
+        "fence_bound_input_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "result": {
+          "const": "PASS"
+        },
+        "checked_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "freshnessValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fence_bound_input_set_sha256",
+        "checkpoints"
+      ],
+      "properties": {
+        "fence_bound_input_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "checkpoints": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "prefixItems": [
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "quorum_signature_collection" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "publication_fence_acquisition" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "pre_promotion" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "promotion_readback" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "final_manifest_publish" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "final_manifest_readback" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "finalized_terminal_reference_cas" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/freshnessCheckpointRecord" },
+                { "properties": { "checkpoint": { "const": "finalized_terminal_reference_readback" } } }
+              ]
+            }
+          ],
+          "items": false
+        }
+      }
+    },
+    "terminalSlotRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload_locator",
+        "payload_sha256"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "FINALIZED",
+            "ABORTED"
+          ]
+        },
+        "payload_locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "payload_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

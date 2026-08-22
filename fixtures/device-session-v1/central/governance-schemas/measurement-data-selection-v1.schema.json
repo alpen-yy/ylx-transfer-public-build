@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/measurement-data-selection-v1.schema.json",
+  "title": "YLX measurement data selection v1",
+  "description": "Immutable, unrevisioned planned-action input selecting one closed side of an exact data partition for one measurement evidence action. The selected group, source-digest, and sample sets are recomputed from the exact partition. An evidence-producing PASS execution evaluation must bind this artifact under the measurement_data_selection prerequisite kind; the later evidence, threshold, and queue wrappers cannot self-assert a different partition membership. This payload grants no authority and is neither evidence nor a verdict.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "selection_id",
+    "measurement_id",
+    "data_partition_ref",
+    "partition_side",
+    "source_group_ids",
+    "selected_group_set_sha256",
+    "selected_source_digest_set_sha256",
+    "selected_sample_set_sha256",
+    "selection_digest_rules",
+    "created_at",
+    "publication_protocol",
+    "publication_readback_schema",
+    "authority_effect",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.measurement-data-selection.v1"
+    },
+    "selection_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "One-shot immutable identity. A retry or changed partition/group set uses a new selection_id."
+    },
+    "measurement_id": {
+      "$ref": "#/$defs/measurementId"
+    },
+    "data_partition_ref": {
+      "$ref": "#/$defs/dataPartitionRef"
+    },
+    "partition_side": {
+      "enum": [
+        "TRAINING",
+        "HOLDOUT"
+      ]
+    },
+    "source_group_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "description": "Every ID resolves exactly once in data_partition_ref.source_groups and has partition_side equal to this selection's side."
+    },
+    "selected_group_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "SHA-256 of RFC 8785 canonical JSON UTF-8 for the lexicographically sorted unique source_group_ids array."
+    },
+    "selected_source_digest_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "SHA-256 of RFC 8785 canonical JSON UTF-8 for the lexicographically sorted unique union of source_digests from the selected source groups."
+    },
+    "selected_sample_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "SHA-256 of ASCII rows sample_id TAB sample_kind TAB sample_sha256 LF, sorted lexicographically by the full tuple and deduplicated, for every expanded sample in the selected source groups."
+    },
+    "selection_digest_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_set",
+        "source_digest_set",
+        "sample_set"
+      ],
+      "properties": {
+        "group_set": {
+          "const": "SHA256_RFC8785_SORTED_UNIQUE_STRING_ARRAY"
+        },
+        "source_digest_set": {
+          "const": "SHA256_RFC8785_SORTED_UNIQUE_STRING_ARRAY"
+        },
+        "sample_set": {
+          "const": "SHA256_ASCII_SORTED_UNIQUE_SAMPLE_ID_TAB_KIND_TAB_SHA256_LF"
+        }
+      }
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "publication_protocol": {
+      "const": "EXTERNAL_CONTENT_ADDRESSED_LOCATOR_READBACK_V1"
+    },
+    "publication_readback_schema": {
+      "const": "ylx.content-addressed-locator-readback.v1",
+      "description": "The payload does not embed its own raw-byte digest. Procedural validation selects exactly one external readback by artifact_schema, selection_id, and raw-byte digest, and requires a digest-derived locator and exact-byte readback."
+    },
+    "authority_effect": {
+      "const": "NONE",
+      "description": "The selection is a planned-action input only. It creates no evidence, threshold, verdict, execution authorization, milestone status, or release authority."
+    },
+    "artifact_metadata": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+        },
+        {
+          "properties": {
+            "classification": {
+              "const": "GOVERNANCE_ARTIFACT"
+            },
+            "evidence_claim": {
+              "const": "GOVERNANCE_INPUT"
+            }
+          },
+          "required": [
+            "classification",
+            "evidence_claim"
+          ]
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "dataPartitionRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.data-partition.v1"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "The current immutable data-partition v1 family has implicit artifact revision 1."
+    },
+    "measurementId": {
+      "enum": [
+        "M0-MEAS-01",
+        "M0-MEAS-02",
+        "M0-MEAS-03",
+        "M0-MEAS-04",
+        "M0-MEAS-05",
+        "M0-MEAS-06",
+        "M0-MEAS-07",
+        "M0-MEAS-08",
+        "M0-MEAS-09",
+        "M0-MEAS-10",
+        "M0-MEAS-11"
+      ]
+    }
+  }
+}

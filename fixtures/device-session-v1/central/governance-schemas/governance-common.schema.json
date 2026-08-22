@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/governance-common.schema.json",
+  "title": "YLX governance model common definitions",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "schemaName": {
+      "type": "string",
+      "pattern": "^ylx\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+    },
+    "artifactId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/+-]*$"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stableLocator": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512,
+      "pattern": "^(?!.*(^|[/@:._-])latest([/@:._-]|$))[A-Za-z0-9][A-Za-z0-9+._:/@-]*$"
+    },
+    "artifactMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "evidence_claim"
+      ],
+      "properties": {
+        "classification": {
+          "enum": [
+            "SYNTHETIC_FIXTURE",
+            "GOVERNANCE_ARTIFACT"
+          ]
+        },
+        "evidence_claim": {
+          "enum": [
+            "NOT_EVIDENCE_OR_PASS",
+            "GOVERNANCE_INPUT",
+            "GOVERNANCE_EVIDENCE"
+          ]
+        },
+        "fixture_notice": {
+          "const": "SYNTHETIC EXAMPLE ONLY; NOT EVIDENCE; NOT A PASS VERDICT"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "classification": {
+                "const": "SYNTHETIC_FIXTURE"
+              }
+            },
+            "required": [
+              "classification"
+            ]
+          },
+          "then": {
+            "required": [
+              "fixture_notice"
+            ],
+            "properties": {
+              "evidence_claim": {
+                "const": "NOT_EVIDENCE_OR_PASS"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref_id",
+        "authority_kind",
+        "locator",
+        "sha256"
+      ],
+      "properties": {
+        "ref_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "authority_kind": {
+          "enum": [
+            "accepted-decision",
+            "canonical-repository",
+            "contract-package",
+            "issue-register",
+            "identity-authority",
+            "external-organizational-authority",
+            "planning-migration-observation",
+            "planning-bootstrap-input-closure",
+            "g0-issue-register-reconciliation",
+            "policy-ratification",
+            "key-authority",
+            "promotion-authority",
+            "fixture-oracle"
+          ]
+        },
+        "locator": {
+          "$ref": "#/$defs/stableLocator"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "planningMigrationObservationSourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "ref_id": {
+              "const": "M0-GOV-01-planning-legacy-migration-anchor"
+            },
+            "authority_kind": {
+              "const": "planning-migration-observation"
+            },
+            "locator": {
+              "const": "docs/evidence/M0/governance/M0-GOV-01/migration/d832c38836b17ffcf4026775618f159d217748d11309a54a3df32954da6e500d--planning-legacy-migration-anchor.json"
+            },
+            "sha256": {
+              "const": "d832c38836b17ffcf4026775618f159d217748d11309a54a3df32954da6e500d"
+            }
+          }
+        }
+      ]
+    },
+    "policyRatificationSourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "authority_kind": {
+              "const": "policy-ratification"
+            }
+          }
+        }
+      ]
+    },
+    "planningBootstrapInputClosureSourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "authority_kind": {
+              "const": "planning-bootstrap-input-closure"
+            }
+          }
+        }
+      ]
+    },
+    "g0IssueRegisterReconciliationSourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "authority_kind": {
+              "const": "g0-issue-register-reconciliation"
+            }
+          }
+        }
+      ]
+    },
+    "ownerAssignmentBootstrapAuthoritySourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sourceRef"
+        },
+        {
+          "properties": {
+            "authority_kind": {
+              "const": "external-organizational-authority"
+            }
+          }
+        }
+      ]
+    },
+    "governedPhaseBPlanningRootSourceRefs": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/sourceRef"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "$ref": "#/$defs/planningMigrationObservationSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/policyRatificationSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/planningBootstrapInputClosureSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/g0IssueRegisterReconciliationSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
+      "uniqueItems": true
+    },
+    "governedPlanningRootSourceRefs": {
+      "description": "Compatibility alias for the exact Phase B governed planning-root source set.",
+      "$ref": "#/$defs/governedPhaseBPlanningRootSourceRefs"
+    },
+    "governedOwnerPlanningRootSourceRefs": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/sourceRef"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "$ref": "#/$defs/planningMigrationObservationSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/policyRatificationSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/planningBootstrapInputClosureSourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/ownerAssignmentBootstrapAuthoritySourceRef"
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
+      "uniqueItems": true
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "schema",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/artifactId"
+        },
+        "schema": {
+          "$ref": "#/$defs/schemaName"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "artifact_path": {
+          "$ref": "#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "authorityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_id",
+        "revision",
+        "artifact_path",
+        "artifact_sha256",
+        "verified_at"
+      ],
+      "properties": {
+        "authority_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "artifact_path": {
+          "$ref": "#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "verified_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "principal_id",
+        "decision",
+        "approved_at",
+        "assignment_ref"
+      ],
+      "properties": {
+        "role_id": {
+          "$ref": "#/$defs/roleId"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "decision": {
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "SYNTHETIC_ONLY"
+          ]
+        },
+        "approved_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "assignment_ref": {
+          "$ref": "#/$defs/authorityRef"
+        }
+      }
+    },
+    "roleId": {
+      "enum": [
+        "release-owner",
+        "contract-owner",
+        "capture-owner",
+        "consumer-owner",
+        "web-control-owner",
+        "network-owner",
+        "security-owner",
+        "build-platform-owner",
+        "qa-evidence-owner",
+        "hardware-owner",
+        "pipeline-owner"
+      ]
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocker_id",
+        "reason_code",
+        "next_action",
+        "authority_ref"
+      ],
+      "properties": {
+        "blocker_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reason_code": {
+          "enum": [
+            "UNKNOWN_PRINCIPAL",
+            "UNKNOWN_ESTIMATE",
+            "UNKNOWN_CALENDAR",
+            "UNKNOWN_CAPACITY",
+            "UNKNOWN_HARDWARE",
+            "UNKNOWN_CREDENTIAL",
+            "UNCONFIRMED_WINDOW",
+            "UNKNOWN_ANCHOR",
+            "UNKNOWN_DEPENDENCY",
+            "RESOURCE_OVERALLOCATION",
+            "ORPHAN_BLOCKER"
+          ]
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "authority_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "issueHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_path",
+        "revision",
+        "head_artifact_sha256",
+        "register_sha256",
+        "selector_version",
+        "overview_cardinality"
+      ],
+      "properties": {
+        "artifact_path": {
+          "$ref": "#/$defs/stableLocator"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "head_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "register_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "selector_version": {
+          "$ref": "#/$defs/identifier"
+        },
+        "overview_cardinality": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "stringSet": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "shaSet": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sha256"
+      },
+      "uniqueItems": true
+    }
+  }
+}

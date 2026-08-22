@@ -1,0 +1,51 @@
+{
+  "schema": "ylx.safe-swap-receipt-resource.v2",
+  "receipt": {
+    "schema": "ylx.safe-swap-receipt.v2",
+    "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "generation_id": "mount-epoch-1",
+    "manifest_id": "01989f6a-2c01-7b2c-9d3e-4f5061728394",
+    "manifest_sha256": "7e53429e512f12d8b6aa2b1794b73c1790792e738df44d20e5487a69d6412815",
+    "sealed_at": "2026-08-08T10:24:33+08:00",
+    "released_at": "2026-08-08T10:25:03+08:00",
+    "release_state": "unmounted",
+    "open_handle_count": 0,
+    "handle_audit": {
+      "schema": "ylx.safe-swap-handle-audit.v1",
+      "scope": "integrated-m4",
+      "participant_set_authority": "m4-qualified-deployment-record",
+      "binding_context_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "deployment_record_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "participant_authority_sha256": "c2a79fe89b9c52076bd127e54d616dd546630f8ee1e24e0ad2c21ea191b1fe80",
+      "expected_participant_set_sha256": "db4c1a6721217979aa754134ecfbb67c5fdbe220b644cb28e27fed1e6b6607d9",
+      "expected_participant_ids": ["fixture-owner"],
+      "admission_fence": {
+        "schema": "ylx.safe-swap-admission-fence.v1",
+        "fence_id": "8b2a4e10-7c44-4d90-a2b5-557ad8ef9012",
+        "generation_id": "7d516b70-d8ab-47d1-b2dc-5b1250138789",
+        "state": "held",
+        "held_until": "receipt-durable-publish"
+      },
+      "acknowledgements": [
+        {
+          "participant_id": "fixture-owner",
+          "access_paths": [
+            "capture-seal",
+            "gateway-validation",
+            "artifact-get-head-range",
+            "preview",
+            "lan-transfer",
+            "media-adapter",
+            "worker"
+          ],
+          "generation_id": "7d516b70-d8ab-47d1-b2dc-5b1250138789",
+          "fence_id": "8b2a4e10-7c44-4d90-a2b5-557ad8ef9012",
+          "open_handle_count": 0,
+          "release_state": "drained",
+          "acknowledged_at": "2026-08-08T10:24:34+08:00"
+        }
+      ]
+    }
+  }
+}

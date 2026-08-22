@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/system-feature-mapping-approval-v1.schema.json",
+  "title": "YLX system feature mapping approval v1",
+  "description": "One external role approval over an already committed candidate subject. M1-TRACE and M1-CONTRACT verdicts are downstream and cannot authorize this record.",
+  "type": "object",
+  "additionalProperties": false,
+  "propertyNames": {
+    "not": {
+      "pattern": "^(own_(digest|locator)|m1_(trace|contract)_verdict|downstream_(result|evidence))"
+    }
+  },
+  "required": [
+    "schema",
+    "approval_id",
+    "candidate_subject_sha256",
+    "role_slot",
+    "actor_id",
+    "natural_person_id",
+    "owner_assignment_ref",
+    "decision",
+    "approved_at",
+    "evidence_refs",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.system-feature-mapping-approval.v1"
+    },
+    "approval_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "candidate_subject_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "role_slot": {
+      "enum": [
+        "release-owner",
+        "contract-owner",
+        "qa-evidence-owner"
+      ]
+    },
+    "actor_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "natural_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "owner_assignment_ref": {
+      "$ref": "#/$defs/ownerAssignmentRef"
+    },
+    "decision": {
+      "const": "APPROVED"
+    },
+    "approved_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/exactArtifactRef"
+      },
+      "uniqueItems": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "ownerAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.owner-assignment.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    }
+  }
+}

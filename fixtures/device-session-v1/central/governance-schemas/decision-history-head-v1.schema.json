@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/decision-history-head-v1.schema.json",
+  "title": "YLX immutable decision history publication head v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "history_revision",
+    "predecessor_head_artifact_sha256",
+    "source_artifact_path",
+    "source_publication_prefix",
+    "archived_source_path",
+    "archived_source_sha256",
+    "migration_anchor",
+    "proposal_records",
+    "publication_order_kind",
+    "selector_version",
+    "authority_effect",
+    "publication_semantics",
+    "approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.decision-history-head.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^decision-history-head-v[1-9][0-9]*-[0-9a-f]{64}$"
+    },
+    "history_revision": {
+      "const": 1
+    },
+    "predecessor_head_artifact_sha256": {
+      "type": "null"
+    },
+    "source_artifact_path": {
+      "const": "docs/DECISIONS.md"
+    },
+    "source_publication_prefix": {
+      "$ref": "#/$defs/byteRange"
+    },
+    "archived_source_path": {
+      "const": "docs/evidence/governance/decision-history/archive/af67c861f93f9e79483bbd235bcb604824546247c4a8e68e8857d8c1541f7460--DECISIONS.md"
+    },
+    "archived_source_sha256": {
+      "const": "af67c861f93f9e79483bbd235bcb604824546247c4a8e68e8857d8c1541f7460"
+    },
+    "migration_anchor": {
+      "$ref": "#/$defs/artifactRef"
+    },
+    "proposal_records": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/proposalArtifact"
+      }
+    },
+    "publication_order_kind": {
+      "const": "APPEND_ORDER_NOT_SEMANTIC_SUCCESSOR_CHAIN"
+    },
+    "selector_version": {
+      "const": "decision-history-selector.v1"
+    },
+    "authority_effect": {
+      "const": "OBSERVED_MIGRATION_AND_UNAPPROVED_PROPOSALS_ONLY"
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "byteRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_byte",
+        "end_byte",
+        "byte_length",
+        "sha256"
+      ],
+      "properties": {
+        "start_byte": {
+          "const": 0
+        },
+        "end_byte": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "pattern": "^decision-history-anchor-[0-9a-f]{64}$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/decision-history/anchors/decision-history-anchor--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "proposalArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "record_id",
+        "artifact_path",
+        "artifact_sha256",
+        "proposal_block_sha256",
+        "proposal_status",
+        "effective_status"
+      ],
+      "properties": {
+        "decision_id": {
+          "enum": [
+            "D-028",
+            "D-029",
+            "D-030"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^decision-successor-proposal-D-[0-9]{3}-[0-9a-f]{64}$"
+        },
+        "artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/decision-history/proposals/D-[0-9]{3}--[0-9a-f]{64}\\.json$"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "proposal_block_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "proposal_status": {
+          "const": "proposed"
+        },
+        "effective_status": {
+          "const": "NOT_EFFECTIVE_PENDING_AUTHORIZED_ACCEPTANCE"
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

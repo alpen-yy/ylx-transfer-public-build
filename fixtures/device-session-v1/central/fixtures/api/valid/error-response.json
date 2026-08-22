@@ -1,0 +1,12 @@
+{
+  "schema": "ylx.api-error.v2",
+  "error": {
+    "code": "capture.admission_failed",
+    "message": "The predecessor is not a sealed session on this device.",
+    "request_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "retryable": false,
+    "details": {
+      "reason": "predecessor_not_admitted"
+    }
+  }
+}

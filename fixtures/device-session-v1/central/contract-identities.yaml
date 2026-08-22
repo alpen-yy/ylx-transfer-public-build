@@ -1,0 +1,66 @@
+schema_version: ylx.contract-identities.v3
+json_schema_dialect: https://json-schema.org/draft/2020-12/schema
+current_schemas:
+  - basename: ylx-volume-v1
+    discriminator: ylx.volume.v1
+    schema_id: urn:ylx:schema:volume:v1
+  - basename: ylx-device-session-v1
+    discriminator: ylx.device-session.v1
+    schema_id: urn:ylx:schema:device-session:v1
+  - basename: ylx-device-session-v2
+    discriminator: ylx.device-session.v2
+    schema_id: urn:ylx:schema:device-session:v2
+  - basename: ylx-recording-state-v1
+    discriminator: ylx.recording-state.v1
+    schema_id: urn:ylx:schema:recording-state:v1
+  - basename: ylx-bucket-publication-v2
+    discriminator: ylx.bucket-publication.v2
+    schema_id: urn:ylx:schema:bucket-publication:v2
+  - basename: ylx-bucket-publication-v3
+    discriminator: ylx.bucket-publication.v3
+    schema_id: urn:ylx:schema:bucket-publication:v3
+  - basename: ylx-imu-sample-v1
+    discriminator: ylx.imu-sample.v1
+    schema_id: urn:ylx:schema:imu-sample:v1
+  - basename: ylx-imu-physical-acceptance-v1
+    discriminator: ylx.imu-physical-acceptance.v1
+    schema_id: urn:ylx:schema:imu-physical-acceptance:v1
+  - basename: ylx-frame-record-v1
+    discriminator: ylx.frame-record.v1
+    schema_id: urn:ylx:schema:frame-record:v1
+  - basename: ylx-external-authority-boundaries-v1
+    discriminator: ylx.external-authority-boundaries.v1
+    schema_id: urn:ylx:schema:external-authority-boundaries:v1
+legacy_v2_schemas:
+  - basename: ylx-safe-swap-participant-authority-v1
+    discriminator: ylx.safe-swap-participant-authority.v1
+    schema_id: urn:ylx:schema:safe-swap-participant-authority:v1
+openapi:
+  current_major: 4
+  supported_major_versions: [2, 3, 4]
+  unknown_major_policy: fail_closed
+  versions:
+    v2:
+      path: openapi/ylx-device-v2.openapi.yaml
+      lifecycle: frozen_compat
+      openapi_version: 3.1.0
+      info_version: 2.0.0
+      server_base_path: /api/v2
+      sha256: 274216d7f140b296dacf70fb669e37eb7be2ccf48f51e9d354a5245e01e05599
+      bytes: 67834
+    v3:
+      path: openapi/ylx-device-v3.openapi.yaml
+      lifecycle: frozen_compat
+      openapi_version: 3.1.0
+      info_version: 3.0.0
+      server_base_path: /api/v3
+      sha256: 72b70dd6d9ab87e70abc0bf4af519435435bba05a33d512d4c394f25b1ef4297
+      bytes: 68520
+    v4:
+      path: openapi/ylx-device-v4.openapi.yaml
+      lifecycle: current
+      openapi_version: 3.1.0
+      info_version: 4.0.0
+      server_base_path: /api/v4
+      sha256: 6740c9875ee6dcf1564062b3b7e63d995d4c01cdd1e3fadcc49bd54b13ffc899
+      bytes: 75767

@@ -1,0 +1,606 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-operation-assignment-v2.schema.json",
+  "title": "YLX exact-scope release operation assignment v2",
+  "description": "An immutable least-privilege assignment for exactly one release operation. Projection binds an exact revisioned ylx.binding-context.v2; exact-RC GA promotion and post-FINALIZED distribution use mutually exclusive scope bodies so an early-stage operator is never granted authority over artifacts that do not yet exist. Every assignment binds an accountable natural person and forbids authority outside its selected scope. Across one release attempt, the PROJECT_RELEASE_RESULTS actor, PROMOTE_EXACT_RC_TO_GA actor, and post-FINALIZED distribution actor must resolve procedurally to three pairwise-distinct actor_identity.person_id values; that cross-artifact comparison cannot be expressed by one JSON Schema instance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assignment_id",
+    "revision",
+    "predecessor_assignment_ref",
+    "authorized_operation",
+    "actor_identity",
+    "operation_scope",
+    "effective_from",
+    "expires_at",
+    "assignment_status",
+    "issued_by",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-operation-assignment.v2"
+    },
+    "assignment_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_assignment_ref": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/releaseOperationAssignmentRef" }
+      ]
+    },
+    "authorized_operation": {
+      "enum": [
+        "PROJECT_RELEASE_RESULTS",
+        "PROMOTE_EXACT_RC_TO_GA",
+        "PUBLISH_INITIAL_ACTIVE_HEAD",
+        "DECLARE_INCIDENT",
+        "PUBLISH_WITHDRAWN_HEAD",
+        "PUBLISH_REDIRECTED_HEAD",
+        "RESOLVE_INCIDENT",
+        "PUBLISH_REACTIVATION_EVIDENCE",
+        "PUBLISH_REACTIVATED_HEAD"
+      ]
+    },
+    "actor_identity": {
+      "$ref": "#/$defs/actorIdentity"
+    },
+    "operation_scope": {
+      "oneOf": [
+        { "$ref": "#/$defs/projectionScope" },
+        { "$ref": "#/$defs/gaPromotionScope" },
+        { "$ref": "#/$defs/distributionScope" }
+      ]
+    },
+    "effective_from": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "expires_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "assignment_status": {
+      "enum": ["ACTIVE", "REVOKED"]
+    },
+    "issued_by": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      }
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "revision": { "const": 1 } },
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_assignment_ref": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": { "type": "integer", "minimum": 2 },
+          "predecessor_assignment_ref": {
+            "$ref": "#/$defs/releaseOperationAssignmentRef"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorized_operation": { "const": "PROJECT_RELEASE_RESULTS" }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": { "$ref": "#/$defs/projectionScope" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorized_operation": { "const": "PROMOTE_EXACT_RC_TO_GA" }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": { "$ref": "#/$defs/gaPromotionScope" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorized_operation": {
+            "enum": [
+              "PUBLISH_INITIAL_ACTIVE_HEAD",
+              "DECLARE_INCIDENT",
+              "PUBLISH_WITHDRAWN_HEAD",
+              "PUBLISH_REDIRECTED_HEAD",
+              "RESOLVE_INCIDENT",
+              "PUBLISH_REACTIVATION_EVIDENCE",
+              "PUBLISH_REACTIVATED_HEAD"
+            ]
+          }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": { "$ref": "#/$defs/distributionScope" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorized_operation": { "const": "PUBLISH_INITIAL_ACTIVE_HEAD" }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": {
+            "allOf": [
+              { "$ref": "#/$defs/distributionScope" },
+              {
+                "properties": {
+                  "expected_predecessor_control_ref": { "type": "null" },
+                  "incident_binding": { "type": "null" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "description": "DECLARE_INCIDENT is the create-before-reference exception: it binds the allocated incident_id and exact predecessor authority, while incident_ref remains null until the immutable incident artifact exists.",
+      "if": {
+        "properties": {
+          "authorized_operation": { "const": "DECLARE_INCIDENT" }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": {
+            "allOf": [
+              { "$ref": "#/$defs/distributionScope" },
+              {
+                "properties": {
+                  "expected_predecessor_control_ref": {
+                    "$ref": "#/$defs/distributionControlRef"
+                  },
+                  "incident_binding": {
+                    "allOf": [
+                      { "$ref": "#/$defs/incidentBinding" },
+                      {
+                        "properties": {
+                          "incident_ref": { "type": "null" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorized_operation": {
+            "enum": [
+              "PUBLISH_WITHDRAWN_HEAD",
+              "PUBLISH_REDIRECTED_HEAD",
+              "RESOLVE_INCIDENT",
+              "PUBLISH_REACTIVATION_EVIDENCE",
+              "PUBLISH_REACTIVATED_HEAD"
+            ]
+          }
+        },
+        "required": ["authorized_operation"]
+      },
+      "then": {
+        "properties": {
+          "operation_scope": {
+            "allOf": [
+              { "$ref": "#/$defs/distributionScope" },
+              {
+                "properties": {
+                  "expected_predecessor_control_ref": {
+                    "$ref": "#/$defs/distributionControlRef"
+                  },
+                  "incident_binding": {
+                    "allOf": [
+                      { "$ref": "#/$defs/incidentBinding" },
+                      {
+                        "properties": {
+                          "incident_ref": { "$ref": "#/$defs/releaseIncidentRef" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "releaseOperationAssignmentRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.release-operation-assignment.v2" }
+          }
+        }
+      ]
+    },
+    "naturalPersonIdentityRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.natural-person-identity-authority.v1" }
+          }
+        }
+      ]
+    },
+    "actorIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "person_id",
+        "natural_person_identity_ref",
+        "role_slot",
+        "role_assignment_ref"
+      ],
+      "properties": {
+        "actor_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier",
+          "description": "Stable pseudonymous natural-person key used for the procedural pairwise-distinctness comparison between projector, GA operator, and distribution operator assignments."
+        },
+        "natural_person_identity_ref": {
+          "$ref": "#/$defs/naturalPersonIdentityRef"
+        },
+        "role_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+        },
+        "role_assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        }
+      }
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.binding-context.v2" }
+          }
+        }
+      ]
+    },
+    "projectionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "acceptance_registry_ref",
+        "m5_binding_context_ref",
+        "selected_issue_head",
+        "selected_result_source_root_sha256",
+        "selected_evidence_binding_root_sha256",
+        "selected_approved_na_root_sha256",
+        "projection_input_set_sha256",
+        "projection_output_slot",
+        "create_if_absent_only"
+      ],
+      "properties": {
+        "scope_kind": { "const": "RELEASE_RESULT_PROJECTION" },
+        "acceptance_registry_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        },
+        "m5_binding_context_ref": { "$ref": "#/$defs/bindingContextRef" },
+        "selected_issue_head": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+        },
+        "selected_result_source_root_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "selected_evidence_binding_root_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "selected_approved_na_root_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "projection_input_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "projection_output_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "create_if_absent_only": { "const": true }
+      }
+    },
+    "promotionPlanRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.ga-promotion-plan.v2" }
+          }
+        }
+      ]
+    },
+    "preReleaseClosureRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.pre-release-closure.v2" }
+          }
+        }
+      ]
+    },
+    "gaPromotionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "release_attempt_id",
+        "pre_release_closure_ref",
+        "promotion_plan_ref",
+        "rc_version",
+        "rc_commit",
+        "rc_artifact_sha256",
+        "canonical_remote_id",
+        "ga_ref",
+        "ga_channel",
+        "canonical_ga_target",
+        "attempt_terminal_slot",
+        "create_if_absent_only",
+        "overwrite_allowed",
+        "rebuild_allowed",
+        "force_push_allowed"
+      ],
+      "properties": {
+        "scope_kind": { "const": "EXACT_RC_GA_PROMOTION" },
+        "release_attempt_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "pre_release_closure_ref": { "$ref": "#/$defs/preReleaseClosureRef" },
+        "promotion_plan_ref": { "$ref": "#/$defs/promotionPlanRef" },
+        "rc_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9A-Za-z.-]+$"
+        },
+        "rc_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+        },
+        "rc_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "canonical_remote_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "ga_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "ga_channel": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "canonical_ga_target": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "attempt_terminal_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "create_if_absent_only": { "const": true },
+        "overwrite_allowed": { "const": false },
+        "rebuild_allowed": { "const": false },
+        "force_push_allowed": { "const": false }
+      }
+    },
+    "finalizedManifestRef": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-distribution-control-v2.schema.json#/$defs/finalizedManifestRef"
+    },
+    "finalizedTerminalReference": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-distribution-control-v2.schema.json#/$defs/finalizedTerminalReference"
+    },
+    "finalizedReleaseBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_ref",
+        "terminal_slot",
+        "terminal_reference",
+        "terminal_reference_readback_sha256"
+      ],
+      "properties": {
+        "manifest_ref": { "$ref": "#/$defs/finalizedManifestRef" },
+        "terminal_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "terminal_reference": { "$ref": "#/$defs/finalizedTerminalReference" },
+        "terminal_reference_readback_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "The manifest digest, terminal-reference payload digest, and durable payload/readback bytes must be equal procedurally."
+    },
+    "channelScope": {
+      "$ref": "https://schemas.ylx.invalid/governance/release-distribution-control-v2.schema.json#/$defs/channelScope"
+    },
+    "channelAuthorityRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        },
+        {
+          "required": ["authority_kind"],
+          "properties": {
+            "authority_kind": { "const": "promotion-authority" }
+          }
+        }
+      ]
+    },
+    "channelBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distribution_head_slot",
+        "channel_scope",
+        "channel_scope_sha256",
+        "channel_authority_ref"
+      ],
+      "properties": {
+        "distribution_head_slot": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "channel_scope": { "$ref": "#/$defs/channelScope" },
+        "channel_scope_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "channel_authority_ref": { "$ref": "#/$defs/channelAuthorityRef" }
+      }
+    },
+    "distributionControlRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.release-distribution-control.v2" }
+          }
+        }
+      ]
+    },
+    "releaseIncidentRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"],
+          "properties": {
+            "schema": { "const": "ylx.release-incident.v1" }
+          }
+        }
+      ]
+    },
+    "incidentBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["incident_id", "incident_ref"],
+      "properties": {
+        "incident_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "incident_ref": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/releaseIncidentRef" }
+          ]
+        }
+      }
+    },
+    "executionConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "create_if_absent_only",
+        "overwrite_allowed",
+        "finalized_release_mutation_allowed",
+        "channel_scope_expansion_allowed",
+        "successor_must_bind_expected_predecessor",
+        "cas_conflict_requires_winner_reload"
+      ],
+      "properties": {
+        "create_if_absent_only": { "const": true },
+        "overwrite_allowed": { "const": false },
+        "finalized_release_mutation_allowed": { "const": false },
+        "channel_scope_expansion_allowed": { "const": false },
+        "successor_must_bind_expected_predecessor": { "const": true },
+        "cas_conflict_requires_winner_reload": { "const": true }
+      }
+    },
+    "distributionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "finalized_release_binding",
+        "channel_binding",
+        "expected_predecessor_control_ref",
+        "incident_binding",
+        "execution_constraints"
+      ],
+      "properties": {
+        "scope_kind": { "const": "POST_FINALIZED_DISTRIBUTION" },
+        "finalized_release_binding": { "$ref": "#/$defs/finalizedReleaseBinding" },
+        "channel_binding": { "$ref": "#/$defs/channelBinding" },
+        "expected_predecessor_control_ref": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/distributionControlRef" }
+          ]
+        },
+        "incident_binding": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/incidentBinding" }
+          ]
+        },
+        "execution_constraints": { "$ref": "#/$defs/executionConstraints" }
+      }
+    }
+  }
+}

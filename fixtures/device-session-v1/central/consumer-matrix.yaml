@@ -1,0 +1,143 @@
+schema_version: ylx.device-api-consumer-matrix.v3
+contract_identity: contracts/contract-identities.yaml
+support_manifest: contracts/ylx-device-api-support.json
+data_contracts:
+  - schema: ylx.device-session.v2
+    status: pending
+    unknown_major_policy: fail_closed
+    consumers:
+      - name: rp-ylx
+        status: producer_pending
+        reason: Device Session v2 audio-capable manifest production is not yet shipped.
+      - name: openaria-conductor
+        status: producer_pending
+        reason: Device Session v2 audio-capable manifest production is not yet shipped.
+      - name: ylx-transfer
+        status: consumer_pending
+        reason: Transfer currently gates Device Session v1; v2 import support remains pending.
+      - name: ylx-card-pipeline
+        status: consumer_pending
+        reason: Card ingestion currently consumes v1 publication/session inputs; v2 support remains pending.
+      - name: egoview-console
+        status: unsupported
+        reason: Console does not directly consume sealed Device Session manifests.
+      - name: egoview-v5
+        status: unsupported
+        reason: Worker input starts from publication/run metadata, not raw Device Session manifests.
+      - name: openaria-echo-web
+        status: unsupported
+        reason: Echo web consumes live Device API v4, not sealed Device Session manifests.
+  - schema: ylx.bucket-publication.v3
+    status: pending
+    unknown_major_policy: fail_closed
+    consumers:
+      - name: rp-ylx
+        status: unsupported
+        reason: RP-YLX produces device-side sessions and does not publish bucket manifests.
+      - name: openaria-conductor
+        status: unsupported
+        reason: Conductor produces device-side sessions and does not publish bucket manifests.
+      - name: ylx-transfer
+        status: producer_pending
+        reason: Transfer publication v3 production is pending after Device Session v2 admission exists.
+      - name: ylx-card-pipeline
+        status: producer_pending
+        reason: Card pipeline publication v3 production is pending after Device Session v2 admission exists.
+      - name: egoview-console
+        status: consumer_pending
+        reason: Console publication v3 consumption remains pending; publication v2 stays v1-bound.
+      - name: egoview-v5
+        status: consumer_pending
+        reason: Worker publication v3 consumption remains pending; publication v2 stays v1-bound.
+      - name: openaria-echo-web
+        status: unsupported
+        reason: Echo web consumes live Device API v4, not bucket publications.
+consumers:
+  - name: rp-ylx
+    repository: mirrorbloom/RP-YLX
+    device_api_role: producer
+    supported_device_api_majors: [2, 3, 4]
+    unknown_major_policy: fail_closed
+    default_paths:
+      - /home/alpen/DEV/RP-YLX
+    probes:
+      - type: support_manifest
+      - type: openapi_exact
+        major: 2
+        path: src/rp_ylx/api/ylx-device-v2.openapi.yaml
+      - type: openapi_exact
+        major: 3
+        path: src/rp_ylx/api/ylx-device-v3.openapi.yaml
+      - type: openapi_exact
+        major: 4
+        path: src/rp_ylx/api/ylx-device-v4.openapi.yaml
+      - type: forbid_text
+        path: src/rp_ylx/api/ylx-device-v3.openapi.yaml
+        text: raw_int16
+        label: frozen v3 must not contain v4 raw_int16 telemetry
+  - name: openaria-conductor
+    repository: Alpenl/openaria-conductor
+    device_api_role: producer
+    supported_device_api_majors: [2, 3, 4]
+    unknown_major_policy: fail_closed
+    default_paths:
+      - /home/alpen/DEV/worktrees/openaria-conductor-ci/native-session-writer
+    probes:
+      - type: support_manifest
+      - type: openapi_exact
+        major: 2
+        path: src/rp_ylx/api/ylx-device-v2.openapi.yaml
+      - type: openapi_exact
+        major: 3
+        path: src/rp_ylx/api/ylx-device-v3.openapi.yaml
+      - type: openapi_exact
+        major: 4
+        path: src/rp_ylx/api/ylx-device-v4.openapi.yaml
+      - type: forbid_text
+        path: src/rp_ylx/api/ylx-device-v3.openapi.yaml
+        text: raw_int16
+        label: frozen v3 must not contain v4 raw_int16 telemetry
+  - name: openaria-echo-web
+    repository: Alpenl/openaria-echo-web
+    device_api_role: raw_live_imu_consumer
+    supported_device_api_majors: [4]
+    unknown_major_policy: fail_closed
+    default_paths:
+      - /home/alpen/DEV/openaria-echo-web
+      - /home/alpen/DEV/worktrees/openaria-echo-web
+    probes:
+      - type: support_manifest
+      - type: file_exact
+        path: src/api/client.ts
+        sha256: e83c19dec2a52cd422d382ffa87443da7f464e3c5e263c92347723f79c1f820b
+        bytes: 9455
+        label: pinned reviewed Echo Device API client source identity
+      - type: typescript_exported_constant
+        path: src/api/client.ts
+        export: API_ROOT
+        value: /api/v4
+        label: expected exported API_ROOT /api/v4
+      - type: typescript_focus_contract
+        client_path: src/api/client.ts
+        types_path: src/api/types.ts
+        route: /camera/focus
+        response_type: CameraFocusStatus
+        request_schema: ylx.camera-focus-set.v1
+        runtime_field: camera_focus
+        label: expected camera focus route and runtime type semantics
+  - name: ylx-transfer
+    repository: mirrorbloom/ylx-transfer
+    live_imu_consumption: unaffected
+    reason: LAN and removable-media import consume sealed Device Session manifests and artifacts, not live IMU preview/status telemetry.
+  - name: ylx-card-pipeline
+    repository: mirrorbloom/ylx-card-pipeline
+    live_imu_consumption: unaffected
+    reason: Card import reads immutable session files from media after sealing; it does not call Device API live status or SSE.
+  - name: egoview-console
+    repository: mirrorbloom/egoview-console
+    live_imu_consumption: unaffected
+    reason: Console operates on Bucket Publication indexes and derived run metadata, not RP-YLX Device API live IMU responses.
+  - name: egoview-v5
+    repository: mirrorbloom/egoview-v5
+    live_imu_consumption: unaffected
+    reason: Worker processing starts from publication inputs and never consumes RP-YLX live recording/status telemetry directly.

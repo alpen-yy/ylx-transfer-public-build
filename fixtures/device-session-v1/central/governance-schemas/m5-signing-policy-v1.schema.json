@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m5-signing-policy-v1.schema.json",
+  "title": "YLX release signing policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "revision",
+    "predecessor_policy_sha256",
+    "canonicalization",
+    "digest_algorithm",
+    "signature_algorithm",
+    "public_key_encoding",
+    "signature_encoding",
+    "signature_domain_template",
+    "signature_message_rule",
+    "minimum_key_validity_horizon_seconds",
+    "valid_at_signature_rule",
+    "normal_post_signature_expiry_rule",
+    "retroactive_revocation_rule",
+    "published_at",
+    "approvals"
+  ],
+  "properties": {
+    "schema": { "const": "ylx.m5-signing-policy.v1" },
+    "policy_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "predecessor_policy_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "canonicalization": { "const": "RFC8785-JSON-UTF8" },
+    "digest_algorithm": { "const": "SHA-256" },
+    "signature_algorithm": { "const": "Ed25519" },
+    "public_key_encoding": { "const": "32-byte-raw-Ed25519" },
+    "signature_encoding": { "const": "base64" },
+    "signature_domain_template": {
+      "const": "ylx.release-closure.quorum.v1/<role_slot>"
+    },
+    "signature_message_rule": {
+      "const": "ASCII_DOMAIN || 0x00 || RFC8785_SIGNED_PAYLOAD_JSON_BYTES"
+    },
+    "minimum_key_validity_horizon_seconds": {
+      "type": "integer",
+      "minimum": 60
+    },
+    "valid_at_signature_rule": {
+      "const": "SIGNED_AT_WITHIN_NOT_BEFORE_AND_NOT_AFTER"
+    },
+    "normal_post_signature_expiry_rule": {
+      "const": "DOES_NOT_INVALIDATE_VALID_SIGNATURE"
+    },
+    "retroactive_revocation_rule": {
+      "const": "INVALID_ONLY_WHEN_EFFECTIVE_AT_OR_BEFORE_SIGNED_AT"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  }
+}

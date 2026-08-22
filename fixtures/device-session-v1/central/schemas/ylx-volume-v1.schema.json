@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ylx:schema:volume:v1",
+  "title": "YLX Volume v1",
+  "description": "Identity marker stored as .ylx-volume.json at the root of a YLX recording volume.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "volume_id",
+    "created_at",
+    "created_by",
+    "layout"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.volume.v1"
+    },
+    "volume_id": {
+      "$ref": "#/$defs/uuidV4",
+      "description": "Stable UUID assigned when the volume is initialized."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "$ref": "#/$defs/deviceIdentity"
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordings_directory"],
+      "properties": {
+        "recordings_directory": {
+          "const": "recordings"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "deviceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "device_label"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/$defs/uuidV4",
+          "description": "Canonical random machine identity."
+        },
+        "device_label": {
+          "type": "string",
+          "pattern": "^YLX-[0-9A-F]{8}$",
+          "description": "Display-only label; never use it as the canonical identity."
+        }
+      }
+    },
+    "uuidV4": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Canonical lowercase random UUIDv4."
+    }
+  }
+}

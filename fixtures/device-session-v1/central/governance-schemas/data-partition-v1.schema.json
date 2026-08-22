@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/data-partition-v1.schema.json",
+  "title": "YLX data partition v1",
+  "description": "Immutable source-group partition for data-fitted qualification. It is frozen before holdout observation and keeps every frame, window, transcode, and derived sample from one acquisition/session, scenario, and fault seed wholly on one side.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "partition_id",
+    "frozen_at",
+    "grouping_rule_version",
+    "grouping_rule_ref",
+    "strata",
+    "training_group_ids",
+    "holdout_group_ids",
+    "source_groups",
+    "disjointness_proof",
+    "owner_role",
+    "reviewer_role",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.data-partition.v1"
+    },
+    "partition_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "frozen_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "grouping_rule_version": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "grouping_rule_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "strata": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stratum"
+      }
+    },
+    "training_group_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    },
+    "holdout_group_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    },
+    "source_groups": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceGroup"
+      },
+      "description": "The training_group_ids and holdout_group_ids sets must be disjoint and together exactly identify these entries. Composite source keys must be unique and may occur on only one partition side."
+    },
+    "disjointness_proof": {
+      "$ref": "#/$defs/disjointnessProof"
+    },
+    "owner_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "reviewer_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "stratum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stratum_id",
+        "selector_ref"
+      ],
+      "properties": {
+        "stratum_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "selector_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        }
+      }
+    },
+    "sourceGroupKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_acquisition_id",
+        "source_session_id",
+        "scenario_id",
+        "fault_seed_id"
+      ],
+      "properties": {
+        "source_acquisition_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_session_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "scenario_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "fault_seed_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier",
+          "description": "Use an explicit stable no-fault identity when fault injection is not applicable; omission is not allowed."
+        }
+      }
+    },
+    "expandedSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sample_id",
+        "sample_kind",
+        "sample_sha256"
+      ],
+      "properties": {
+        "sample_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "sample_kind": {
+          "enum": [
+            "frame",
+            "window",
+            "transcode",
+            "derived"
+          ]
+        },
+        "sample_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "sourceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "partition_side",
+        "stratum_ids",
+        "group_key",
+        "group_key_sha256",
+        "source_digests",
+        "expanded_samples"
+      ],
+      "properties": {
+        "group_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "partition_side": {
+          "enum": [
+            "training",
+            "holdout"
+          ]
+        },
+        "stratum_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        },
+        "group_key": {
+          "$ref": "#/$defs/sourceGroupKey"
+        },
+        "group_key_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "source_digests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        },
+        "expanded_samples": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/expandedSample"
+          }
+        }
+      }
+    },
+    "disjointnessProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calculator_version",
+        "training_group_set_sha256",
+        "holdout_group_set_sha256",
+        "training_sample_set_sha256",
+        "holdout_sample_set_sha256",
+        "training_source_digest_set_sha256",
+        "holdout_source_digest_set_sha256",
+        "group_id_intersection",
+        "sample_id_intersection",
+        "sample_digest_intersection",
+        "source_digest_intersection"
+      ],
+      "properties": {
+        "calculator_version": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "training_group_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "holdout_group_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "training_sample_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "holdout_sample_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "training_source_digest_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "holdout_source_digest_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "group_id_intersection": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "sample_id_intersection": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "sample_digest_intersection": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "source_digest_intersection": {
+          "type": "array",
+          "maxItems": 0
+        }
+      },
+      "description": "The named set digests and all three empty intersections are recomputed from source_groups by the pinned validator."
+    }
+  }
+}

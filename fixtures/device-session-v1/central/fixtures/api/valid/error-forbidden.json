@@ -1,0 +1,12 @@
+{
+  "schema": "ylx.api-error.v2",
+  "error": {
+    "code": "authorization.denied",
+    "message": "The authenticated principal is not authorized for this operation.",
+    "request_id": "2fcf6f81-6dd4-4d42-a9f0-87db8a696bee",
+    "retryable": false,
+    "details": {
+      "reason": "insufficient_scope"
+    }
+  }
+}

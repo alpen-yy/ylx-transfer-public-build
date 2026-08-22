@@ -1,0 +1,612 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-result-projection-v2.schema.json",
+  "title": "YLX release result projection v2",
+  "description": "Immutable non-authoritative projection of the exact 171 current effective stage-native terminal-result tips. It binds the effective M4 lineage authority and, separately, the exact binding-context ref that must equal that lineage's unique tip.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "projection_id",
+    "revision",
+    "predecessor_projection_ref",
+    "m5_binding_context_ref",
+    "effective_m4_lineage_ref",
+    "effective_m4_binding_context_ref",
+    "registry_sha256",
+    "registry_id_set_sha256",
+    "core_requirement_id_set_sha256",
+    "core_requirement_cardinality",
+    "acceptance_sha256",
+    "system_requirement_mapping_artifact_sha256",
+    "system_requirement_mapping_semantic_sha256",
+    "selected_gate_root_ref_by_closing_gate",
+    "row_projection_by_requirement_id",
+    "evidence_record_sha256_by_id",
+    "issue_head",
+    "issue_reconciliation_set_sha256",
+    "projection_algorithm",
+    "projection_version",
+    "projector_person_id",
+    "created_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-result-projection.v2"
+    },
+    "projection_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every revision in this projection chain."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_projection_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/releaseResultProjectionRef"
+        }
+      ],
+      "description": "Exact direct predecessor. Its artifact_id equals projection_id and its revision is exactly this revision minus one."
+    },
+    "m5_binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "effective_m4_lineage_ref": {
+      "$ref": "#/$defs/m4ContextLineageRef",
+      "description": "Exact revision of the fork-free M4 lineage authority selected for this projection."
+    },
+    "effective_m4_binding_context_ref": {
+      "$ref": "#/$defs/bindingContextRef",
+      "description": "Exact M4 context ref that must equal effective_m4_lineage_ref.tip_context_ref."
+    },
+    "registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_id_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "core_requirement_id_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "core_requirement_cardinality": {
+      "const": 171
+    },
+    "acceptance_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "system_requirement_mapping_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "system_requirement_mapping_semantic_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "selected_gate_root_ref_by_closing_gate": {
+      "$ref": "#/$defs/selectedGateRootMap"
+    },
+    "row_projection_by_requirement_id": {
+      "$ref": "#/$defs/rowProjectionMap"
+    },
+    "evidence_record_sha256_by_id": {
+      "$ref": "#/$defs/evidenceDigestMap"
+    },
+    "issue_head": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+    },
+    "issue_reconciliation_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "projection_algorithm": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "projection_version": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "projector_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_projection_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_projection_ref": {
+            "$ref": "#/$defs/releaseResultProjectionRef"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": [
+          "release_result_projection_sha256"
+        ]
+      },
+      {
+        "required": [
+          "artifact_path"
+        ]
+      },
+      {
+        "required": [
+          "artifact_locator"
+        ]
+      },
+      {
+        "required": [
+          "domain_attestation_sha256_by_role_slot"
+        ]
+      },
+      {
+        "required": [
+          "pre_release_closure_ref"
+        ]
+      },
+      {
+        "required": [
+          "pre_release_closure_sha256"
+        ]
+      },
+      {
+        "required": [
+          "quorum_signature_sha256_by_role_slot"
+        ]
+      },
+      {
+        "required": [
+          "publication_fence_ref"
+        ]
+      },
+      {
+        "required": [
+          "publication_fence_sha256"
+        ]
+      },
+      {
+        "required": [
+          "ga_promotion_receipt_ref"
+        ]
+      },
+      {
+        "required": [
+          "ga_promotion_receipt_sha256"
+        ]
+      },
+      {
+        "required": [
+          "final_manifest_ref"
+        ]
+      },
+      {
+        "required": [
+          "final_manifest_sha256"
+        ]
+      },
+      {
+        "required": [
+          "final_result_map"
+        ]
+      },
+      {
+        "required": [
+          "release_decision"
+        ]
+      },
+      {
+        "required": [
+          "release_completion"
+        ]
+      }
+    ]
+  },
+  "$defs": {
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "m4ContextLineageRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.m4-context-lineage.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageTerminalResultRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-terminal-result.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageGateResultRootRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-gate-result-root.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "releaseResultProjectionRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-result-projection.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "evidenceBindingRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.evidence-binding.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "stageSourceScopeRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-source-scope.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "approvedNaRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.approved-na-record.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "selectedGateRootMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4a",
+        "M4b",
+        "M4c",
+        "M4d",
+        "M4",
+        "M5"
+      ],
+      "properties": {
+        "M0": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M1": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M2": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M3": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M4a": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M4b": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M4c": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M4d": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M4": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        },
+        "M5": {
+          "$ref": "#/$defs/stageGateResultRootRef"
+        }
+      }
+    },
+    "rowProjectionMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 171,
+      "maxProperties": 171,
+      "propertyNames": {
+        "allOf": [
+          {
+            "pattern": "^[A-Z0-9][A-Z0-9-]+$"
+          },
+          {
+            "not": {
+              "enum": [
+                "M5-MATRIX-COMPLETE-01",
+                "M5-SIGNOFF-01"
+              ]
+            }
+          }
+        ]
+      },
+      "patternProperties": {
+        "^[A-Z0-9][A-Z0-9-]+$": {
+          "$ref": "#/$defs/rowProjection"
+        }
+      }
+    },
+    "rowProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "closing_gate",
+        "effective_result",
+        "effective_result_ref",
+        "source_scope_ref",
+        "evidence_binding_refs",
+        "evidence_ids",
+        "approved_na_record_ref"
+      ],
+      "properties": {
+        "closing_gate": {
+          "enum": [
+            "M0",
+            "M1",
+            "M2",
+            "M3",
+            "M4a",
+            "M4b",
+            "M4c",
+            "M4d",
+            "M4",
+            "M5"
+          ]
+        },
+        "effective_result": {
+          "enum": [
+            "PASS",
+            "N/A"
+          ]
+        },
+        "effective_result_ref": {
+          "$ref": "#/$defs/stageTerminalResultRef"
+        },
+        "source_scope_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "evidence_binding_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceBindingRef"
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+          }
+        },
+        "approved_na_record_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/approvedNaRecordRef"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "effective_result": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "effective_result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "approved_na_record_ref": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "approved_na_record_ref": {
+                "$ref": "#/$defs/approvedNaRecordRef"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "closing_gate": {
+                "enum": [
+                  "M0",
+                  "M1"
+                ]
+              }
+            },
+            "required": [
+              "closing_gate"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_scope_ref": {
+                "$ref": "#/$defs/stageSourceScopeRef"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "source_scope_ref": {
+                "$ref": "#/$defs/bindingContextRef"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidenceDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]*$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

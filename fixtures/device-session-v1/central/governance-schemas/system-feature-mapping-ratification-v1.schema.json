@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/system-feature-mapping-ratification-v1.schema.json",
+  "title": "YLX system feature mapping ratification v1",
+  "description": "Publishes one upstream mapping ratification after three external approval records bind the exact candidate subject. M1-TRACE and M1-CONTRACT verdicts are downstream consumers and are forbidden as ratification inputs.",
+  "type": "object",
+  "additionalProperties": false,
+  "propertyNames": {
+    "not": {
+      "pattern": "^(own_(digest|locator)|m1_(trace|contract)_verdict|downstream_(result|evidence))"
+    }
+  },
+  "required": [
+    "schema",
+    "ratification_id",
+    "revision",
+    "predecessor_ratification_sha256",
+    "candidate_subject",
+    "candidate_subject_sha256",
+    "approval_sha256_by_role_slot",
+    "published_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.system-feature-mapping-ratification.v1"
+    },
+    "ratification_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_ratification_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "candidate_subject": {
+      "$ref": "https://schemas.ylx.invalid/governance/system-feature-mapping-approval-subject-v1.schema.json"
+    },
+    "candidate_subject_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "approval_sha256_by_role_slot": {
+      "$ref": "#/$defs/approvalDigestMap"
+    },
+    "published_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "$defs": {
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "approvalDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "contract-owner",
+        "qa-evidence-owner"
+      ],
+      "properties": {
+        "release-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "contract-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "qa-evidence-owner": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_ratification_sha256": {
+            "type": "null"
+          },
+          "candidate_subject": {
+            "properties": {
+              "predecessor_ratification_sha256": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_ratification_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          },
+          "candidate_subject": {
+            "properties": {
+              "predecessor_ratification_sha256": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

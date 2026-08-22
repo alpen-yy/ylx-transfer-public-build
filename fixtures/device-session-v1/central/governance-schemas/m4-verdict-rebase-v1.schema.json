@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m4-verdict-rebase-v1.schema.json",
+  "title": "YLX target-bound M4 verdict rebase wrapper v1",
+  "description": "Carries only an unaffected PASS onto a new target binding context after machine-recomputed impact analysis. N/A is never accepted by this wrapper and must be reselected and reapproved on the target candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "rebase_id",
+    "revision",
+    "predecessor_sha256",
+    "created_at",
+    "artifact_path",
+    "artifact_metadata",
+    "target_requirement_id",
+    "source_candidate_id",
+    "target_candidate_id",
+    "source_qualification_revision",
+    "target_qualification_revision",
+    "source_effective_verdict",
+    "source_applicability_outcome",
+    "target_applicability_outcome",
+    "source_verdict_ref",
+    "source_evidence_refs",
+    "source_binding_context_ref",
+    "target_binding_context_ref",
+    "source_assembly_ref",
+    "target_assembly_ref",
+    "component_impact_graph_ref",
+    "component_diff",
+    "source_qualification_input_sha256_by_id",
+    "target_qualification_input_sha256_by_id",
+    "qualification_input_diff",
+    "recomputed_affected_requirement_ids",
+    "target_requirement_affected",
+    "transitive_input_equality_proof",
+    "target_integration_smoke_sha256",
+    "evaluator_sha256",
+    "target_wrapper_signature_ref",
+    "rebase_outcome",
+    "target_effective_verdict",
+    "issued_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m4-verdict-rebase.v1"
+    },
+    "rebase_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "target_requirement_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "source_candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "target_candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "source_qualification_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "target_qualification_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_effective_verdict": {
+      "const": "PASS"
+    },
+    "source_applicability_outcome": {
+      "const": "APPLICABLE"
+    },
+    "target_applicability_outcome": {
+      "const": "APPLICABLE"
+    },
+    "source_verdict_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "source_evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "source_binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "target_binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "source_assembly_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "target_assembly_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "component_impact_graph_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "component_diff": {
+      "$ref": "#/$defs/completeAssemblyDiff"
+    },
+    "source_qualification_input_sha256_by_id": {
+      "$ref": "#/$defs/qualificationInputDigestMap"
+    },
+    "target_qualification_input_sha256_by_id": {
+      "$ref": "#/$defs/qualificationInputDigestMap"
+    },
+    "qualification_input_diff": {
+      "$ref": "#/$defs/qualificationInputDiffMap"
+    },
+    "recomputed_affected_requirement_ids": {
+      "type": "array",
+      "maxItems": 72,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "target_requirement_affected": {
+      "const": false
+    },
+    "transitive_input_equality_proof": {
+      "$ref": "#/$defs/transitiveInputEqualityProof"
+    },
+    "target_integration_smoke_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "evaluator_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "target_wrapper_signature_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "rebase_outcome": {
+      "const": "REBASED_UNAFFECTED"
+    },
+    "target_effective_verdict": {
+      "const": "PASS"
+    },
+    "issued_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    }
+  },
+  "$defs": {
+    "identifierArray": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "componentDigestDiff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sub_bundle_sha256",
+        "target_sub_bundle_sha256",
+        "changed"
+      ],
+      "properties": {
+        "source_sub_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_sub_bundle_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "changed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "componentDiffMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "web",
+        "network",
+        "preview",
+        "transfer-calibration"
+      ],
+      "properties": {
+        "web": {
+          "$ref": "#/$defs/componentDigestDiff"
+        },
+        "network": {
+          "$ref": "#/$defs/componentDigestDiff"
+        },
+        "preview": {
+          "$ref": "#/$defs/componentDigestDiff"
+        },
+        "transfer-calibration": {
+          "$ref": "#/$defs/componentDigestDiff"
+        }
+      }
+    },
+    "equalDigestPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sha256",
+        "target_sha256",
+        "equal"
+      ],
+      "properties": {
+        "source_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "equal": {
+          "const": true
+        }
+      }
+    },
+    "sharedInputEqualityMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "#/$defs/equalDigestPair"
+        }
+      }
+    },
+    "qualificationInputDigestMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "qualificationInputDigestDiff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sha256",
+        "target_sha256",
+        "changed"
+      ],
+      "properties": {
+        "source_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "changed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "qualificationInputDiffMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "#/$defs/qualificationInputDigestDiff"
+        }
+      }
+    },
+    "completeAssemblyDiff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_sub_bundles",
+        "shared_inputs",
+        "source_assembly_projection_sha256",
+        "target_assembly_projection_sha256",
+        "unexplained_artifact_diff_ids",
+        "unexplained_config_diff_ids"
+      ],
+      "properties": {
+        "component_sub_bundles": {
+          "$ref": "#/$defs/componentDiffMap"
+        },
+        "shared_inputs": {
+          "$ref": "#/$defs/sharedInputEqualityMap"
+        },
+        "source_assembly_projection_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "target_assembly_projection_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "unexplained_artifact_diff_ids": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        },
+        "unexplained_config_diff_ids": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        }
+      }
+    },
+    "transitiveInputEqualityProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_contract",
+        "qualification_governance_contract",
+        "contract_release",
+        "m3_binding_context",
+        "common_lineage",
+        "component_impact_graph",
+        "target_requirement_inputs",
+        "target_requirement_qualification_inputs",
+        "dependency_closure_requirement_ids",
+        "proof_sha256",
+        "all_equal"
+      ],
+      "properties": {
+        "product_contract": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "qualification_governance_contract": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "contract_release": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "m3_binding_context": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "common_lineage": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "component_impact_graph": {
+          "$ref": "#/$defs/equalDigestPair"
+        },
+        "target_requirement_inputs": {
+          "$ref": "#/$defs/sharedInputEqualityMap"
+        },
+        "target_requirement_qualification_inputs": {
+          "$ref": "#/$defs/sharedInputEqualityMap"
+        },
+        "dependency_closure_requirement_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "proof_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "all_equal": {
+          "const": true
+        }
+      }
+    }
+  }
+}

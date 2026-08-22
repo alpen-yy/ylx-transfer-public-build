@@ -1,0 +1,12 @@
+{
+  "schema": "ylx.volume.v1",
+  "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+  "created_at": "2026-08-08T10:00:00+08:00",
+  "created_by": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "30d5872d"
+  },
+  "layout": {
+    "recordings_directory": "recordings"
+  }
+}

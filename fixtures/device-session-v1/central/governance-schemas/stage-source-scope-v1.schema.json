@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/stage-source-scope-v1.schema.json",
+  "title": "YLX immutable M0/M1 stage source scope v1",
+  "description": "Revisioned native source scope for M0 baseline and M1 decision terminal results. Every revision exact-binds a closed source ref/digest map and records whether it was a non-authoritative M0-P custody index or the output of a pre-action execution authorization evaluation. The scope is immutable and append-only; it is not itself execution or approval authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "scope_id",
+    "revision",
+    "predecessor_scope_ref",
+    "scope_kind",
+    "closing_gate",
+    "candidate_id",
+    "source_ref_by_id",
+    "source_sha256_by_id",
+    "creation_provenance",
+    "authority_effect",
+    "created_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.stage-source-scope.v1"
+    },
+    "scope_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_scope_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/stageSourceScopeRef"
+        }
+      ]
+    },
+    "scope_kind": {
+      "enum": [
+        "M0_BASELINE",
+        "M1_DECISION"
+      ]
+    },
+    "closing_gate": {
+      "enum": [
+        "M0",
+        "M1"
+      ]
+    },
+    "candidate_id": {
+      "type": "null"
+    },
+    "source_ref_by_id": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/exactScopeSourceRef"
+        }
+      }
+    },
+    "source_sha256_by_id": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "propertyNames": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "creation_provenance": {
+      "$ref": "#/$defs/creationProvenance"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_scope_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_scope_ref": {
+            "$ref": "#/$defs/stageSourceScopeRef"
+          }
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "scope_kind": {
+              "const": "M0_BASELINE"
+            },
+            "closing_gate": {
+              "const": "M0"
+            }
+          },
+          "required": [
+            "scope_kind",
+            "closing_gate"
+          ]
+        },
+        {
+          "properties": {
+            "scope_kind": {
+              "const": "M1_DECISION"
+            },
+            "closing_gate": {
+              "const": "M1"
+            }
+          },
+          "required": [
+            "scope_kind",
+            "closing_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "scope_kind": {
+            "const": "M0_BASELINE"
+          },
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "scope_kind",
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "creation_provenance": {
+            "properties": {
+              "mode": {
+                "const": "M0_P_CUSTODY_INDEX"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "creation_provenance": {
+            "properties": {
+              "mode": {
+                "const": "EXECUTION_AUTHORIZED_GOVERNANCE_OUTPUT"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "custodySourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref_id",
+        "source_kind",
+        "locator",
+        "sha256",
+        "observed_at",
+        "provenance",
+        "authority_effect"
+      ],
+      "properties": {
+        "ref_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_kind": {
+          "enum": [
+            "ALREADY_HELD_LOCAL_BYTES",
+            "GIT_OBJECT_BYTES",
+            "REPOSITORY_OBSERVATION_BYTES",
+            "CUSTODY_COPY_BYTES"
+          ]
+        },
+        "locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "observed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "provenance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "authority_effect": {
+          "const": "NONE"
+        }
+      }
+    },
+    "exactScopeSourceRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sourceRef"
+        },
+        {
+          "$ref": "#/$defs/custodySourceRef"
+        }
+      ]
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "creationProvenance": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "execution_authorization_evaluation_ref"
+          ],
+          "properties": {
+            "mode": {
+              "const": "M0_P_CUSTODY_INDEX"
+            },
+            "execution_authorization_evaluation_ref": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "execution_authorization_evaluation_ref"
+          ],
+          "properties": {
+            "mode": {
+              "const": "EXECUTION_AUTHORIZED_GOVERNANCE_OUTPUT"
+            },
+            "execution_authorization_evaluation_ref": {
+              "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+            }
+          }
+        }
+      ]
+    },
+    "stageSourceScopeRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-source-scope.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/stage-terminal-result-v2.schema.json",
+  "title": "YLX stage terminal result v2",
+  "description": "Immutable PASS or approved-N/A terminal result with a stable result_id and an exact direct-predecessor supersession chain. Currentness is selected by a stage-gate-result-root.v2 tip and is never asserted by mutating an older result revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "result_id",
+    "revision",
+    "predecessor_result_ref",
+    "requirement_id",
+    "closing_gate",
+    "effective_result",
+    "source_scope_ref",
+    "evidence_binding_refs",
+    "evidence_ids",
+    "approved_na_record_ref",
+    "supersession_reason",
+    "created_at",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.stage-terminal-result.v2"
+    },
+    "result_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every superseding revision for one requirement and native scope lineage."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_result_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/stageTerminalResultRef"
+        }
+      ],
+      "description": "Exact direct predecessor. Its artifact_id equals result_id and its revision is exactly this revision minus one."
+    },
+    "requirement_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "closing_gate": {
+      "$ref": "#/$defs/closingGate"
+    },
+    "effective_result": {
+      "enum": [
+        "PASS",
+        "N/A"
+      ]
+    },
+    "source_scope_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef",
+      "description": "Exact native scope: stage-source-scope.v1 for M0/M1, or binding-context.v2 for M2 and later gates."
+    },
+    "evidence_binding_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceBindingRef"
+      }
+    },
+    "evidence_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+      }
+    },
+    "approved_na_record_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/approvedNaRecordRef"
+        }
+      ]
+    },
+    "supersession_reason": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      ],
+      "description": "Null for revision 1; a nonempty explanation of the exact predecessor superseded by every later revision."
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_result_ref": {
+            "type": "null"
+          },
+          "supersession_reason": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_result_ref": {
+            "$ref": "#/$defs/stageTerminalResultRef"
+          },
+          "supersession_reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "effective_result": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "effective_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "approved_na_record_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "approved_na_record_ref": {
+            "$ref": "#/$defs/approvedNaRecordRef"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "closing_gate": {
+            "enum": [
+              "M0",
+              "M1"
+            ]
+          }
+        },
+        "required": [
+          "closing_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_scope_ref": {
+            "$ref": "#/$defs/stageSourceScopeRef"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "source_scope_ref": {
+            "$ref": "#/$defs/bindingContextRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "closingGate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4a",
+        "M4b",
+        "M4c",
+        "M4d",
+        "M4",
+        "M5"
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageSourceScopeRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-source-scope.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "stageTerminalResultRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-terminal-result.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "evidenceBindingRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.evidence-binding.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "approvedNaRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.approved-na-record.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/preview-recording-time-infeasibility-v1.schema.json",
+  "title": "YLX preview recording-time infeasibility evidence v1",
+  "description": "Immutable M1 proof that an actual recording-time preview prototype failed one or more frozen capture-safety or resource predicates on the selected required hardware cell.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_version",
+    "decision_scope_id",
+    "target_hardware_cell_id",
+    "prototype_candidate_sha256",
+    "recording_time_config_sha256",
+    "workload_sha256",
+    "evaluated_predicate_ids",
+    "failed_predicate_ids",
+    "measurement_evidence_ids",
+    "measurement_evidence_sha256_by_id",
+    "attempted_at",
+    "supersedes_infeasibility_sha256",
+    "owner_approvals",
+    "independent_review"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.preview-recording-time-infeasibility.v1"
+    },
+    "artifact_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "decision_scope_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "target_hardware_cell_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "prototype_candidate_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "recording_time_config_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "workload_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "evaluated_predicate_ids": {
+      "$ref": "#/$defs/nonEmptyIdentifierSet"
+    },
+    "failed_predicate_ids": {
+      "$ref": "#/$defs/nonEmptyIdentifierSet"
+    },
+    "measurement_evidence_ids": {
+      "$ref": "#/$defs/nonEmptyIdentifierSet"
+    },
+    "measurement_evidence_sha256_by_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "attempted_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "supersedes_infeasibility_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "owner_approvals": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "role_id": {
+                "const": "capture-owner"
+              }
+            },
+            "required": [
+              "role_id"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role_id": {
+                "const": "web-control-owner"
+              }
+            },
+            "required": [
+              "role_id"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role_id": {
+                "const": "hardware-owner"
+              }
+            },
+            "required": [
+              "role_id"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role_id": {
+                "const": "release-owner"
+              }
+            },
+            "required": [
+              "role_id"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    },
+    "independent_review": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+        },
+        {
+          "properties": {
+            "role_id": {
+              "const": "qa-evidence-owner"
+            }
+          },
+          "required": [
+            "role_id"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "artifact_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "supersedes_infeasibility_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "supersedes_infeasibility_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyIdentifierSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    }
+  }
+}

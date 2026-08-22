@@ -1,0 +1,8 @@
+{
+  "schema": "ylx.capture-start.v2",
+  "mode": "production",
+  "take": {
+    "kind": "continue",
+    "continuation_of": "01989f6a-2c00-7a1b-8c2d-3e4f50617283"
+  }
+}

@@ -1,0 +1,700 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/m4-component-impact-graph-v1.schema.json",
+  "title": "YLX candidate-neutral M4 component impact graph v1",
+  "description": "A versioned, candidate-neutral graph over all current M4 registry rows. It maps stable input IDs but stores no candidate or qualification-revision input digest. BLOCKED_ALL_UP is an aggregate control outcome and is never projected as a row verdict.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "graph_id",
+    "graph_revision",
+    "predecessor_graph_sha256",
+    "created_at",
+    "artifact_path",
+    "artifact_metadata",
+    "qualification_governance_contract_sha256",
+    "contract_release_sha256",
+    "registry_sha256",
+    "registry_requirement_ids",
+    "component_nodes",
+    "shared_inputs",
+    "qualification_inputs",
+    "dependency_edges",
+    "row_bindings",
+    "requirement_dependencies",
+    "cross_component_requirement_ids",
+    "validation_outcome",
+    "approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.m4-component-impact-graph.v1"
+    },
+    "graph_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "graph_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_graph_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "artifact_path": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    },
+    "qualification_governance_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "contract_release_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_requirement_ids": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "component_nodes": {
+      "$ref": "#/$defs/componentNodeMap"
+    },
+    "shared_inputs": {
+      "$ref": "#/$defs/sharedInputMap"
+    },
+    "qualification_inputs": {
+      "$ref": "#/$defs/qualificationInputMap"
+    },
+    "dependency_edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dependencyEdge"
+      },
+      "uniqueItems": true
+    },
+    "row_bindings": {
+      "$ref": "#/$defs/rowBindingMap"
+    },
+    "requirement_dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementDependency"
+      },
+      "uniqueItems": true
+    },
+    "cross_component_requirement_ids": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "prefixItems": [
+        {
+          "const": "M0-MEAS-07"
+        },
+        {
+          "const": "M0-MEAS-08"
+        },
+        {
+          "const": "M4-CANDIDATE-ASSEMBLY-01"
+        },
+        {
+          "const": "SAFE-SWAP-INTEGRATED-01"
+        },
+        {
+          "const": "RUNTIME-SERVICE-01"
+        },
+        {
+          "const": "CONSUMER-ATTESTATION-01"
+        },
+        {
+          "const": "SEC-PROFILE-01"
+        },
+        {
+          "const": "SEC-LAB-01"
+        },
+        {
+          "const": "SEC-PATH-01"
+        },
+        {
+          "const": "SEC-SECRET-01"
+        },
+        {
+          "const": "WEB-SAFE-SWAP-01"
+        },
+        {
+          "const": "M4-ISSUES-01"
+        }
+      ],
+      "items": false
+    },
+    "validation_outcome": {
+      "$ref": "#/$defs/validationOutcome"
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/approval"
+      },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "validation_outcome": {
+            "properties": {
+              "outcome": {
+                "const": "VALID"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          }
+        },
+        "required": [
+          "validation_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "registry_requirement_ids": {
+            "minItems": 72,
+            "maxItems": 72
+          },
+          "component_nodes": {
+            "required": [
+              "web",
+              "network",
+              "preview",
+              "transfer-calibration"
+            ],
+            "minProperties": 4,
+            "maxProperties": 4,
+            "propertyNames": {
+              "enum": [
+                "web",
+                "network",
+                "preview",
+                "transfer-calibration"
+              ]
+            }
+          },
+          "shared_inputs": {
+            "minProperties": 1
+          },
+          "qualification_inputs": {
+            "minProperties": 1
+          },
+          "dependency_edges": {
+            "minItems": 1
+          },
+          "row_bindings": {
+            "minProperties": 72,
+            "maxProperties": 72
+          },
+          "approvals": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifierArray": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "componentNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "owned_requirement_ids",
+        "shared_input_ids",
+        "qualification_input_ids",
+        "inbound_dependency_edge_ids",
+        "outbound_dependency_edge_ids"
+      ],
+      "properties": {
+        "component_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "owned_requirement_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "shared_input_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "qualification_input_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "inbound_dependency_edge_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "outbound_dependency_edge_ids": {
+          "$ref": "#/$defs/identifierArray"
+        }
+      }
+    },
+    "componentNodeMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 16,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "#/$defs/componentNode"
+        }
+      }
+    },
+    "sharedInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_kind",
+        "component_ids",
+        "requirement_ids",
+        "change_policy"
+      ],
+      "properties": {
+        "input_kind": {
+          "enum": [
+            "PRODUCT_CONTRACT",
+            "QUALIFICATION_GOVERNANCE_CONTRACT",
+            "CONTRACT_RELEASE",
+            "M3_BASE",
+            "COMMON_CONFIG",
+            "COMMON_LINEAGE",
+            "ACCEPTED_DECISION",
+            "IDENTITY",
+            "STATE_MACHINE",
+            "SECURITY_POLICY",
+            "SUPPORT_CELL",
+            "REQUIREMENT_ORACLE"
+          ]
+        },
+        "component_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "requirement_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "change_policy": {
+          "const": "BLOCKED_ALL_UP"
+        }
+      }
+    },
+    "sharedInputMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 256,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "#/$defs/sharedInput"
+        }
+      }
+    },
+    "qualificationInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_kind",
+        "oracle_class",
+        "component_ids",
+        "requirement_ids",
+        "change_policy"
+      ],
+      "properties": {
+        "input_kind": {
+          "enum": [
+            "PROCEDURE",
+            "QUALIFICATION_PLAN",
+            "THRESHOLD",
+            "STATISTICAL_METHOD",
+            "REPETITION_POLICY",
+            "REPETITION_COUNT",
+            "DATA_PARTITION",
+            "SUPPORT_CELL",
+            "FIXTURE_SET",
+            "ORACLE",
+            "EXECUTION_INPUT"
+          ]
+        },
+        "oracle_class": {
+          "enum": [
+            "DETERMINISTIC",
+            "DATA_FITTED",
+            "EXECUTION_COVERAGE"
+          ]
+        },
+        "component_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "change_policy": {
+          "const": "REQUIREMENT_DEPENDENCY_CLOSURE"
+        }
+      }
+    },
+    "qualificationInputMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 512,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}$": {
+          "$ref": "#/$defs/qualificationInput"
+        }
+      }
+    },
+    "dependencyEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_id",
+        "source_component_id",
+        "target_component_id",
+        "dependency_type",
+        "requirement_ids",
+        "change_policy"
+      ],
+      "properties": {
+        "edge_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "source_component_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "target_component_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "dependency_type": {
+          "enum": [
+            "IMPORT_CONTRACT",
+            "RUNTIME",
+            "RESOURCE_ARBITRATION",
+            "IDENTITY",
+            "STATE_MACHINE",
+            "SECURITY",
+            "CONFIG",
+            "LINEAGE"
+          ]
+        },
+        "requirement_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "change_policy": {
+          "enum": [
+            "REVERSE_CLOSURE",
+            "BLOCKED_ALL_UP"
+          ]
+        }
+      }
+    },
+    "rowBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "closing_gate",
+        "component_ids",
+        "shared_input_ids",
+        "qualification_input_ids",
+        "dependency_edge_ids",
+        "requirement_dependency_ids",
+        "binding_scope",
+        "oracle_qualification_input_ids",
+        "applicability_selector_qualification_input_id",
+        "change_policy"
+      ],
+      "properties": {
+        "closing_gate": {
+          "enum": [
+            "M4a",
+            "M4b",
+            "M4c",
+            "M4d",
+            "M4"
+          ]
+        },
+        "component_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "shared_input_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "qualification_input_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "dependency_edge_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "requirement_dependency_ids": {
+          "$ref": "#/$defs/identifierArray"
+        },
+        "binding_scope": {
+          "enum": [
+            "COMPONENT",
+            "CROSS_COMPONENT",
+            "ALL_UP"
+          ]
+        },
+        "oracle_qualification_input_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "applicability_selector_qualification_input_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+            }
+          ]
+        },
+        "change_policy": {
+          "enum": [
+            "SELECTIVE_REQUALIFICATION",
+            "BLOCKED_ALL_UP"
+          ]
+        }
+      }
+    },
+    "rowBindingMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 72,
+      "patternProperties": {
+        "^[A-Z0-9][A-Z0-9-]+$": {
+          "$ref": "#/$defs/rowBinding"
+        }
+      }
+    },
+    "requirementDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dependency_id",
+        "predecessor_requirement_id",
+        "dependent_requirement_id",
+        "dependency_type"
+      ],
+      "properties": {
+        "dependency_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "predecessor_requirement_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "dependent_requirement_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "dependency_type": {
+          "enum": [
+            "REGISTRY_PREREQUISITE",
+            "SHARED_ORACLE",
+            "CROSS_COMPONENT_SAFETY",
+            "AGGREGATE_RECONCILIATION"
+          ]
+        }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "diagnostic_id",
+        "code",
+        "message",
+        "related_ids"
+      ],
+      "properties": {
+        "diagnostic_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "code": {
+          "enum": [
+            "unknown-node",
+            "missing-node",
+            "stale-graph",
+            "graph-cycle",
+            "wrong-predecessor",
+            "digest-mismatch",
+            "missing-row-coverage",
+            "duplicate-row-coverage",
+            "unknown-row",
+            "unexplained-artifact-diff",
+            "unexplained-config-diff",
+            "missing-transitive-input",
+            "missing-qualification-input",
+            "unknown-qualification-input",
+            "unexplained-qualification-input-diff",
+            "stale-qualification-input",
+            "shared-input-drift",
+            "cross-component-impact"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "related_ids": {
+          "$ref": "#/$defs/identifierArray"
+        }
+      }
+    },
+    "validationOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "selected_requirement_count",
+        "invalidated_requirement_ids",
+        "rebase_disposition",
+        "accepted_rebase_wrapper_count",
+        "complete_all_up_required",
+        "diagnostics"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "VALID",
+            "BLOCKED_ALL_UP"
+          ]
+        },
+        "selected_requirement_count": {
+          "const": 72
+        },
+        "invalidated_requirement_ids": {
+          "type": "array",
+          "maxItems": 72,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "rebase_disposition": {
+          "enum": [
+            "MAY_EVALUATE",
+            "ACCEPT_ZERO"
+          ]
+        },
+        "accepted_rebase_wrapper_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete_all_up_required": {
+          "type": "boolean"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "VALID"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "invalidated_requirement_ids": {
+                "maxItems": 0
+              },
+              "rebase_disposition": {
+                "const": "MAY_EVALUATE"
+              },
+              "accepted_rebase_wrapper_count": {
+                "const": 0
+              },
+              "complete_all_up_required": {
+                "const": false
+              },
+              "diagnostics": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "invalidated_requirement_ids": {
+                "minItems": 72,
+                "maxItems": 72
+              },
+              "rebase_disposition": {
+                "const": "ACCEPT_ZERO"
+              },
+              "accepted_rebase_wrapper_count": {
+                "const": 0
+              },
+              "complete_all_up_required": {
+                "const": true
+              },
+              "diagnostics": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

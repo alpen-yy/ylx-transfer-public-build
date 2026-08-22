@@ -1,0 +1,15 @@
+{
+  "schema": "ylx.capture-event.v3",
+  "sse_delivery_id": "1042",
+  "authority_epoch": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_revision": 42,
+  "type": "state",
+  "occurred_at": "2026-08-08T10:25:01+08:00",
+  "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+  "data": {
+    "schema": "ylx.capture-state-event.v2",
+    "state": "encoding",
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "generation_id": "7d516b70-d8ab-47d1-b2dc-5b1250138789"
+  }
+}

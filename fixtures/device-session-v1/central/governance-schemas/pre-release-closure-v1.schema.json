@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/pre-release-closure-v1.schema.json",
+  "title": "YLX immutable pre-release closure v1",
+  "description": "A pre-signoff 173-row snapshot and proposed final map. It is signing input, not a release-completion receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "closure_id",
+    "revision",
+    "predecessor_closure_sha256",
+    "binding_context_ref",
+    "contract_release_sha256",
+    "product_contract_sha256",
+    "qualification_governance_contract_sha256",
+    "registry_sha256",
+    "registry_id_set_sha256",
+    "registry_cardinality",
+    "acceptance_sha256",
+    "system_requirement_mapping_artifact_sha256",
+    "system_requirement_mapping_semantic_sha256",
+    "release_result_projection_ref",
+    "release_result_projection_sha256",
+    "current_result_map",
+    "proposed_final_result_map",
+    "issue_head",
+    "issue_reconciliation_set_sha256",
+    "domain_attestation_sha256_by_role_slot",
+    "consumer_boundary_registry_sha256",
+    "consumer_boundary_acceptance_set_sha256",
+    "component_acceptance_record_sha256_by_boundary",
+    "signing_policy_sha256",
+    "key_validity_revocation_head_sha256",
+    "quorum_policy_sha256",
+    "ga_promotion_plan_sha256",
+    "planned_promotion_operator",
+    "created_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.pre-release-closure.v1"
+    },
+    "closure_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_closure_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "contract_release_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "product_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "qualification_governance_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_id_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "registry_cardinality": {
+      "const": 173
+    },
+    "acceptance_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "system_requirement_mapping_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "system_requirement_mapping_semantic_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "release_result_projection_ref": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.release-result-projection.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "release_result_projection_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "current_result_map": {
+      "$ref": "#/$defs/currentResultMap"
+    },
+    "proposed_final_result_map": {
+      "$ref": "#/$defs/finalResultMap"
+    },
+    "issue_head": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/issueHead"
+    },
+    "issue_reconciliation_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "domain_attestation_sha256_by_role_slot": {
+      "$ref": "#/$defs/domainAttestationMap"
+    },
+    "consumer_boundary_registry_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "consumer_boundary_acceptance_set_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "component_acceptance_record_sha256_by_boundary": {
+      "$ref": "#/$defs/componentAcceptanceMap"
+    },
+    "signing_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "key_validity_revocation_head_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "quorum_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "ga_promotion_plan_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "planned_promotion_operator": {
+      "$ref": "https://schemas.ylx.invalid/governance/ga-promotion-plan-v1.schema.json#/$defs/plannedOperator"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["pre_release_closure_sha256"] },
+      { "required": ["matrix_verdict_sha256"] },
+      { "required": ["external_locator_sha256"] }
+    ]
+  },
+  "$defs": {
+    "currentResultMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 173,
+      "maxProperties": 173,
+      "patternProperties": {
+        "^[A-Z0-9][A-Z0-9-]+$": {
+          "enum": [
+            "PASS",
+            "N/A",
+            "PASS_DERIVED_FROM_PRE_RELEASE_VALIDITY",
+            "PENDING_CLOSURE"
+          ]
+        }
+      }
+    },
+    "finalResultMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 173,
+      "maxProperties": 173,
+      "patternProperties": {
+        "^[A-Z0-9][A-Z0-9-]+$": {
+          "enum": [
+            "PASS",
+            "N/A",
+            "PASS_DERIVED_FROM_PRE_RELEASE_VALIDITY",
+            "PASS_DERIVED_FROM_FINAL_MANIFEST_VALIDITY"
+          ]
+        }
+      }
+    },
+    "domainAttestationMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release-owner",
+        "contract-owner",
+        "capture-owner",
+        "consumer-owner",
+        "web-control-owner",
+        "network-owner",
+        "security-owner",
+        "build-platform-owner",
+        "qa-evidence-owner",
+        "hardware-owner",
+        "pipeline-owner"
+      ],
+      "properties": {
+        "release-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "contract-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "capture-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "consumer-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "web-control-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "network-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "security-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "build-platform-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "qa-evidence-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "hardware-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "pipeline-owner": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      }
+    },
+    "componentAcceptanceMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rp-ylx-target-session-reader",
+        "rp-ylx-v1-projection-adapter",
+        "spectacular-calibration-reader",
+        "ylx-card-pipeline",
+        "ylx-transfer",
+        "egoview-console",
+        "g3-egoview-v5-wrapper"
+      ],
+      "properties": {
+        "rp-ylx-target-session-reader": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "rp-ylx-v1-projection-adapter": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "spectacular-calibration-reader": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "ylx-card-pipeline": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "ylx-transfer": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "egoview-console": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" },
+        "g3-egoview-v5-wrapper": { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      }
+    }
+  }
+}

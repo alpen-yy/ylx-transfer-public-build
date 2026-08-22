@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/target-disabled-deployment-receipt-v1.schema.json",
+  "title": "YLX target-disabled deployment receipt v1",
+  "description": "Immutable per-boundary receipt for one bootstrap-bound target-disabled install, configure, or deploy action over the exact seven M2 dual-read consumers. Its closed scope binds the contract package and excludes the release control plane. It exact-binds its PASS evaluation tuple, the closed four-action consumer implementation receipt set, its same-boundary deployment predecessor, observed bytes and environment, and a later durable readback proving that target production writes remained disabled.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "boundary_id",
+    "bootstrap_context_ref",
+    "deployment_scope",
+    "execution_authorization_evaluation_ref",
+    "implementation_action_receipt_ref_by_action",
+    "predecessor_deployment_receipt_ref",
+    "action_instance_id",
+    "planned_action_input_sha256",
+    "authorization_action",
+    "actor_person_id",
+    "execution_environment_ref",
+    "deployment_record_ref",
+    "deployment_record_sha256",
+    "deployed_environment_identity",
+    "deployment_state",
+    "producer_target_write_enabled",
+    "deployment_started_at",
+    "operation_result",
+    "completed_at",
+    "readback_deployment_record_ref",
+    "readback_deployment_record_sha256",
+    "readback_at",
+    "readback_matches_expected",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.target-disabled-deployment-receipt.v1"
+    },
+    "receipt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "boundary_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryId"
+    },
+    "bootstrap_context_ref": {
+      "$ref": "#/$defs/bindingContextRef"
+    },
+    "deployment_scope": {
+      "$ref": "#/$defs/m2DeploymentScope"
+    },
+    "execution_authorization_evaluation_ref": {
+      "$ref": "#/$defs/executionAuthorizationEvaluationRef"
+    },
+    "implementation_action_receipt_ref_by_action": {
+      "$ref": "#/$defs/implementationReceiptRefByAction"
+    },
+    "predecessor_deployment_receipt_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+        }
+      ]
+    },
+    "action_instance_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "planned_action_input_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "authorization_action": {
+      "enum": [
+        "install-target",
+        "configure-target",
+        "deploy-target-disabled"
+      ]
+    },
+    "actor_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "execution_environment_ref": {
+      "$ref": "#/$defs/exactArtifactRef"
+    },
+    "deployment_record_ref": {
+      "$ref": "#/$defs/consumerDeploymentRecordRef"
+    },
+    "deployment_record_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "deployed_environment_identity": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "deployment_state": {
+      "const": "target-disabled"
+    },
+    "producer_target_write_enabled": {
+      "const": false
+    },
+    "deployment_started_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "operation_result": {
+      "enum": [
+        "INSTALLED_TARGET_DISABLED",
+        "CONFIGURED_TARGET_DISABLED",
+        "DEPLOYED_TARGET_DISABLED"
+      ]
+    },
+    "completed_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_deployment_record_ref": {
+      "$ref": "#/$defs/consumerDeploymentRecordRef"
+    },
+    "readback_deployment_record_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "readback_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "readback_matches_expected": {
+      "const": true
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "install-target"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_deployment_receipt_ref": {
+            "type": "null"
+          },
+          "operation_result": {
+            "const": "INSTALLED_TARGET_DISABLED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "configure-target"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_deployment_receipt_ref": {
+            "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+          },
+          "operation_result": {
+            "const": "CONFIGURED_TARGET_DISABLED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_action": {
+            "const": "deploy-target-disabled"
+          }
+        },
+        "required": ["authorization_action"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_deployment_receipt_ref": {
+            "$ref": "#/$defs/targetDisabledDeploymentReceiptRef"
+          },
+          "operation_result": {
+            "const": "DEPLOYED_TARGET_DISABLED"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": ["artifact_sha256"]
+      },
+      {
+        "required": ["receipt_sha256"]
+      },
+      {
+        "required": ["self_sha256"]
+      }
+    ]
+  },
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": ["revision"]
+        }
+      ]
+    },
+    "bindingContextRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.binding-context.v2"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    },
+    "m2DeploymentScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "contract_package_included",
+        "consumer_boundary_ids",
+        "release_control_plane_included"
+      ],
+      "properties": {
+        "scope_kind": {
+          "const": "M2_CONTRACT_PACKAGE_AND_DUAL_READ_CONSUMERS"
+        },
+        "contract_package_included": {
+          "const": true
+        },
+        "consumer_boundary_ids": {
+          "$ref": "https://schemas.ylx.invalid/governance/consumer-boundary-registry-v1.schema.json#/$defs/boundaryIdSet"
+        },
+        "release_control_plane_included": {
+          "const": false
+        }
+      }
+    },
+    "executionAuthorizationEvaluationRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.execution-authorization-evaluation.v1"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    },
+    "consumerDeploymentRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.target-disabled-deployment-record.v1"
+            }
+          },
+          "required": [
+            "schema"
+          ]
+        }
+      ]
+    },
+    "implementationActionReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.implementation-action-receipt.v1"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    },
+    "implementationReceiptRefByAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implement-contract",
+        "implement-product",
+        "build-target-disabled",
+        "run-integration-smoke"
+      ],
+      "properties": {
+        "implement-contract": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "implement-product": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "build-target-disabled": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        },
+        "run-integration-smoke": {
+          "$ref": "#/$defs/implementationActionReceiptRef"
+        }
+      }
+    },
+    "targetDisabledDeploymentReceiptRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.target-disabled-deployment-receipt.v1"
+            }
+          },
+          "required": ["schema"]
+        }
+      ]
+    }
+  }
+}

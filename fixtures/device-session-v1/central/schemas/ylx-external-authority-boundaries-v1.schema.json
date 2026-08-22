@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ylx:schema:external-authority-boundaries:v1",
+  "title": "YLX External Authority Boundaries v1",
+  "description": "Closed current-state authority boundary for migration and transport-security inputs that are not vendored by this repository.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "legacy_v1", "tls_pin"],
+  "properties": {
+    "schema": {
+      "const": "ylx.external-authority-boundaries.v1"
+    },
+    "legacy_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "profile_binding",
+        "lab_destructive_mutation",
+        "lab_network_mutation",
+        "customer_destructive_mutation",
+        "deployed_contract_authority"
+      ],
+      "properties": {
+        "status": {
+          "const": "BLOCKED"
+        },
+        "profile_binding": {
+          "const": "same-explicit-deployment-profile-as-v2"
+        },
+        "lab_destructive_mutation": {
+          "const": "unreachable-or-rejected-before-handler"
+        },
+        "lab_network_mutation": {
+          "const": "unreachable-or-rejected-before-handler"
+        },
+        "customer_destructive_mutation": {
+          "const": "target-disabled-pending-STORE-DELETE-01"
+        },
+        "deployed_contract_authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "immutable_ref",
+            "contract_sha256",
+            "fixture_set_sha256",
+            "status",
+            "blocked_on"
+          ],
+          "properties": {
+            "immutable_ref": {
+              "type": "null"
+            },
+            "contract_sha256": {
+              "type": "null"
+            },
+            "fixture_set_sha256": {
+              "type": "null"
+            },
+            "status": {
+              "const": "BLOCKED"
+            },
+            "blocked_on": {
+              "const": [
+                "immutable-deployed-contract-ref",
+                "deployed-v1-fixture-digest"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "tls_pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "authority_requirement",
+        "expected_pin_owner",
+        "server_credential_owner",
+        "configuration",
+        "blocked_on"
+      ],
+      "properties": {
+        "status": {
+          "const": "BLOCKED"
+        },
+        "authority_requirement": {
+          "const": "m1-versioned-machine-contract"
+        },
+        "expected_pin_owner": {
+          "const": "ylx-transfer"
+        },
+        "server_credential_owner": {
+          "const": "device-gateway"
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["target", "algorithm", "encoding", "provisioning", "rotation"],
+          "properties": {
+            "target": {
+              "type": "null"
+            },
+            "algorithm": {
+              "type": "null"
+            },
+            "encoding": {
+              "type": "null"
+            },
+            "provisioning": {
+              "type": "null"
+            },
+            "rotation": {
+              "type": "null"
+            }
+          }
+        },
+        "blocked_on": {
+          "const": ["target", "algorithm", "encoding", "provisioning", "rotation"]
+        }
+      }
+    }
+  }
+}

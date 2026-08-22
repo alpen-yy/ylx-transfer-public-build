@@ -1,0 +1,474 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/qualification-plan-v1.schema.json",
+  "title": "YLX qualification plan v1",
+  "description": "Immutable pre-run qualification plan. Test-only changes advance qualification_revision and its direct predecessor while preserving candidate_id unless shipped/runtime bytes or behavior-changing configuration also change. The plan's exact-byte digest is carried by evidence, verdict, and index records, not by this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "candidate_id",
+    "binding_context_ref",
+    "contract_release_sha256",
+    "product_contract_sha256",
+    "qualification_governance_contract_sha256",
+    "qualification_revision",
+    "predecessor_plan_sha256",
+    "frozen_at",
+    "applicable_requirement_ids",
+    "applicable_support_cell_ids",
+    "stimulus",
+    "oracle_type",
+    "oracle",
+    "repetitions",
+    "exclusion_rules",
+    "aggregation_method_ref",
+    "statistical_method_ref",
+    "threshold_refs",
+    "owner_role",
+    "reviewer_role",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.qualification-plan.v1"
+    },
+    "plan_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "candidate_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "contract_release_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "product_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "qualification_governance_contract_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "qualification_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_plan_sha256": {
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "frozen_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "applicable_requirement_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    },
+    "applicable_support_cell_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    },
+    "stimulus": {
+      "$ref": "#/$defs/stimulus"
+    },
+    "oracle_type": {
+      "enum": [
+        "deterministic",
+        "fitted"
+      ]
+    },
+    "oracle": {},
+    "repetitions": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "exclusion_rules": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/exclusionRule"
+      }
+    },
+    "aggregation_method_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "statistical_method_ref": {
+      "oneOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "threshold_refs": {},
+    "data_partition_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/dataPartitionRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "data_partition_execution_context_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/executionContextRef"
+      }
+    },
+    "owner_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "reviewer_role": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId"
+    },
+    "artifact_metadata": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+    }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "required": [
+            "qualification_revision",
+            "predecessor_plan_sha256"
+          ],
+          "properties": {
+            "qualification_revision": {
+              "const": 1
+            },
+            "predecessor_plan_sha256": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "required": [
+            "qualification_revision",
+            "predecessor_plan_sha256"
+          ],
+          "properties": {
+            "qualification_revision": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "predecessor_plan_sha256": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "oneOf": [
+        {
+          "required": [
+            "oracle_type",
+            "oracle",
+            "statistical_method_ref",
+            "threshold_refs"
+          ],
+          "properties": {
+            "oracle_type": {
+              "const": "deterministic"
+            },
+            "oracle": {
+              "$ref": "#/$defs/deterministicOracle"
+            },
+            "statistical_method_ref": {
+              "type": "null"
+            },
+            "threshold_refs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/predeclaredThresholdRef"
+              }
+            },
+            "data_partition_ref": {
+              "type": "null"
+            }
+          },
+          "not": {
+            "required": [
+              "data_partition_execution_context_refs"
+            ]
+          }
+        },
+        {
+          "required": [
+            "oracle_type",
+            "oracle",
+            "statistical_method_ref",
+            "threshold_refs",
+            "data_partition_ref",
+            "data_partition_execution_context_refs"
+          ],
+          "properties": {
+            "oracle_type": {
+              "const": "fitted"
+            },
+            "oracle": {
+              "$ref": "#/$defs/fittedOracle"
+            },
+            "statistical_method_ref": {
+              "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+            },
+            "threshold_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/fittedThresholdRef"
+              }
+            },
+            "data_partition_ref": {
+              "$ref": "#/$defs/dataPartitionRef"
+            },
+            "data_partition_execution_context_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/executionContextRef"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "stimulus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stimulus_id",
+        "protocol_ref",
+        "input_refs"
+      ],
+      "properties": {
+        "stimulus_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "protocol_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "input_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          }
+        }
+      }
+    },
+    "deterministicOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_domain",
+        "positive_fixture_refs",
+        "negative_fixture_refs",
+        "evaluator_ref"
+      ],
+      "properties": {
+        "oracle_domain": {
+          "enum": [
+            "schema",
+            "enum",
+            "authorization",
+            "profile-rejection",
+            "state-machine",
+            "invariant",
+            "digest",
+            "version-dispatch",
+            "fixed-error-code"
+          ]
+        },
+        "positive_fixture_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          }
+        },
+        "negative_fixture_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          }
+        },
+        "evaluator_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        }
+      },
+      "description": "Predeclared positive and negative fixtures define the oracle. Training/holdout partitioning is forbidden."
+    },
+    "fittedOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_domain",
+        "metric_ids",
+        "estimator_ref",
+        "evaluation_protocol_ref",
+        "holdout_policy"
+      ],
+      "properties": {
+        "oracle_domain": {
+          "enum": [
+            "performance",
+            "quality",
+            "resource",
+            "drop",
+            "latency",
+            "frame-age",
+            "tolerance"
+          ]
+        },
+        "metric_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        },
+        "estimator_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "evaluation_protocol_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        "holdout_policy": {
+          "const": "validation-only-no-retuning",
+          "description": "Using holdout results to adjust a threshold invalidates this revision and requires a successor plan and unseen holdout groups."
+        }
+      }
+    },
+    "exclusionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "rule_ref"
+      ],
+      "properties": {
+        "rule_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "rule_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        }
+      }
+    },
+    "predeclaredThresholdRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold_id",
+        "threshold_kind",
+        "artifact_ref"
+      ],
+      "properties": {
+        "threshold_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "threshold_kind": {
+          "const": "predeclared"
+        },
+        "artifact_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        }
+      }
+    },
+    "fittedThresholdRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold_id",
+        "threshold_kind",
+        "artifact_ref"
+      ],
+      "properties": {
+        "threshold_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "threshold_kind": {
+          "const": "data-fitted"
+        },
+        "artifact_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        }
+      }
+    },
+    "dataPartitionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partition_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "partition_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "executionContextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "artifact_path",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "artifact_path": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

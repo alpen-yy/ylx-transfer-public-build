@@ -1,0 +1,208 @@
+{
+  "schema_version": "ylx.record-corpus-fixture.v1",
+  "cases": [
+    {
+      "name": "split-eye-complete-with-one-accounted-drop",
+      "session": {
+        "schema": "ylx.device-session.v1",
+        "manifest_id": "0198b100-0002-7002-8000-000000000002",
+        "sealed": true,
+        "sealed_at": "2026-08-08T15:00:00.300000+08:00",
+        "session_id": "0198b100-0001-7001-8000-000000000001",
+        "volume_id": "30000001-0000-4001-8000-000000000001",
+        "capture_mode": "production",
+        "display_name": "2026-08-08_15-00-00_YLX-30D5872D",
+        "device": {
+          "device_id": "550e8400-e29b-41d4-a716-446655440000",
+          "device_label": "YLX-30D5872D",
+          "hardware_fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "platform": "raspberry-pi-5",
+          "software_version": "0.10.0-dev.1",
+          "commit": "2db57ae68e04197397b8ac84f4d71548aa2fcb36"
+        },
+        "time": {
+          "started_at": "2026-08-08T15:00:00+08:00",
+          "ended_at": "2026-08-08T15:00:00.133333+08:00",
+          "timezone": "Asia/Shanghai",
+          "duration_seconds": 0.133333
+        },
+        "take": {
+          "take_id": "0198b100-0000-7000-8000-000000000000",
+          "sequence": 1,
+          "continuation_of": null
+        },
+        "camera": {
+          "width": 3840,
+          "height": 1080,
+          "eye_width": 1920,
+          "sensor_fps": 60,
+          "frame_decimation": 2,
+          "effective_fps": 30,
+          "coordinate_frame": "opencv_optical"
+        },
+        "video": {
+          "layout": "split-eyes",
+          "codec": "h264",
+          "container": "mp4",
+          "segments": [
+            {
+              "index": 0,
+              "start_frame": 0,
+              "end_frame": 4,
+              "start_time_seconds": 0,
+              "end_time_seconds": 0.133333,
+              "artifacts": {
+                "left": {
+                  "artifact_id": "6161616161616161616161616161616161616161616161616161616161616161",
+                  "role": "video.left",
+                  "path": "video/left_00000.mp4",
+                  "media_type": "video/mp4",
+                  "bytes": 4096,
+                  "sha256": "6161616161616161616161616161616161616161616161616161616161616161"
+                },
+                "right": {
+                  "artifact_id": "7171717171717171717171717171717171717171717171717171717171717171",
+                  "role": "video.right",
+                  "path": "video/right_00000.mp4",
+                  "media_type": "video/mp4",
+                  "bytes": 4096,
+                  "sha256": "7171717171717171717171717171717171717171717171717171717171717171"
+                }
+              }
+            }
+          ]
+        },
+        "imu": {
+          "artifact": {
+            "artifact_id": "8181818181818181818181818181818181818181818181818181818181818181",
+            "role": "imu.samples",
+            "path": "imu/imu.jsonl",
+            "media_type": "application/x-ndjson",
+            "bytes": 1024,
+            "sha256": "8181818181818181818181818181818181818181818181818181818181818181"
+          },
+          "sample_count": 4,
+          "units": "raw_int16",
+          "coordinate_frame": "opencv_optical"
+        },
+        "frames": {
+          "artifact": {
+            "artifact_id": "9191919191919191919191919191919191919191919191919191919191919191",
+            "role": "frames.index",
+            "path": "imu/frames.jsonl",
+            "media_type": "application/x-ndjson",
+            "bytes": 768,
+            "sha256": "9191919191919191919191919191919191919191919191919191919191919191"
+          },
+          "count": 3
+        },
+        "logs": [],
+        "integrity": {
+          "verified_at": "2026-08-08T15:00:00.200000+08:00",
+          "dropped_frames": 1,
+          "drop_events": [
+            {
+              "start_frame": 2,
+              "end_frame": 3,
+              "at_time_seconds": 0.066667,
+              "reason": "write_backpressure",
+              "dropped": 1
+            }
+          ],
+          "media_write_throughput_bytes_per_second": 1000000,
+          "fatal_errors": []
+        }
+      },
+      "frames": [
+        {
+          "schema": "ylx.frame-record.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 0,
+          "sequence": 0,
+          "source_frame_id": 0,
+          "output_frame_index": 0,
+          "video_associations": [
+            {"role": "video.left", "artifact_id": "6161616161616161616161616161616161616161616161616161616161616161", "artifact_frame_index": 0, "segment_index": 0},
+            {"role": "video.right", "artifact_id": "7171717171717171717171717171717171717171717171717171717171717171", "artifact_frame_index": 0, "segment_index": 0}
+          ],
+          "imu_association": {"status": "associated", "first_sequence": 0, "last_sequence": 0, "sample_count": 1}
+        },
+        {
+          "schema": "ylx.frame-record.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 33333333,
+          "sequence": 1,
+          "source_frame_id": 2,
+          "output_frame_index": 1,
+          "video_associations": [
+            {"role": "video.left", "artifact_id": "6161616161616161616161616161616161616161616161616161616161616161", "artifact_frame_index": 1, "segment_index": 0},
+            {"role": "video.right", "artifact_id": "7171717171717171717171717171717171717171717171717171717171717171", "artifact_frame_index": 1, "segment_index": 0}
+          ],
+          "imu_association": {"status": "associated", "first_sequence": 1, "last_sequence": 2, "sample_count": 2}
+        },
+        {
+          "schema": "ylx.frame-record.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 100000000,
+          "sequence": 3,
+          "source_frame_id": 6,
+          "output_frame_index": 2,
+          "video_associations": [
+            {"role": "video.left", "artifact_id": "6161616161616161616161616161616161616161616161616161616161616161", "artifact_frame_index": 2, "segment_index": 0},
+            {"role": "video.right", "artifact_id": "7171717171717171717171717171717171717171717171717171717171717171", "artifact_frame_index": 2, "segment_index": 0}
+          ],
+          "imu_association": {"status": "associated", "first_sequence": 3, "last_sequence": 3, "sample_count": 1}
+        }
+      ],
+      "imu": [
+        {
+          "schema": "ylx.imu-sample.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 0,
+          "sequence": 0,
+          "raw_axes": {"units": "raw_int16", "accelerometer": {"x": 0, "y": 0, "z": 16384}, "gyroscope": {"x": 0, "y": 0, "z": 0}},
+          "frame_association": {"status": "associated", "frame_sequence": 0, "method": "nearest", "offset_nanoseconds": 0}
+        },
+        {
+          "schema": "ylx.imu-sample.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 30000000,
+          "sequence": 1,
+          "raw_axes": {"units": "raw_int16", "accelerometer": {"x": 1, "y": 0, "z": 16383}, "gyroscope": {"x": 1, "y": 0, "z": 0}},
+          "frame_association": {"status": "associated", "frame_sequence": 1, "method": "nearest", "offset_nanoseconds": -3333333}
+        },
+        {
+          "schema": "ylx.imu-sample.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 40000000,
+          "sequence": 2,
+          "raw_axes": {"units": "raw_int16", "accelerometer": {"x": 2, "y": 0, "z": 16382}, "gyroscope": {"x": 2, "y": 0, "z": 0}},
+          "frame_association": {"status": "associated", "frame_sequence": 1, "method": "nearest", "offset_nanoseconds": 6666667}
+        },
+        {
+          "schema": "ylx.imu-sample.v1",
+          "session_id": "0198b100-0001-7001-8000-000000000001",
+          "clock": {"domain": "session_monotonic", "unit": "nanosecond", "epoch_id": "0198b100-0001-7001-8000-000000000001"},
+          "timestamp": 100000000,
+          "sequence": 3,
+          "raw_axes": {"units": "raw_int16", "accelerometer": {"x": 3, "y": 0, "z": 16381}, "gyroscope": {"x": 3, "y": 0, "z": 0}},
+          "frame_association": {"status": "associated", "frame_sequence": 3, "method": "nearest", "offset_nanoseconds": 0}
+        }
+      ],
+      "negative_mutations": [
+        {"id": "missing-retained-frame", "operation": "remove", "target": "frames", "index": 1, "expected_error": "frame sequence set"},
+        {"id": "right-eye-segment-mismatch", "operation": "set", "target": "frames", "index": 1, "path": ["video_associations", 1, "segment_index"], "value": 1, "expected_error": "segment_index"},
+        {"id": "wrong-video-artifact", "operation": "set", "target": "frames", "index": 0, "path": ["video_associations", 0, "artifact_id"], "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected_error": "artifact_id"},
+        {"id": "duplicate-output-index", "operation": "set", "target": "frames", "index": 2, "path": ["output_frame_index"], "value": 1, "expected_error": "output_frame_index"},
+        {"id": "missing-imu-sample", "operation": "remove", "target": "imu", "index": 2, "expected_error": "IMU sequence set"},
+        {"id": "wrong-imu-offset", "operation": "set", "target": "imu", "index": 1, "path": ["frame_association", "offset_nanoseconds"], "value": 0, "expected_error": "offset_nanoseconds"}
+      ]
+    }
+  ]
+}

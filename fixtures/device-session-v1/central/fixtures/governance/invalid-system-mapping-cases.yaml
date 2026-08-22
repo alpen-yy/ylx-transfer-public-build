@@ -1,0 +1,36 @@
+schema_version: ylx.system-mapping-negative-cases.v1
+cases:
+  - id: substitute-known-acceptance-target
+    mutation:
+      path: [mappings, 0, acceptance_ids, 0]
+      operation: replace
+      value: M0-GOV-01
+    expected_error_contains: canonical semantic digest differs from reviewed oracle
+
+  - id: rename-closed-root-field
+    mutation:
+      path: [policy]
+      operation: rename
+      new_name: policies
+    expected_error_contains: mapping root fields must be closed
+
+  - id: rename-closed-entry-field
+    mutation:
+      path: [mappings, 0, acceptance_ids]
+      operation: rename
+      new_name: targets
+    expected_error_contains: mappings[0] fields must be closed
+
+  - id: reuse-unreviewed-revision
+    mutation:
+      path: [mapping_revision]
+      operation: replace
+      value: 2
+    expected_error_contains: mapping revision differs from reviewed authority
+
+  - id: drift-source-document-digest
+    mutation:
+      path: [source, document_sha256]
+      operation: replace
+      value: 0000000000000000000000000000000000000000000000000000000000000000
+    expected_error_contains: source document digest differs

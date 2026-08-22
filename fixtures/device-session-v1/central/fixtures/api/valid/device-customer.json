@@ -1,0 +1,64 @@
+{
+  "schema": "ylx.device.v3",
+  "device": {
+    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+    "device_label": "YLX-30D5872D"
+  },
+  "hardware_fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "api_version": "3.0",
+  "build": {
+    "package_version": "0.10.0-dev.1",
+    "commit": "2db57ae68e04197397b8ac84f4d71548aa2fcb36",
+    "build_id": "build-20260808.1"
+  },
+  "security_profile": "customer",
+  "capabilities": {
+    "capture": true,
+    "preview": true,
+    "range_download": true,
+    "network_mutation": false
+  },
+  "storage": {
+    "volume_id": "6ba7b810-9dad-41d1-80b4-00c04fd430c8",
+    "total_bytes": 128000000000,
+    "available_bytes": 96000000000,
+    "writable": true
+  },
+  "runtime": {
+    "observed_at": "2026-08-08T10:24:15+08:00",
+    "connection_method": "ethernet_lan",
+    "temperature_celsius": 53.5,
+    "network": {
+      "ap": {
+        "state": "active",
+        "interface": "wlan0",
+        "addresses": ["10.42.0.1/24"],
+        "peer_or_ssid": "YLX-30D5872D"
+      },
+      "wifi_client": {
+        "state": "disconnected",
+        "interface": "wlan1",
+        "addresses": [],
+        "peer_or_ssid": null
+      },
+      "wired": {
+        "state": "connected",
+        "interface": "eth0",
+        "addresses": ["192.0.2.24/24"],
+        "peer_or_ssid": null
+      },
+      "default_route": "wired"
+    },
+    "live_imu": {
+      "session_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+      "clock": {
+        "time_base": "session_monotonic",
+        "epoch_id": "01989f6a-2c00-7a1b-8c2d-3e4f50617283",
+        "timestamp_ns": 15000000000
+      },
+      "acceleration_m_s2": {"x": 0.1, "y": -0.2, "z": 9.79},
+      "angular_velocity_rad_s": {"x": 0.01, "y": 0.02, "z": -0.01},
+      "orientation_quaternion": {"w": 0.999, "x": 0.01, "y": 0.02, "z": 0.03}
+    }
+  }
+}

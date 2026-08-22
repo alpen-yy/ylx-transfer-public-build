@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/ga-promotion-receipt-v1.schema.json",
+  "title": "YLX exact-RC GA promotion/readback receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "attempt_id",
+    "publication_fence_ref",
+    "publication_fence_sha256",
+    "ga_promotion_plan_ref",
+    "ga_promotion_plan_sha256",
+    "binding_context_ref",
+    "rc_version",
+    "rc_commit",
+    "rc_artifact_sha256",
+    "canonical_remote_id",
+    "ga_ref",
+    "ga_channel",
+    "observed_ref_target_commit",
+    "observed_artifact_sha256",
+    "operation_result",
+    "verified_at",
+    "promotion_operator_person_id",
+    "promotion_operator_assignment_artifact_sha256",
+    "promotion_operator_assignment_revision",
+    "ga_visibility",
+    "remote_observation",
+    "remote_observation_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.ga-promotion-receipt.v1"
+    },
+    "attempt_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "publication_fence_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "publication_fence_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "ga_promotion_plan_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "ga_promotion_plan_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "binding_context_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+    },
+    "rc_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9A-Za-z.-]+$"
+    },
+    "rc_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+    },
+    "rc_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "canonical_remote_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "ga_ref": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "ga_channel": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+    },
+    "observed_ref_target_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+    },
+    "observed_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "operation_result": {
+      "enum": [
+        "CREATED_EXACT",
+        "ALREADY_EXACT"
+      ]
+    },
+    "verified_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "promotion_operator_person_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "promotion_operator_assignment_artifact_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "promotion_operator_assignment_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ga_visibility": {
+      "const": "QUARANTINED_UNTIL_VALID_ACTIVE_DISTRIBUTION_HEAD"
+    },
+    "remote_observation": {
+      "$ref": "#/$defs/remoteObservation"
+    },
+    "remote_observation_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "remoteObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_remote_id",
+        "ga_ref",
+        "ga_channel",
+        "observed_ref_target_commit",
+        "observed_artifact_sha256",
+        "operation_result",
+        "observed_at"
+      ],
+      "properties": {
+        "canonical_remote_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "ga_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "ga_channel": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "observed_ref_target_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+        },
+        "observed_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "operation_result": {
+          "enum": [
+            "CREATED_EXACT",
+            "ALREADY_EXACT"
+          ]
+        },
+        "observed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        }
+      }
+    }
+  }
+}

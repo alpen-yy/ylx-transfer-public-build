@@ -1,0 +1,476 @@
+name: CI / Release
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: >-
+          Existing semantic-version tag to build and publish. Leave empty to
+          run CI against the selected branch without publishing a release.
+        required: false
+        default: ""
+        type: string
+      run_cross_repo:
+        description: >-
+          Also run the pinned cross-repo Pi integration lane (needs the
+          RP_YLX_TOKEN secret).
+        required: false
+        default: false
+        type: boolean
+      platforms:
+        description: >-
+          Desktop platforms to build and run the recovery contract on.
+          "ubuntu" skips the macOS and Windows lanes, which is for iterating on
+          a Linux-only change; it is not cross-platform verification, so a
+          change that ships still needs a full run.
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - ubuntu
+
+permissions:
+  contents: read
+
+# One in-flight run per ref. A superseded push has nothing useful left to
+# say, and letting it finish only delays the run that replaced it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The sibling Pi capture repo that `pi_http_integration.rs` speaks real
+  # HTTPS to. Pinned to an exact SHA rather than a branch so the cross-repo
+  # lane is reproducible and so a red result always names a specific pair of
+  # revisions. Bump this deliberately, together with any wire-contract change.
+  RP_YLX_REPOSITORY: mirrorbloom/RP-YLX
+  RP_YLX_PINNED_SHA: 2db57ae68e04197397b8ac84f4d71548aa2fcb36
+
+jobs:
+  prepare:
+    name: resolve build metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      checkout_ref: ${{ steps.metadata.outputs.checkout_ref }}
+      is_release: ${{ steps.metadata.outputs.is_release }}
+      release_tag: ${{ steps.metadata.outputs.release_tag }}
+      platforms: ${{ steps.metadata.outputs.platforms }}
+    steps:
+      - name: Resolve build metadata
+        id: metadata
+        shell: bash
+        env:
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+          REQUESTED_PLATFORMS: ${{ inputs.platforms }}
+        run: |
+          set -euo pipefail
+
+          checkout_ref="${GITHUB_REF}"
+          release_tag=""
+
+          # A dispatch without a tag is a plain manual CI run against the
+          # selected ref (this is how the cross-repo lane is triggered), so
+          # only an explicitly requested tag redirects the checkout.
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${REQUESTED_TAG}" ]]; then
+            checkout_ref="${REQUESTED_TAG}"
+            release_tag="${REQUESTED_TAG}"
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_tag="${GITHUB_REF_NAME}"
+          fi
+
+          if [[ -n "${release_tag}" && ! "${release_tag}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must use the numeric SemVer form X.Y.Z; got '${release_tag}'." >&2
+            exit 1
+          fi
+
+          is_release=false
+          if [[ -n "${release_tag}" ]]; then
+            is_release=true
+          fi
+
+          # Only a manual dispatch may narrow the matrix, and never for a
+          # release: a published artifact is always built on all three.
+          platforms='["ubuntu-latest","macos-latest","windows-latest"]'
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" \
+                && "${REQUESTED_PLATFORMS}" == "ubuntu" \
+                && "${is_release}" == "false" ]]; then
+            platforms='["ubuntu-latest"]'
+          fi
+
+          {
+            echo "checkout_ref=${checkout_ref}"
+            echo "is_release=${is_release}"
+            echo "release_tag=${release_tag}"
+            echo "platforms=${platforms}"
+          } >> "${GITHUB_OUTPUT}"
+
+  frontend:
+    name: frontend (lint, typecheck, build)
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+
+  # Rust checks for the single Cargo workspace. The root manifest owns the
+  # application, core crate, and adapter crate, so one all-targets/all-features
+  # gate covers production and test code together.
+  rust:
+    name: rust (fmt, clippy, test)
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+      # The outer crate links against the system webkit/gtk stack, so even
+      # `cargo clippy` on it needs these present.
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev \
+            libayatana-appindicator3-dev patchelf build-essential curl wget file libssl-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: cargo fmt --check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
+
+      - name: cargo clippy
+        run: >-
+          cargo clippy --manifest-path src-tauri/Cargo.toml
+          --workspace --all-targets --all-features -- -D warnings
+
+      - name: cargo test
+        run: >-
+          cargo test --manifest-path src-tauri/Cargo.toml
+          --workspace --all-targets --all-features
+
+  object-store-minio:
+    name: hermetic object-store contract (MinIO)
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Run the pinned MinIO contract lane
+        env:
+          YLX_MINIO_IMAGE: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+        run: bash src-tauri/crates/ylx-transfer-adapters/tests/support/run_minio_object_store_contract.sh
+
+  fs-recovery:
+    name: filesystem recovery (${{ matrix.os }})
+    needs: prepare
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(needs.prepare.outputs.platforms) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Run filesystem recovery contract
+        run: >-
+          cargo test --manifest-path src-tauri/Cargo.toml
+          -p ylx-transfer-core --test fs_recovery_contract
+          --all-targets --all-features -- --nocapture
+
+  # Builds the full desktop app on all three target platforms. This is the
+  # actual cross-platform verification for this project — see
+  # docs/LAN_TRANSFER_PROTOCOL.md for why local builds on Linux dev boxes
+  # can't easily verify this themselves (webkit2gtk isn't always installed).
+  tauri:
+    name: tauri build (${{ matrix.platform }})
+    needs: [prepare, frontend, rust]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJSON(needs.prepare.outputs.platforms) }}
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+      - name: Install Linux system dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev \
+            libayatana-appindicator3-dev patchelf build-essential curl wget file libssl-dev
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set bundle version from Release tag
+        if: needs.prepare.outputs.is_release == 'true'
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ needs.prepare.outputs.release_tag }}
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const path = "src-tauri/tauri.conf.json";
+          const config = JSON.parse(fs.readFileSync(path, "utf8"));
+
+          config.version = process.env.RELEASE_VERSION;
+          fs.writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
+          NODE
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      # Formatting is platform-independent and already gated by the `rust`
+      # job; clippy and all-target tests are not -- cfg-gated paths differ per
+      # OS, which is the whole point of running this matrix.
+      - name: cargo clippy
+        run: >-
+          cargo clippy --manifest-path src-tauri/Cargo.toml
+          --workspace --all-targets --all-features -- -D warnings
+
+      - name: Rust workspace tests
+        run: >-
+          cargo test --manifest-path src-tauri/Cargo.toml
+          --workspace --all-targets --all-features
+
+      - name: tauri build
+        uses: tauri-apps/tauri-action@v0
+
+      - name: Upload Tauri artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: ylx-transfer-${{ matrix.platform }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/**
+            src-tauri/target/release/ylx-transfer
+            src-tauri/target/release/ylx-transfer.exe
+
+  # The real cross-language proof: this repo's Rust client against the actual
+  # RP-YLX Python daemon, at a pinned revision.
+  #
+  # Deliberately NOT a required lane, and deliberately manual
+  # (`workflow_dispatch` only): it checks out a second, private repository,
+  # which needs a credential a fork's PR run cannot have. A lane that cannot
+  # authenticate must not be able to redden a required check -- and, more
+  # importantly, must not be able to *green* one either, which is why the
+  # tests it runs are `#[ignore]`d rather than self-skipping. Anything
+  # missing here is a hard failure, never a quiet pass.
+  cross-repo-pi-integration:
+    name: cross-repo Pi integration (pinned RP-YLX)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_cross_repo
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out ylx-transfer
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+          path: ylx-transfer
+
+      - name: Check out RP-YLX at the pinned revision
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.RP_YLX_REPOSITORY }}
+          ref: ${{ env.RP_YLX_PINNED_SHA }}
+          path: RP-YLX
+          persist-credentials: false
+          token: ${{ secrets.RP_YLX_TOKEN || github.token }}
+
+      - name: Verify the peer checkout and every required fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          missing=0
+          require() {
+            if [[ ! -f "$1" ]]; then
+              echo "::error::required fixture is missing: $1"
+              missing=1
+            fi
+          }
+
+          require RP-YLX/capture/src/ylx_capture/transfer_daemon_cli.py
+          require RP-YLX/capture/src/ylx_capture/transfer/composition.py
+          require RP-YLX/capture/src/ylx_capture/publication.py
+          require ylx-transfer/src-tauri/crates/ylx-transfer-adapters/tests/support/pi_daemon_harness.py
+
+          if (( missing )); then
+            echo "::error::cross-repo lane cannot run without the peer repo and its fixtures; failing rather than skipping"
+            exit 1
+          fi
+
+      - name: Record both revisions
+        id: revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ylx_sha="$(git -C ylx-transfer rev-parse HEAD)"
+          rp_sha="$(git -C RP-YLX rev-parse HEAD)"
+
+          if [[ "${rp_sha}" != "${RP_YLX_PINNED_SHA}" ]]; then
+            echo "::error::RP-YLX resolved to ${rp_sha}, expected the pinned ${RP_YLX_PINNED_SHA}"
+            exit 1
+          fi
+
+          printf '{"ylx_transfer":"%s","rp_ylx_repository":"%s","rp_ylx":"%s"}\n' \
+            "${ylx_sha}" "${RP_YLX_REPOSITORY}" "${rp_sha}" > cross-repo-revisions.json
+
+          {
+            echo "### Cross-repo integration revisions"
+            echo
+            echo "| repo | revision |"
+            echo "| --- | --- |"
+            echo "| \`${GITHUB_REPOSITORY}\` | \`${ylx_sha}\` |"
+            echo "| \`${RP_YLX_REPOSITORY}\` | \`${rp_sha}\` |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      # The Rust tests put RP-YLX on PYTHONPATH rather than installing it, so
+      # only the daemon's own third-party runtime deps are needed here (the
+      # `transfer` extra from RP-YLX's `capture/pyproject.toml`).
+      - name: Install the Pi daemon's Python dependencies
+        run: python -m pip install "cryptography>=42,<46" "zeroconf>=0.140,<1"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ylx-transfer/src-tauri
+
+      - name: Run the cross-repo integration proofs
+        working-directory: ylx-transfer
+        env:
+          YLX_RP_REPO_PATH: ${{ github.workspace }}/RP-YLX
+        run: >-
+          cargo test --manifest-path src-tauri/Cargo.toml
+          -p ylx-transfer-adapters --test pi_http_integration
+          -- --ignored --nocapture
+
+      - name: Upload the recorded revisions
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cross-repo-revisions
+          if-no-files-found: error
+          path: cross-repo-revisions.json
+
+  release:
+    name: publish GitHub Release
+    if: needs.prepare.outputs.is_release == 'true'
+    needs: [prepare, tauri]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - name: Download platform artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: ylx-transfer-*
+          path: release-assets
+
+      - name: Create Release and upload installers
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          assets=()
+          while IFS= read -r -d '' asset; do
+            assets+=("${asset}")
+          done < <(
+            find release-assets -type f \
+              \( -name '*.AppImage' \
+                -o -name '*.deb' \
+                -o -name '*.rpm' \
+                -o -name '*.dmg' \
+                -o -name '*.msi' \
+                -o -name '*-setup.exe' \) \
+              -print0 | sort -z
+          )
+
+          if (( ${#assets[@]} == 0 )); then
+            echo "No packaged desktop installers were found in the build artifacts." >&2
+            exit 1
+          fi
+
+          printf 'Release assets:\n'
+          printf '  %s\n' "${assets[@]}"
+
+          if ! gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release create "${RELEASE_TAG}" \
+              --draft \
+              --generate-notes \
+              --title "Release ${RELEASE_TAG}" \
+              --verify-tag
+          fi
+
+          gh release upload "${RELEASE_TAG}" "${assets[@]}" --clobber
+          gh release edit "${RELEASE_TAG}" \
+            --draft=false \
+            --prerelease=false \
+            --title "Release ${RELEASE_TAG}"

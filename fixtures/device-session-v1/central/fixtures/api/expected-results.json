@@ -1,0 +1,234 @@
+{
+  "schema": "ylx.api-fixture-results.v2",
+  "valid": {
+    "valid/capture-start-new.json": "CaptureStartRequest",
+    "valid/capture-start-continue.json": "CaptureStartRequest",
+    "valid/capture-stop.json": "CaptureStopRequest",
+    "valid/device-customer.json": "DeviceDescriptor",
+    "valid/device-lab.json": "DeviceDescriptor",
+    "valid/capture-event.json": "CaptureEvent",
+    "valid/capture-event-snapshot-idle.json": "CaptureEvent",
+    "valid/capture-event-snapshot-idle-retained.json": "CaptureEvent",
+    "valid/capture-event-state.json": "CaptureEvent",
+    "valid/capture-event-progress.json": "CaptureEvent",
+    "valid/capture-event-safe-swap-v3.json": "CaptureEvent",
+    "valid/capture-status-idle.json": "CaptureStatusSnapshot",
+    "valid/capture-status.json": "CaptureStatusSnapshot",
+    "valid/retained-unsuccessful-session-resource.json": "RetainedUnsuccessfulSessionResource",
+    "valid/safe-swap-receipt-resource.json": "SafeSwapReceiptResource",
+    "valid/safe-swap-receipt-resource-v3.json": "SafeSwapReceiptResourceV3",
+    "valid/session-list.json": "SessionList",
+    "valid/session-list-unverified.json": "SessionList",
+    "valid/session-list-with-quarantine.json": "SessionList",
+    "valid/error-response.json": "ErrorResponse",
+    "valid/error-forbidden.json": "ErrorResponse",
+    "valid/error-session-not-verified.json": "SessionNotVerifiedError",
+    "valid/error-capture-busy.json": "CaptureBusyError"
+  },
+  "invalid": {
+    "invalid/capture-start-client-take-id.json": {
+      "component": "CaptureStartRequest",
+      "expected_error_keywords": ["take", "oneOf"]
+    },
+    "invalid/capture-stop-missing-reason.json": {
+      "component": "CaptureStopRequest",
+      "expected_error_keywords": ["reason", "required"]
+    },
+    "invalid/device-lab-network-mutation-enabled.json": {
+      "component": "DeviceDescriptor",
+      "expected_error_keywords": ["network_mutation", "const"]
+    },
+    "invalid/capture-event-unknown-field.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["unexpected", "additionalProperties"]
+    },
+    "invalid/capture-event-snapshot-empty-data.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["device_state", "required"]
+    },
+    "invalid/capture-event-diagnostic-open-bag.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["diagnostic", "required"]
+    },
+    "invalid/capture-event-diagnostic-lossy.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["at", "required"]
+    },
+    "invalid/capture-event-diagnostic-message-drift.json": {
+      "component": "CaptureEvent",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["diagnostic", "exact", "Recording State"]
+    },
+    "invalid/capture-event-source-revision-mismatch.json": {
+      "component": "CaptureEvent",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["media_lost", "source_revision", "state_revision"]
+    },
+    "invalid/capture-status-source-revision-mismatch.json": {
+      "component": "CaptureStatusSnapshot",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["state_revision", "source_revision", "equal"]
+    },
+    "invalid/retained-unsuccessful-session-active-state.json": {
+      "component": "RetainedUnsuccessfulSessionResource",
+      "expected_error_keywords": ["state", "recording", "enum"]
+    },
+    "invalid/retained-unsuccessful-session-revision-mismatch.json": {
+      "component": "RetainedUnsuccessfulSessionResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["source_revision", "state_revision", "equal"]
+    },
+    "invalid/device-live-imu-epoch-mismatch.json": {
+      "component": "DeviceDescriptor",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["live_imu", "epoch_id", "session_id"]
+    },
+    "invalid/capture-event-safe-swap-missing-release.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["open_handle_count", "required"]
+    },
+    "invalid/safe-swap-receipt-resource-nonzero-handles.json": {
+      "component": "SafeSwapReceiptResource",
+      "expected_error_keywords": ["open_handle_count", "const"]
+    },
+    "invalid/safe-swap-receipt-resource-missing-handle-audit.json": {
+      "component": "SafeSwapReceiptResource",
+      "expected_error_keywords": ["handle_audit", "required"]
+    },
+    "invalid/safe-swap-receipt-resource-participant-nonzero-handles.json": {
+      "component": "SafeSwapReceiptResource",
+      "expected_error_keywords": ["acknowledgements", "open_handle_count", "const"]
+    },
+    "invalid/safe-swap-receipt-resource-participant-set-digest-mismatch.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant-set", "digest", "canonical"]
+    },
+    "invalid/safe-swap-receipt-resource-authority-shrink.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "shrink"]
+    },
+    "invalid/safe-swap-receipt-resource-authority-owner-drift.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "owner drift"]
+    },
+    "invalid/safe-swap-receipt-resource-authority-path-drift.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "access-path", "owner drift"]
+    },
+    "invalid/safe-swap-receipt-resource-authority-digest-drift.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "content digest", "does not match"]
+    },
+    "invalid/safe-swap-receipt-resource-binding-context-drift.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "binding_context_sha256", "binding drifted"]
+    },
+    "invalid/safe-swap-receipt-resource-deployment-record-drift.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "authority", "deployment_record_sha256", "binding drifted"]
+    },
+    "invalid/safe-swap-receipt-resource-incomplete-access-paths.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["access-path", "coverage", "missing"]
+    },
+    "invalid/safe-swap-receipt-resource-participant-id-mismatch.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant IDs", "expected participant set"]
+    },
+    "invalid/safe-swap-receipt-resource-participant-generation-mismatch.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["participant", "generation_id", "does not match receipt"]
+    },
+    "invalid/safe-swap-receipt-resource-invalid-generation.json": {
+      "component": "SafeSwapReceiptResource",
+      "expected_error_keywords": ["generation_id", "pattern"]
+    },
+    "invalid/safe-swap-receipt-resource-unknown-field.json": {
+      "component": "SafeSwapReceiptResource",
+      "expected_error_keywords": ["cached", "additionalProperties"]
+    },
+    "invalid/safe-swap-receipt-resource-manifest-mismatch.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["manifest_sha256", "exact manifest bytes"]
+    },
+    "invalid/safe-swap-receipt-resource-manifest-id-mismatch.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["manifest_id", "does not match"]
+    },
+    "invalid/safe-swap-receipt-resource-release-before-seal.json": {
+      "component": "SafeSwapReceiptResource",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["released_at", "sealed_at"]
+    },
+    "invalid/capture-event-safe-swap-release-after-event.json": {
+      "component": "CaptureEvent",
+      "validation_stage": "cross-field",
+      "expected_error_keywords": ["occurred_at", "released_at"]
+    },
+    "invalid/capture-event-safe-swap-v3-missing-generation.json": {
+      "component": "CaptureEvent",
+      "expected_error_keywords": ["generation_id", "required"]
+    },
+    "invalid/safe-swap-receipt-resource-v3-nonzero-handles.json": {
+      "component": "SafeSwapReceiptResourceV3",
+      "expected_error_keywords": ["open_handle_count", "const"]
+    },
+    "invalid/safe-swap-receipt-resource-v3-unknown-handle-audit.json": {
+      "component": "SafeSwapReceiptResourceV3",
+      "expected_error_keywords": ["handle_audit", "additionalProperties"]
+    },
+    "invalid/session-list-diagnostic-unknown-field.json": {
+      "component": "SessionList",
+      "expected_error_keywords": ["filesystem_path", "additionalProperties"]
+    },
+    "invalid/session-list-diagnostic-unknown-code.json": {
+      "component": "SessionList",
+      "expected_error_keywords": ["manifest_malformed", "enum"]
+    },
+    "invalid/session-list-missing-attestation.json": {
+      "component": "SessionList",
+      "expected_error_keywords": ["verification", "required"]
+    },
+    "invalid/error-response-unknown-field.json": {
+      "component": "ErrorResponse",
+      "expected_error_keywords": ["debug_trace", "additionalProperties"]
+    }
+  },
+  "legacy_v2": {
+    "valid": [
+      "valid/safe-swap-receipt-resource.json"
+    ],
+    "invalid": [
+      "invalid/safe-swap-receipt-resource-authority-digest-drift.json",
+      "invalid/safe-swap-receipt-resource-authority-owner-drift.json",
+      "invalid/safe-swap-receipt-resource-authority-path-drift.json",
+      "invalid/safe-swap-receipt-resource-authority-shrink.json",
+      "invalid/safe-swap-receipt-resource-binding-context-drift.json",
+      "invalid/safe-swap-receipt-resource-deployment-record-drift.json",
+      "invalid/safe-swap-receipt-resource-incomplete-access-paths.json",
+      "invalid/safe-swap-receipt-resource-invalid-generation.json",
+      "invalid/safe-swap-receipt-resource-manifest-id-mismatch.json",
+      "invalid/safe-swap-receipt-resource-manifest-mismatch.json",
+      "invalid/safe-swap-receipt-resource-missing-handle-audit.json",
+      "invalid/safe-swap-receipt-resource-nonzero-handles.json",
+      "invalid/safe-swap-receipt-resource-participant-generation-mismatch.json",
+      "invalid/safe-swap-receipt-resource-participant-id-mismatch.json",
+      "invalid/safe-swap-receipt-resource-participant-nonzero-handles.json",
+      "invalid/safe-swap-receipt-resource-participant-set-digest-mismatch.json",
+      "invalid/safe-swap-receipt-resource-release-before-seal.json",
+      "invalid/safe-swap-receipt-resource-unknown-field.json"
+    ]
+  }
+}

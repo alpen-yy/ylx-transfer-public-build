@@ -1,0 +1,896 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/measurement-queue-v2.schema.json",
+  "title": "YLX versioned measurement queue v2",
+  "description": "A closed, revisioned planning projection for the exact eleven M0 measurement requirements selected from one acceptance-registry history revision. Revision 1 is the immutable stable-path root; every r2+ artifact occupies the closed canonical successors directory and exact-binds its adjacent predecessor. A separate durable monotonic checkpoint exact-binds the immutable root and the unique highest fork-free tip. The queue and checkpoint bind exact bytes but are neither threshold authority nor requirement-verdict authority; threshold values, observations, evidence outcomes, terminal results, and successor-publication authority remain external.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "queue_id",
+    "revision",
+    "predecessor_queue_ref",
+    "content_sha256",
+    "content_digest_rule",
+    "registry_binding",
+    "measurements",
+    "created_at",
+    "authority_effect",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.measurement-queue.v2"
+    },
+    "queue_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId",
+      "description": "Stable identity shared by every revision in this queue chain."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_queue_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/measurementQueueRef"
+        }
+      ],
+      "description": "Exact direct predecessor bytes. For a successor, artifact_id equals queue_id and revision is exactly this revision minus one. A procedural validator enumerates the immutable root plus every regular file in the closed canonical successors directory and rejects non-canonical entries, gaps, forks, path reuse, cycles, identity drift, digest mismatch, orphan higher revisions, and lower-tip fallback."
+    },
+    "content_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+      "description": "Lowercase SHA-256 of RFC 8785 canonical JSON UTF-8 over every root property except content_sha256. This is a non-recursive semantic-content digest, not the raw artifact-byte digest used by artifact refs."
+    },
+    "content_digest_rule": {
+      "const": "SHA256_RFC8785_CANONICAL_JSON_EXCLUDING_CONTENT_SHA256"
+    },
+    "registry_binding": {
+      "$ref": "#/$defs/registryBinding"
+    },
+    "measurements": {
+      "$ref": "#/$defs/exactMeasurementSet"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "authority_effect": {
+      "const": "NONE",
+      "description": "The queue may describe BLOCKED planning work and point to external records, but cannot create a threshold, evidence outcome, PASS, N/A, or any other terminal requirement verdict."
+    },
+    "artifact_metadata": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+        },
+        {
+          "properties": {
+            "evidence_claim": {
+              "enum": [
+                "NOT_EVIDENCE_OR_PASS",
+                "GOVERNANCE_INPUT"
+              ]
+            }
+          },
+          "required": [
+            "evidence_claim"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_queue_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_queue_ref": {
+            "$ref": "#/$defs/measurementQueueRef"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "currentTipCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpoint_format",
+        "queue_schema",
+        "queue_id",
+        "root_revision",
+        "root_artifact_path",
+        "root_artifact_sha256",
+        "current_revision",
+        "current_artifact_path",
+        "current_artifact_sha256"
+      ],
+      "properties": {
+        "checkpoint_format": {
+          "const": "ylx.measurement-queue-current-tip-checkpoint.v1"
+        },
+        "queue_schema": {
+          "const": "ylx.measurement-queue.v2"
+        },
+        "queue_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+        },
+        "root_revision": {
+          "const": 1
+        },
+        "root_artifact_path": {
+          "const": "docs/evidence/M0/measurements/measurement-backlog.yaml"
+        },
+        "root_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "current_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_artifact_path": {
+          "oneOf": [
+            {
+              "const": "docs/evidence/M0/measurements/measurement-backlog.yaml"
+            },
+            {
+              "type": "string",
+              "pattern": "^docs/evidence/M0/measurements/measurement-queue-v2-successors/r(?:[2-9]|[1-9][0-9]+)-[0-9a-f]{64}--measurement-queue-v2\\.yaml$"
+            }
+          ]
+        },
+        "current_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      },
+      "description": "Canonical JSON checkpoint stored outside the queue payload. Procedural validation requires exact canonical bytes, immutable root path/raw digest continuity, current_revision equal to the unique highest contiguous revision enumerated from the closed root-plus-successors inventory, and current path/raw digest equal to that exact artifact. The initial checkpoint is create-if-absent; every later advancement is a locked monotonic adjacent compare-and-swap followed by file and directory fsync and exact-byte readback. This repository-local checkpoint proves only fail-closed consistency inside the worktree being inspected; it is not an external witness, transparency log, or protection against coordinated rollback of the entire repository. The checkpoint selects current planning state but grants no threshold, evidence, verdict, or publication authority."
+    },
+    "measurementQueueRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.measurement-queue.v2"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "acceptanceProposalRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.acceptance-registry-history-proposal.v1"
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "acceptanceHeadRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.acceptance-registry-history-head.v1"
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "registryBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_proposal_ref",
+        "selected_head_ref",
+        "registry_revision",
+        "registry_artifact_path",
+        "registry_artifact_sha256",
+        "registry_archived_artifact_path",
+        "registry_archived_artifact_sha256",
+        "acceptance_artifact_path",
+        "acceptance_artifact_sha256",
+        "acceptance_archived_artifact_path",
+        "acceptance_archived_artifact_sha256",
+        "canonical_id_set_artifact_path",
+        "canonical_id_set_sha256",
+        "registry_cardinality",
+        "measurement_id_set_sha256",
+        "measurement_cardinality"
+      ],
+      "properties": {
+        "selected_proposal_ref": {
+          "$ref": "#/$defs/acceptanceProposalRef",
+          "description": "Exact revisioned proposal selected by the acceptance-history head."
+        },
+        "selected_head_ref": {
+          "$ref": "#/$defs/acceptanceHeadRef",
+          "description": "Exact revisioned acceptance-history head used for this projection."
+        },
+        "registry_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Exact registry scope revision in selected_proposal_ref."
+        },
+        "registry_artifact_path": {
+          "const": "docs/acceptance-requirements.yaml"
+        },
+        "registry_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_archived_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/registry/[0-9a-f]{64}--acceptance-requirements\\.yaml$"
+        },
+        "registry_archived_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "acceptance_artifact_path": {
+          "const": "docs/ACCEPTANCE.md"
+        },
+        "acceptance_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "acceptance_archived_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/acceptance/[0-9a-f]{64}--ACCEPTANCE\\.md$"
+        },
+        "acceptance_archived_artifact_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "canonical_id_set_artifact_path": {
+          "type": "string",
+          "pattern": "^docs/evidence/governance/acceptance-history/revisions/[1-9][0-9]*/canonical-id-set/[0-9a-f]{64}--requirement-ids\\.txt$"
+        },
+        "canonical_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "registry_cardinality": {
+          "const": 173
+        },
+        "measurement_id_set_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256",
+          "description": "SHA-256 of ASCII-sorted unique measurement IDs, one per LF-terminated line."
+        },
+        "measurement_cardinality": {
+          "const": 11
+        }
+      },
+      "description": "A procedural validator resolves selected_head_ref to selected_proposal_ref and requires every revision, path, byte digest, archive digest, ID-set digest, and cardinality here to equal that selected proposal exactly. Live and archived registry/Acceptance digests must be pairwise equal."
+    },
+    "planningState": {
+      "enum": [
+        "BLOCKED",
+        "READY_FOR_VERDICT"
+      ],
+      "description": "Workflow state only. BLOCKED requires one or more truthful blockers. READY_FOR_VERDICT requires an exact resolved threshold record, nonempty exact resolved evidence records, and no blockers. A terminal-result ref may be null or non-null while READY_FOR_VERDICT and never changes this workflow state into a verdict."
+    },
+    "closingGate": {
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4a",
+        "M4b",
+        "M4c",
+        "M4d",
+        "M4",
+        "M5"
+      ]
+    },
+    "nullableRequirementVerdictRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/stageTerminalResultRef"
+        }
+      ],
+      "description": "Optional pointer to an independently valid external terminal result. Its presence never changes planning_state and the queue cannot derive or restate its result."
+    },
+    "stageTerminalResultRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-terminal-result.v2"
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "nullableThresholdRecordRef": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/measurementThresholdRecordRef"
+        }
+      ],
+      "description": "Exact external ylx.measurement-threshold-record.v1 reference, or null while that dedicated artifact family is unresolved. Arbitrary governance artifacts, including assignments and planning records, cannot occupy this role. The queue never embeds a threshold value, unit, direction, statistical method, or support-cell claim."
+    },
+    "measurementThresholdRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.measurement-threshold-record.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "Closed discriminator for the dedicated threshold-record role. No such record is materialized by this queue; a procedural validator must resolve exact bytes and reject every unrelated artifact family."
+    },
+    "evidenceRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.stage-evidence-record.v1"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "Exact immutable ylx.stage-evidence-record.v1 artifact ref. The ref revision is the implicit v1 artifact revision because legacy stage-evidence payloads have no root revision field. A procedural validator resolves exact canonical bytes, evidence_id, schema, path, and digest and requires the row measurement_id to occur in the payload requirement_ids."
+    },
+    "dataPartitionRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.data-partition.v1"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ],
+      "description": "The current immutable data-partition v1 family has implicit artifact revision 1."
+    },
+    "queueEvidenceBinding": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/unpartitionedEvidenceBinding"
+        },
+        {
+          "$ref": "#/$defs/partitionedHoldoutEvidenceBinding"
+        }
+      ]
+    },
+    "unpartitionedEvidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_record_ref",
+        "data_partition_ref",
+        "partition_side",
+        "source_group_ids"
+      ],
+      "properties": {
+        "evidence_record_ref": {
+          "$ref": "#/$defs/evidenceRecordRef"
+        },
+        "data_partition_ref": {
+          "type": "null"
+        },
+        "partition_side": {
+          "type": "null"
+        },
+        "source_group_ids": {
+          "type": "array",
+          "maxItems": 0
+        }
+      },
+      "description": "Explicit no-partition binding for PREDECLARED and DETERMINISTIC_POLICY evidence."
+    },
+    "partitionedHoldoutEvidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_record_ref",
+        "data_partition_ref",
+        "partition_side",
+        "source_group_ids"
+      ],
+      "properties": {
+        "evidence_record_ref": {
+          "$ref": "#/$defs/evidenceRecordRef"
+        },
+        "data_partition_ref": {
+          "$ref": "#/$defs/dataPartitionRef"
+        },
+        "partition_side": {
+          "const": "HOLDOUT"
+        },
+        "source_group_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+          }
+        }
+      },
+      "description": "Holdout-side membership for one DATA_FITTED measurement evidence record. Procedural validation requires the partition ref to equal the resolved threshold record's data_partition_ref, every group ID to resolve uniquely to a holdout source group in that partition, and the uniquely bound evidence/E measurement_data_selection prerequisite to equal this wrapper and carry the recomputed selected group/source/sample set digests."
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measurement_id",
+        "planning_state",
+        "requirement_verdict_ref",
+        "threshold_record_ref",
+        "evidence_record_refs",
+        "owner_projection",
+        "closing_gate_projection",
+        "blockers"
+      ],
+      "properties": {
+        "measurement_id": {
+          "$ref": "#/$defs/measurementId"
+        },
+        "planning_state": {
+          "$ref": "#/$defs/planningState"
+        },
+        "requirement_verdict_ref": {
+          "$ref": "#/$defs/nullableRequirementVerdictRef"
+        },
+        "threshold_record_ref": {
+          "$ref": "#/$defs/nullableThresholdRecordRef"
+        },
+        "evidence_record_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/queueEvidenceBinding"
+          },
+          "description": "External evidence refs plus closed partition membership only. DATA_FITTED holdout evidence uses the threshold record's exact partition, HOLDOUT side, and nonempty source-group IDs. Each evidence record must resolve through one exact evidence-binding and PASS E whose measurement_data_selection prerequisite is an externally read-back ylx.measurement-data-selection.v1 with field-for-field equal measurement, partition, side, and group IDs plus recomputed source/sample sets. PREDECLARED and DETERMINISTIC_POLICY evidence uses explicit null/null/empty partition semantics. Raw observations and result values are forbidden from the closed queue row."
+        },
+        "owner_projection": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/roleId",
+          "description": "Derived from the unique acceptance-registry ownership pattern matching measurement_id; it grants no assignment authority."
+        },
+        "closing_gate_projection": {
+          "$ref": "#/$defs/closingGate",
+          "description": "Derived from the selected acceptance-registry requirement row and checked against registry_binding."
+        },
+        "blockers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/blocker"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "planning_state": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "planning_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "blockers": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blockers": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "planning_state": {
+                "const": "READY_FOR_VERDICT"
+              }
+            },
+            "required": [
+              "planning_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "threshold_record_ref": {
+                "$ref": "#/$defs/measurementThresholdRecordRef"
+              },
+              "evidence_record_refs": {
+                "minItems": 1
+              },
+              "blockers": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "threshold_record_ref": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "threshold_record_ref"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requirement_verdict_ref": {
+                "type": "null"
+              },
+              "evidence_record_refs": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "evidence_record_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "measurementId": {
+      "enum": [
+        "M0-MEAS-01",
+        "M0-MEAS-02",
+        "M0-MEAS-03",
+        "M0-MEAS-04",
+        "M0-MEAS-05",
+        "M0-MEAS-06",
+        "M0-MEAS-07",
+        "M0-MEAS-08",
+        "M0-MEAS-09",
+        "M0-MEAS-10",
+        "M0-MEAS-11"
+      ]
+    },
+    "exactMeasurementSet": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "$ref": "#/$defs/measurement"
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/containsMeasurement01"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement02"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement03"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement04"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement05"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement06"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement07"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement08"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement09"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement10"
+        },
+        {
+          "$ref": "#/$defs/containsMeasurement11"
+        }
+      ]
+    },
+    "containsMeasurement01": {
+      "$ref": "#/$defs/containsMeasurementTemplate01"
+    },
+    "containsMeasurement02": {
+      "$ref": "#/$defs/containsMeasurementTemplate02"
+    },
+    "containsMeasurement03": {
+      "$ref": "#/$defs/containsMeasurementTemplate03"
+    },
+    "containsMeasurement04": {
+      "$ref": "#/$defs/containsMeasurementTemplate04"
+    },
+    "containsMeasurement05": {
+      "$ref": "#/$defs/containsMeasurementTemplate05"
+    },
+    "containsMeasurement06": {
+      "$ref": "#/$defs/containsMeasurementTemplate06"
+    },
+    "containsMeasurement07": {
+      "$ref": "#/$defs/containsMeasurementTemplate07"
+    },
+    "containsMeasurement08": {
+      "$ref": "#/$defs/containsMeasurementTemplate08"
+    },
+    "containsMeasurement09": {
+      "$ref": "#/$defs/containsMeasurementTemplate09"
+    },
+    "containsMeasurement10": {
+      "$ref": "#/$defs/containsMeasurementTemplate10"
+    },
+    "containsMeasurement11": {
+      "$ref": "#/$defs/containsMeasurementTemplate11"
+    },
+    "containsMeasurementTemplate01": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-01"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate02": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-02"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate03": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-03"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate04": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-04"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate05": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-05"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate06": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-06"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate07": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-07"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate08": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-08"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate09": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-09"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate10": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-10"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "containsMeasurementTemplate11": {
+      "contains": {
+        "properties": {
+          "measurement_id": {
+            "const": "M0-MEAS-11"
+          }
+        },
+        "required": [
+          "measurement_id"
+        ]
+      },
+      "minContains": 1,
+      "maxContains": 1
+    }
+  }
+}

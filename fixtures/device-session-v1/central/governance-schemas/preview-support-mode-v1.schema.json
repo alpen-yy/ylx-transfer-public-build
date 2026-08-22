@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/preview-support-mode-v1.schema.json",
+  "title": "YLX preview support mode v1",
+  "description": "Immutable M1 selector for recording-time or pre-recording-only preview support. The exact-byte digest is carried by consuming approvals, verdicts, and evidence, not by this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact_version",
+    "selector",
+    "value",
+    "decision_requirement_id",
+    "decision_sha256",
+    "issued_at",
+    "supersedes_selector_artifact_sha256",
+    "recording_time_infeasibility_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.preview-support-mode.v1"
+    },
+    "artifact_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "selector": {
+      "const": "preview_support_mode"
+    },
+    "value": {
+      "enum": [
+        "recording_time",
+        "pre_recording_only"
+      ]
+    },
+    "decision_requirement_id": {
+      "const": "M1-SUPPORT-01"
+    },
+    "decision_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "issued_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "supersedes_selector_artifact_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    },
+    "recording_time_infeasibility_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "artifact_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "supersedes_selector_artifact_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "supersedes_selector_artifact_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "value": {
+            "const": "recording_time"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "then": {
+        "properties": {
+          "recording_time_infeasibility_sha256": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "recording_time_infeasibility_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ]
+}

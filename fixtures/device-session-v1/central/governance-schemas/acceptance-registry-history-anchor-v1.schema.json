@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/acceptance-registry-history-anchor-v1.schema.json",
+  "title": "YLX observed acceptance registry history migration anchor v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "record_status",
+    "source_artifact_path",
+    "archived_source_path",
+    "archived_source_sha256",
+    "archived_source_byte_length",
+    "source_retention",
+    "observed_legacy_document",
+    "historical_limitations",
+    "authority_effect",
+    "publication_semantics",
+    "approvals",
+    "evidence_ids"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.acceptance-registry-history-anchor.v1"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^acceptance-registry-history-anchor-[0-9a-f]{64}$"
+    },
+    "record_status": {
+      "const": "OBSERVED_MIGRATION_ANCHOR"
+    },
+    "source_artifact_path": {
+      "const": "docs/acceptance-requirements-history.yaml"
+    },
+    "archived_source_path": {
+      "type": "string",
+      "pattern": "^docs/evidence/governance/acceptance-history/archive/[0-9a-f]{64}--acceptance-requirements-history\\.yaml$"
+    },
+    "archived_source_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "archived_source_byte_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_retention": {
+      "const": "EXACT_OBSERVED_BYTES_CONTENT_ADDRESSED_ARCHIVE"
+    },
+    "observed_legacy_document": {
+      "$ref": "#/$defs/observedLegacyDocument"
+    },
+    "historical_limitations": {
+      "$ref": "#/$defs/historicalLimitations"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "publication_semantics": {
+      "$ref": "#/$defs/publicationSemantics"
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "evidence_ids": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "observedLegacyDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "revision_numbers",
+        "revision_1_registry_artifact_sha256",
+        "revision_1_acceptance_artifact_sha256",
+        "revision_1_id_set_sha256",
+        "revision_1_cardinality",
+        "revision_1_approval_status",
+        "referenced_registry_exact_bytes_status",
+        "referenced_acceptance_exact_bytes_status",
+        "approval_material_status"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "ylx.acceptance-requirements-history.v1"
+        },
+        "status": {
+          "const": "draft"
+        },
+        "revision_numbers": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": 1
+            }
+          ],
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "revision_1_registry_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "revision_1_acceptance_artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "revision_1_id_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "revision_1_cardinality": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_1_approval_status": {
+          "const": "NOT_APPROVED"
+        },
+        "referenced_registry_exact_bytes_status": {
+          "const": "UNAVAILABLE"
+        },
+        "referenced_acceptance_exact_bytes_status": {
+          "const": "UNAVAILABLE"
+        },
+        "approval_material_status": {
+          "const": "NOT_RECOVERED_OR_RECONSTRUCTED"
+        }
+      }
+    },
+    "historicalLimitations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "referenced_registry_bytes_recovered",
+        "referenced_acceptance_bytes_recovered",
+        "approvals_reconstructed",
+        "signatures_reconstructed",
+        "timestamps_reconstructed",
+        "commits_reconstructed",
+        "retrospective_approval_claim",
+        "statement"
+      ],
+      "properties": {
+        "referenced_registry_bytes_recovered": {
+          "const": false
+        },
+        "referenced_acceptance_bytes_recovered": {
+          "const": false
+        },
+        "approvals_reconstructed": {
+          "const": false
+        },
+        "signatures_reconstructed": {
+          "const": false
+        },
+        "timestamps_reconstructed": {
+          "const": false
+        },
+        "commits_reconstructed": {
+          "const": false
+        },
+        "retrospective_approval_claim": {
+          "const": "NOT_MADE"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "publicationSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "addressed_bytes",
+        "write_mode",
+        "on_existing_path",
+        "mutation"
+      ],
+      "properties": {
+        "addressed_bytes": {
+          "const": "RECORD_RAW_BYTES"
+        },
+        "write_mode": {
+          "const": "CREATE_IF_ABSENT"
+        },
+        "on_existing_path": {
+          "const": "REQUIRE_EXACT_RECORD_BYTES"
+        },
+        "mutation": {
+          "const": "FORBIDDEN"
+        }
+      }
+    }
+  }
+}

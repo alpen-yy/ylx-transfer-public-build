@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/release-distribution-control-v1.schema.json",
+  "title": "YLX append-only signed release distribution control v1",
+  "description": "Controls post-GA customer visibility without modifying immutable release-completion history. Signatures cover the RFC 8785 JSON UTF-8 bytes of this object with signatures_by_role_slot omitted. The two ordinary signing roles must resolve procedurally to distinct natural persons; emergency authority is a separate policy and is not implicit here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "revision",
+    "predecessor_control_sha256",
+    "finalized_release_manifest_ref",
+    "finalized_terminal_reference",
+    "channel_scope",
+    "action",
+    "incident_ref",
+    "reason",
+    "effective_at",
+    "required_rto_seconds",
+    "client_behavior",
+    "producer_behavior",
+    "consumer_behavior",
+    "compatibility_window",
+    "recovery_condition",
+    "redirect_target_finalized_manifest_ref",
+    "signing_policy_sha256",
+    "signatures_by_role_slot",
+    "created_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.release-distribution-control.v1"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_control_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256" }
+      ]
+    },
+    "finalized_release_manifest_ref": {
+      "$ref": "#/$defs/finalizedManifestRef"
+    },
+    "finalized_terminal_reference": {
+      "$ref": "#/$defs/finalizedTerminalReference"
+    },
+    "channel_scope": {
+      "$ref": "#/$defs/channelScope"
+    },
+    "action": {
+      "enum": ["ACTIVE", "WITHDRAWN", "REDIRECTED"]
+    },
+    "incident_ref": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef" }
+      ]
+    },
+    "reason": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "minLength": 1, "maxLength": 600 }
+      ]
+    },
+    "effective_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "required_rto_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "client_behavior": {
+      "$ref": "#/$defs/clientBehavior"
+    },
+    "producer_behavior": {
+      "$ref": "#/$defs/producerBehavior"
+    },
+    "consumer_behavior": {
+      "$ref": "#/$defs/consumerBehavior"
+    },
+    "compatibility_window": {
+      "$ref": "#/$defs/compatibilityWindow"
+    },
+    "recovery_condition": {
+      "$ref": "#/$defs/recoveryCondition"
+    },
+    "redirect_target_finalized_manifest_ref": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/finalizedManifestRef" }
+      ]
+    },
+    "signing_policy_sha256": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+    },
+    "signatures_by_role_slot": {
+      "$ref": "#/$defs/signatureMap"
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": { "const": 1 }
+        },
+        "required": ["revision"]
+      },
+      "then": {
+        "properties": {
+          "predecessor_control_sha256": { "type": "null" },
+          "action": { "const": "ACTIVE" },
+          "incident_ref": { "type": "null" },
+          "reason": { "type": "null" },
+          "redirect_target_finalized_manifest_ref": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": { "type": "integer", "minimum": 2 },
+          "predecessor_control_sha256": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+          },
+          "action": { "enum": ["ACTIVE", "WITHDRAWN", "REDIRECTED"] },
+          "incident_ref": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 600 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": { "const": "ACTIVE" }
+        },
+        "required": ["action"]
+      },
+      "then": {
+        "properties": {
+          "redirect_target_finalized_manifest_ref": { "type": "null" },
+          "client_behavior": {
+            "properties": {
+              "customer_discovery": { "const": "VISIBLE" },
+              "default_installation": { "const": "ENABLED" },
+              "automatic_upgrade": { "const": "ENABLED" },
+              "public_indexes": { "const": "VISIBLE" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": { "const": "WITHDRAWN" }
+        },
+        "required": ["action"]
+      },
+      "then": {
+        "properties": {
+          "redirect_target_finalized_manifest_ref": { "type": "null" },
+          "client_behavior": {
+            "properties": {
+              "customer_discovery": { "const": "HIDDEN" },
+              "default_installation": { "const": "DISABLED" },
+              "automatic_upgrade": { "const": "DISABLED" },
+              "public_indexes": { "const": "HIDDEN" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": { "const": "REDIRECTED" }
+        },
+        "required": ["action"]
+      },
+      "then": {
+        "properties": {
+          "redirect_target_finalized_manifest_ref": {
+            "$ref": "#/$defs/finalizedManifestRef"
+          },
+          "client_behavior": {
+            "properties": {
+              "customer_discovery": { "const": "REDIRECT_TO_TARGET" },
+              "default_installation": { "const": "REDIRECT_TO_TARGET" },
+              "automatic_upgrade": { "const": "REDIRECT_TO_TARGET" },
+              "public_indexes": { "const": "REDIRECT_TO_TARGET" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "revision": { "type": "integer", "minimum": 2 },
+          "action": { "const": "ACTIVE" }
+        },
+        "required": ["revision", "action"]
+      },
+      "then": {
+        "properties": {
+          "recovery_condition": {
+            "properties": {
+              "not_before": {
+                "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+              },
+              "recovery_evidence_refs": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "finalizedManifestRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "properties": {
+            "schema": { "const": "ylx.release-closure-manifest.v1" }
+          }
+        }
+      ]
+    },
+    "finalizedTerminalReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "payload_locator", "payload_sha256"],
+      "properties": {
+        "kind": { "const": "FINALIZED" },
+        "payload_locator": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+        },
+        "payload_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "channelScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel_ids", "visibility_surfaces"],
+      "properties": {
+        "channel_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/stableLocator"
+          }
+        },
+        "visibility_surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "CUSTOMER_DISCOVERY",
+              "DEFAULT_INSTALLATION",
+              "AUTOMATIC_UPGRADE",
+              "PUBLIC_INDEXES"
+            ]
+          }
+        }
+      }
+    },
+    "clientBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "customer_discovery",
+        "default_installation",
+        "automatic_upgrade",
+        "public_indexes",
+        "offline_client_notice"
+      ],
+      "properties": {
+        "customer_discovery": {
+          "enum": ["VISIBLE", "HIDDEN", "REDIRECT_TO_TARGET"]
+        },
+        "default_installation": {
+          "enum": ["ENABLED", "DISABLED", "REDIRECT_TO_TARGET"]
+        },
+        "automatic_upgrade": {
+          "enum": ["ENABLED", "DISABLED", "REDIRECT_TO_TARGET"]
+        },
+        "public_indexes": {
+          "enum": ["VISIBLE", "HIDDEN", "REDIRECT_TO_TARGET"]
+        },
+        "offline_client_notice": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        }
+      }
+    },
+    "producerBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["write_disposition", "operator_instruction"],
+      "properties": {
+        "write_disposition": {
+          "enum": ["CONTINUE", "STOP", "ROLLBACK_TO_REDIRECT_TARGET"]
+        },
+        "operator_instruction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        }
+      }
+    },
+    "consumerBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read_disposition", "existing_data_disposition"],
+      "properties": {
+        "read_disposition": {
+          "enum": ["TARGET_ONLY", "DUAL_READ_REQUIRED"]
+        },
+        "existing_data_disposition": {
+          "const": "PRESERVE_EXISTING_DATA"
+        }
+      }
+    },
+    "compatibilityWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_data_scope",
+        "target_read_from",
+        "legacy_read_until",
+        "dual_read_required"
+      ],
+      "properties": {
+        "required_data_scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "target_read_from": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "legacy_read_until": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp" }
+          ]
+        },
+        "dual_read_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "recoveryCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition",
+        "not_before",
+        "required_evidence",
+        "recovery_evidence_refs"
+      ],
+      "properties": {
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "not_before": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp" }
+          ]
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "recovery_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+          }
+        }
+      }
+    },
+    "signatureMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release-owner", "security-owner"],
+      "properties": {
+        "release-owner": {
+          "allOf": [
+            { "$ref": "#/$defs/roleSignature" },
+            {
+              "properties": {
+                "role_slot": { "const": "release-owner" },
+                "signature_domain": {
+                  "const": "ylx.release-distribution-control.v1/release-owner"
+                }
+              }
+            }
+          ]
+        },
+        "security-owner": {
+          "allOf": [
+            { "$ref": "#/$defs/roleSignature" },
+            {
+              "properties": {
+                "role_slot": { "const": "security-owner" },
+                "signature_domain": {
+                  "const": "ylx.release-distribution-control.v1/security-owner"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "roleSignature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_slot",
+        "person_id",
+        "signing_key_fingerprint",
+        "role_assignment_ref",
+        "signed_at",
+        "signature_domain",
+        "signed_payload_sha256",
+        "signature_b64"
+      ],
+      "properties": {
+        "role_slot": {
+          "enum": ["release-owner", "security-owner"]
+        },
+        "person_id": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+        },
+        "signing_key_fingerprint": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "role_assignment_ref": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/authorityRef"
+        },
+        "signed_at": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+        },
+        "signature_domain": {
+          "enum": [
+            "ylx.release-distribution-control.v1/release-owner",
+            "ylx.release-distribution-control.v1/security-owner"
+          ]
+        },
+        "signed_payload_sha256": {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/sha256"
+        },
+        "signature_b64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    }
+  }
+}

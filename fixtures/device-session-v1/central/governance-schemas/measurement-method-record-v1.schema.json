@@ -1,0 +1,330 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.ylx.invalid/governance/measurement-method-record-v1.schema.json",
+  "title": "YLX measurement method record v1",
+  "description": "Immutable, revisioned definition of a freeze-evaluation or statistical-fit method used by measurement threshold records. The method is expressed in closed typed fields rather than by pointing at an arbitrary governance artifact. It defines method semantics only; effective threshold policy still requires an independently valid threshold record, registry-derived freeze profile, durable pre-action PASS execution evaluation and assignments, training evidence, partition where applicable, and external exact-byte publication/readback.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "method_record_id",
+    "revision",
+    "predecessor_method_record_ref",
+    "method_role",
+    "applicable_measurement_ids",
+    "metric_ids",
+    "algorithm_id",
+    "algorithm_version",
+    "procedure_steps",
+    "aggregation",
+    "percentile",
+    "repetition_rule",
+    "input_record_schema",
+    "output_contract",
+    "partition_policy",
+    "holdout_policy",
+    "created_at",
+    "supersession_reason",
+    "publication_protocol",
+    "publication_readback_schema",
+    "authority_effect",
+    "artifact_metadata"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ylx.measurement-method-record.v1"
+    },
+    "method_record_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_method_record_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/measurementMethodRecordRef"
+        }
+      ]
+    },
+    "method_role": {
+      "enum": [
+        "FREEZE_EVALUATION",
+        "STATISTICAL_FIT"
+      ]
+    },
+    "applicable_measurement_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/measurementId"
+      }
+    },
+    "metric_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+      }
+    },
+    "algorithm_id": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "algorithm_version": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/identifier"
+    },
+    "procedure_steps": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      }
+    },
+    "aggregation": {
+      "enum": [
+        "NONE",
+        "MINIMUM",
+        "MAXIMUM",
+        "ARITHMETIC_MEAN",
+        "MEDIAN",
+        "PERCENTILE",
+        "RATE",
+        "COUNT",
+        "ABSOLUTE_ERROR",
+        "SET_COMPARISON"
+      ]
+    },
+    "percentile": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 100
+        }
+      ]
+    },
+    "repetition_rule": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "input_record_schema": {
+      "const": "ylx.stage-evidence-record.v1"
+    },
+    "output_contract": {
+      "const": "MEASUREMENT_THRESHOLD_TERMS_V1"
+    },
+    "partition_policy": {
+      "enum": [
+        "FORBIDDEN",
+        "REQUIRED_SOURCE_GROUP_DISJOINT"
+      ]
+    },
+    "holdout_policy": {
+      "enum": [
+        "NOT_APPLICABLE",
+        "VALIDATION_ONLY_NO_RETUNING"
+      ]
+    },
+    "created_at": {
+      "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/timestamp"
+    },
+    "supersession_reason": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      ]
+    },
+    "publication_protocol": {
+      "const": "EXTERNAL_CONTENT_ADDRESSED_LOCATOR_READBACK_V1"
+    },
+    "publication_readback_schema": {
+      "const": "ylx.content-addressed-locator-readback.v1",
+      "description": "The method payload does not embed its own digest or readback ref. Procedural validation externally selects exactly one matching readback by artifact_schema, artifact_id, and raw-byte digest."
+    },
+    "authority_effect": {
+      "const": "NONE",
+      "description": "The method payload defines no authority. A threshold may consume it only through the separately authorized and durably read-back threshold-freeze workflow."
+    },
+    "artifact_metadata": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactMetadata"
+        },
+        {
+          "properties": {
+            "classification": {
+              "const": "GOVERNANCE_ARTIFACT"
+            },
+            "evidence_claim": {
+              "const": "GOVERNANCE_INPUT"
+            }
+          },
+          "required": [
+            "classification",
+            "evidence_claim"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "predecessor_method_record_ref": {
+            "type": "null"
+          },
+          "supersession_reason": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "predecessor_method_record_ref": {
+            "$ref": "#/$defs/measurementMethodRecordRef"
+          },
+          "supersession_reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "aggregation": {
+            "const": "PERCENTILE"
+          }
+        },
+        "required": [
+          "aggregation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "percentile": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 100
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "percentile": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method_role": {
+            "const": "STATISTICAL_FIT"
+          }
+        },
+        "required": [
+          "method_role"
+        ]
+      },
+      "then": {
+        "properties": {
+          "partition_policy": {
+            "const": "REQUIRED_SOURCE_GROUP_DISJOINT"
+          },
+          "holdout_policy": {
+            "const": "VALIDATION_ONLY_NO_RETUNING"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "exactArtifactRef": {
+      "allOf": [
+        {
+          "$ref": "https://schemas.ylx.invalid/governance/governance-common.schema.json#/$defs/artifactRef"
+        },
+        {
+          "required": [
+            "revision"
+          ]
+        }
+      ]
+    },
+    "measurementMethodRecordRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/exactArtifactRef"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "ylx.measurement-method-record.v1"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "schema",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "measurementId": {
+      "enum": [
+        "M0-MEAS-01",
+        "M0-MEAS-02",
+        "M0-MEAS-03",
+        "M0-MEAS-04",
+        "M0-MEAS-05",
+        "M0-MEAS-06",
+        "M0-MEAS-07",
+        "M0-MEAS-08",
+        "M0-MEAS-09",
+        "M0-MEAS-10",
+        "M0-MEAS-11"
+      ]
+    }
+  }
+}
